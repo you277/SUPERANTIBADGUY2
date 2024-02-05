@@ -12,6 +12,7 @@ public class DesktopLauncher {
 		config.setWindowedMode(800, 500);
 		config.useVsync(true);
 		config.setTitle("epic gaem");
+		config.setResizable(false);
 		new Lwjgl3Application(new Game(), config);
 	}
 }
