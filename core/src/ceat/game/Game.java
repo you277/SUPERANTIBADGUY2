@@ -16,7 +16,7 @@ public class Game extends ApplicationAdapter {
 	Texture title1;
 
 	private void renderTitle1() {
-		ScreenUtils.clear(1, 0, 0, 1);
+		ScreenUtils.clear(0, 0, 0, 1);
 		batch.begin();
 		batch.draw(title1, 10, 10);
 		batch.end();
