@@ -7,11 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import ceat.game.Lerp;
-
 public class TheActualGame {
     private final SpriteBatch batch;
-    private float elapsed;
+    private float gameTime;
     private Sprite guy;
 
     public TheActualGame(SpriteBatch newBatch) {
@@ -20,9 +18,18 @@ public class TheActualGame {
         Texture hi = new Texture("img/what.png");
         guy = new Sprite(hi);
         guy.setScale(0.5f, 0.5f);
+
+        new Loop(1.0f) {
+            @Override
+            public void run(float deltaTime, float elapsed) {
+                System.out.println(elapsed/1);
+            }
+        };
     }
 
     private void stepGame(float delta, double elapsed) {
+        Loop.runLoops(delta);
+
         float t = (float)(Math.min(elapsed, 2)/2);
         Vector2 pos1 = new Vector2();
         Vector2 pos2 = new Vector2();
@@ -37,8 +44,8 @@ public class TheActualGame {
     }
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
-        elapsed += delta;
-        stepGame(delta, elapsed);
+        gameTime += delta;
+        stepGame(delta, gameTime);
 
         ScreenUtils.clear(1, 0, 0, 1);
         batch.begin();
