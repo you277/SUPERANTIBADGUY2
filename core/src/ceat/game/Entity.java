@@ -25,6 +25,11 @@ public class Entity {
     public Texture tex;
     public Sprite sprite;
     private boolean loadedSprite;
+    public Grid grid;
+
+    public Entity(Grid newGrid) {
+        grid = newGrid;
+    }
 
     public Sprite loadSprite(String path, float scaleX, float scaleY) {
         tex = new Texture(path);

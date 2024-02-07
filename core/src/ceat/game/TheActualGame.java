@@ -11,6 +11,7 @@ public class TheActualGame {
     private final SpriteBatch batch;
     private float gameTime;
     private Sprite guy;
+    private Grid grid;
 
     public TheActualGame(SpriteBatch newBatch) {
         batch = newBatch;
@@ -18,6 +19,8 @@ public class TheActualGame {
         Texture hi = new Texture("img/what.png");
         guy = new Sprite(hi);
         guy.setScale(0.5f, 0.5f);
+
+        grid = new Grid();
 
         new Loop(1.0f) {
             @Override
@@ -47,9 +50,12 @@ public class TheActualGame {
         gameTime += delta;
         stepGame(delta, gameTime);
 
+        grid.render(gameTime);
+
         ScreenUtils.clear(1, 0, 0, 1);
         batch.begin();
         guy.draw(batch);
+        grid.draw(batch);
         batch.end();
     }
 
