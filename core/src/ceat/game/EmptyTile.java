@@ -9,8 +9,8 @@ public class EmptyTile extends Entity {
     public float x;
     public float y;
 
-    public EmptyTile(Grid newGrid) {
-        super(newGrid);
+    public EmptyTile(TheActualGame newGame, Grid newGrid) {
+        super(newGame, newGrid);
         super.loadSprite("img/baseTile.png");
         sprite.scale(1.5f);
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);

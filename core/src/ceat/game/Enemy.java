@@ -5,8 +5,8 @@ public class Enemy extends Entity {
     public int x;
     public int y;
 
-    public Enemy(Grid newGrid) {
-        super(newGrid);
+    public Enemy(TheActualGame newGame, Grid newGrid) {
+        super(newGame, newGrid);
         super.loadSprite("img/what.png");
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
     }

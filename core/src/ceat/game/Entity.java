@@ -26,9 +26,11 @@ public class Entity {
     public Sprite sprite;
     private boolean loadedSprite;
     public Grid grid;
+    public TheActualGame game;
 
-    public Entity(Grid newGrid) {
+    public Entity(TheActualGame newGame, Grid newGrid) {
         grid = newGrid;
+        game = newGame;
     }
 
     public Sprite loadSprite(String path, float scaleX, float scaleY) {
@@ -45,6 +47,8 @@ public class Entity {
         loadedSprite = true;
         return sprite;
     }
+
+    public void render() {}
 
     public void step() {}
 

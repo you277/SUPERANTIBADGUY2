@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Player extends Entity {
     public final entityType type = entityType.PLAYER;
-    private moveDirection direction;
+    private moveDirection direction = moveDirection.UP;
     private final Texture leftArrowTex;
     private final Texture upArrowTex;
     private final Texture rightArrowTex;
@@ -20,17 +20,27 @@ public class Player extends Entity {
     public int gridX;
     public int gridY;
 
-    public Player(Grid newGrid) {
-        super(newGrid);
-        super.loadSprite("img/what.png");
+    public Player(TheActualGame newGame, Grid newGrid) {
+        super(newGame, newGrid);
+        super.loadSprite("img/playerTile.png");
+        sprite.setScale(2f);
+        sprite.setColor(1, 1, 1, 0f);
+
         leftArrowTex = new Texture("img/leftArr.png");
         upArrowTex = new Texture("img/upArr.png");
         rightArrowTex = new Texture("img/rightArr.png");
         downArrowTex = new Texture("img/downArr.png");
+
         leftArrow = new Sprite(leftArrowTex);
         upArrow = new Sprite(upArrowTex);
         rightArrow = new Sprite(rightArrowTex);
         downArrow = new Sprite(downArrowTex);
+
+        leftArrow.scale(1.5f);
+        upArrow.scale(1.5f);
+        rightArrow.scale(1.5f);
+        downArrow.scale(1.5f);
+
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
         leftArrow.setCenter(leftArrow.getWidth()/2, leftArrow.getHeight()/2);
         upArrow.setCenter(upArrow.getWidth()/2, upArrow.getHeight()/2);
@@ -72,20 +82,23 @@ public class Player extends Entity {
 
     @Override
     public void draw(SpriteBatch batch) {
+        Vector2 spritePos = grid.getSpritePositionFromGridPosition(gridX, gridY);
+        sprite.setPosition(spritePos.x, spritePos.y);
         super.draw(batch);
-        switch(direction) {
-            case LEFT:
-                leftArrow.draw(batch);
-                break;
-            case UP:
-                upArrow.draw(batch);
-                break;
-            case RIGHT:
-                rightArrow.draw(batch);
-                break;
-            case DOWN:
-                downArrow.draw(batch);
-                break;
+
+        // switch statement threw an exception so i have to use ifs
+        if (direction == moveDirection.LEFT) {
+            leftArrow.setPosition(spritePos.x, spritePos.y);
+            leftArrow.draw(batch);
+        } else if (direction == moveDirection.UP) {
+            upArrow.setPosition(spritePos.x, spritePos.y);
+            upArrow.draw(batch);
+        } else if (direction == moveDirection.RIGHT) {
+            rightArrow.setPosition(spritePos.x, spritePos.y);
+            rightArrow.draw(batch);
+        } else if (direction == moveDirection.DOWN) {
+            downArrow.setPosition(spritePos.x, spritePos.y);
+            downArrow.draw(batch);
         }
     }
 

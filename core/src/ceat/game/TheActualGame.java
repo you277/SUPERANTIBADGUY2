@@ -20,7 +20,7 @@ public class TheActualGame {
         guy = new Sprite(hi);
         guy.setScale(0.5f, 0.5f);
 
-        grid = new Grid();
+        grid = new Grid(this);
 
         new Loop(1.0f) {
             @Override
