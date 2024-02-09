@@ -1,13 +1,15 @@
 package ceat.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.Input.Keys;
 
-public class TheActualGame {
+public class TheActualGame implements InputProcessor {
     private final SpriteBatch batch;
     private float gameTime;
     private Sprite guy;
@@ -21,13 +23,7 @@ public class TheActualGame {
         guy.setScale(0.5f, 0.5f);
 
         grid = new Grid(this);
-
-        new Loop(1.0f) {
-            @Override
-            public void run(float deltaTime, float elapsed) {
-                System.out.println(elapsed/1);
-            }
-        };
+        Gdx.input.setInputProcessor(this);
     }
 
     private void stepGame(float delta, double elapsed) {
@@ -57,6 +53,67 @@ public class TheActualGame {
         guy.draw(batch);
         grid.draw(batch);
         batch.end();
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        switch (keycode) {
+            case Keys.W: {
+                grid.player.setDirection(Entity.moveDirection.UP);
+            }
+            case Keys.A: {
+                grid.player.setDirection(Entity.moveDirection.LEFT);
+            }
+            case Keys.S: {
+                grid.player.setDirection(Entity.moveDirection.DOWN);
+            }
+            case Keys.D: {
+                grid.player.setDirection(Entity.moveDirection.RIGHT);
+            }
+            case Keys.ENTER: {
+                grid.player.step();
+            }
+        }
+        return false;
+    }
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
     }
 
     public void dispose() {

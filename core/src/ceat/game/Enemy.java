@@ -1,9 +1,7 @@
 package ceat.game;
 
-public class Enemy extends Entity {
+public class Enemy extends BoardEntity {
     public final entityType type = entityType.ENEMY;
-    public int x;
-    public int y;
 
     public Enemy(TheActualGame newGame, Grid newGrid) {
         super(newGame, newGrid);

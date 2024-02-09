@@ -29,10 +29,10 @@ public class Grid {
         return newVec;
     }
 
-    private EmptyTile[][] grid;
-    private ArrayList<Enemy> enemies;
+    public EmptyTile[][] grid;
+    public ArrayList<Enemy> enemies;
 //    private ArrayList<Projectile> projectiles;
-    private Player player;
+    public Player player;
 
 
     public Grid(TheActualGame newGame) {

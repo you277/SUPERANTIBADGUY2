@@ -6,8 +6,7 @@ public class Loop {
     private float elapsed;
     private float duration;
     public static void runLoops(float deltaTime) {
-        int l = loops.size();
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < loops.size(); i++) {
             Loop f = loops.get(i);
             f.elapsed += deltaTime;
             if (f.elapsed > f.duration) {

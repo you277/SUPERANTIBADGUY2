@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
-public class Player extends Entity {
+public class Player extends BoardEntity {
     public final entityType type = entityType.PLAYER;
     private moveDirection direction = moveDirection.UP;
     private final Texture leftArrowTex;
@@ -17,14 +17,11 @@ public class Player extends Entity {
     private final Sprite rightArrow;
     private final Sprite downArrow;
 
-    public int gridX;
-    public int gridY;
 
     public Player(TheActualGame newGame, Grid newGrid) {
         super(newGame, newGrid);
         super.loadSprite("img/playerTile.png");
         sprite.setScale(2f);
-        sprite.setColor(1, 1, 1, 0f);
 
         leftArrowTex = new Texture("img/leftArr.png");
         upArrowTex = new Texture("img/upArr.png");
@@ -83,8 +80,10 @@ public class Player extends Entity {
     @Override
     public void draw(SpriteBatch batch) {
         Vector2 spritePos = grid.getSpritePositionFromGridPosition(gridX, gridY);
-        sprite.setPosition(spritePos.x, spritePos.y);
+        super.render();
         super.draw(batch);
+//        sprite.setPosition(spritePos.x, spritePos.y);
+//        super.draw(batch);
 
         // switch statement threw an exception so i have to use ifs
         if (direction == moveDirection.LEFT) {
