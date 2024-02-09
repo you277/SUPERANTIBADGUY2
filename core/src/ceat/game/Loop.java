@@ -10,7 +10,10 @@ public class Loop {
         for (int i = 0; i < l; i++) {
             Loop f = loops.get(i);
             f.elapsed += deltaTime;
-            if (f.elapsed > f.duration) loops.remove(f);
+            if (f.elapsed > f.duration) {
+                loops.remove(f);
+                i--;
+            }
             else f.run(deltaTime, f.elapsed);
         }
 
