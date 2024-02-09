@@ -49,7 +49,7 @@ public class Grid {
         player = new Player(game, this);
     }
 
-    public Entity getEntityAt(int x, int y) {
+    public EmptyTile getTileAt(int x, int y) {
         return grid[x][y];
     }
 

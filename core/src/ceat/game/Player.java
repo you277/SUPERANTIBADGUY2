@@ -75,6 +75,7 @@ public class Player extends BoardEntity {
         }
         gridX = (int)vec.x;
         gridY = (int)vec.y;
+        super.animateJump(grid.getTileAt(gridX, gridY));
     }
 
     @Override
