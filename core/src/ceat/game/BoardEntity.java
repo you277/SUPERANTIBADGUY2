@@ -18,28 +18,31 @@ public class BoardEntity extends Entity {
     private boolean isAnimating;
     public BoardEntity(TheActualGame newGame, Grid newGrid) {
         super(newGame, newGrid);
+        parentTile = grid.getTileAt(0, 0);
     }
     public void render() {
         if (!isAnimating) {
             Vector2 spritePos = grid.getSpritePositionFromGridPosition(gridX, gridY);
-            sprite.setPosition(spritePos.x, spritePos.y);
+            x = spritePos.x;
+            y = spritePos.y;
         }
+        sprite.setPosition(x, y);
     }
 
     public void animateJump(EmptyTile nextTile) {
         isAnimating = true;
-        new Loop(0.5f) {
+        new Loop(0.25f) {
             @Override
             public void run(float delta, float elapsed) {
                 float midX = (parentTile.x + nextTile.x)/2;
-                float midY = (parentTile.y + nextTile.y)/2 + 100;
-                Vector2 newPos = Lerp.threePointBezier(parentTile.x, parentTile.y, midX, midY, nextTile.x, nextTile.y, elapsed*2);
+                float midY = (parentTile.y + nextTile.y)/2 + 75;
+                Vector2 newPos = Lerp.threePointBezier(parentTile.x, parentTile.y, midX, midY, nextTile.x, nextTile.y, elapsed*4);
                 x = newPos.x;
                 y = newPos.y;
             }
         };
         new ChainedTask()
-            .wait(0.5f)
+            .wait(0.25f)
             .run(new Task() {
             @Override
             public void run() {

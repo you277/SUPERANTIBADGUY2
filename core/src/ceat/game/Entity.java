@@ -10,7 +10,8 @@ public class Entity {
         EMPTY,
         PLAYER,
         ENEMY,
-        PROJECTILE
+        PROJECTILE,
+        HIGHLIGHT
     }
 
     public enum moveDirection {

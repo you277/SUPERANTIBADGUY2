@@ -60,15 +60,19 @@ public class TheActualGame implements InputProcessor {
         switch (keycode) {
             case Keys.W: {
                 grid.player.setDirection(Entity.moveDirection.UP);
+                break;
             }
             case Keys.A: {
                 grid.player.setDirection(Entity.moveDirection.LEFT);
+                break;
             }
             case Keys.S: {
                 grid.player.setDirection(Entity.moveDirection.DOWN);
+                break;
             }
             case Keys.D: {
                 grid.player.setDirection(Entity.moveDirection.RIGHT);
+                break;
             }
             case Keys.ENTER: {
                 grid.player.step();
