@@ -74,7 +74,7 @@ public class Player extends BoardEntity {
                 break;
             default:
                 offset = left;
-
+                break;
         }
         Vector2 nextPos = Grid.getFinalPosition(gridX + offset[0], gridY + offset[1]);
         highlight.gridX = (int)nextPos.x;
