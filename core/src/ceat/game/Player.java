@@ -21,6 +21,8 @@ public class Player extends BoardEntity {
 
     public Player(TheActualGame newGame, Grid newGrid) {
         super(newGame, newGrid);
+        parentTile = grid.getTileAt(gridX, gridY);
+
         super.loadSprite("img/playerTile.png");
         sprite.setScale(2f);
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
