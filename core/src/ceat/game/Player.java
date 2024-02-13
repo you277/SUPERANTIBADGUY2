@@ -58,12 +58,12 @@ public class Player extends BoardEntity {
         return direction;
     }
     int[] left = {-1, 0};
-    int[] up = {-1, 0};
-    int[] right = {-1, 0};
-    int[] down = {-1, 0};
+    int[] up = {0, -1};
+    int[] right = {1, 0};
+    int[] down = {0, 1};
 
     private void moveHighlight() {
-        int[] offset;
+        int[] offset = left;
         switch (direction) {
             case UP:
                 offset = up;
@@ -74,8 +74,8 @@ public class Player extends BoardEntity {
             case DOWN:
                 offset = down;
                 break;
-            default:
-                offset = left;
+            case LEFT:
+                offset = left; // INTELLISENSE WHAT DO YOU WANT???
                 break;
         }
         Vector2 nextPos = Grid.getFinalPosition(gridX + offset[0], gridY + offset[1]);
