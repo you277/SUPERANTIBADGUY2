@@ -2,6 +2,7 @@ package ceat.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,6 +15,7 @@ public class TheActualGame implements InputProcessor {
     private float gameTime;
     private Sprite guy;
     private Grid grid;
+    private Music music;
 
     public TheActualGame(SpriteBatch newBatch) {
         batch = newBatch;
@@ -24,6 +26,10 @@ public class TheActualGame implements InputProcessor {
 
         grid = new Grid(this);
         Gdx.input.setInputProcessor(this);
+
+        music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
+        music.setLooping(true);
+        music.play();
     }
 
     private void stepGame(float delta, double elapsed) {
