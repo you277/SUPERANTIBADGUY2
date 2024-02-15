@@ -1,56 +1,38 @@
 package ceat.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Timer.Task;
+
+import ceat.game.ChainedTask;
 
 public class Player extends BoardEntity {
     public final entityType type = entityType.PLAYER;
     private moveDirection direction = moveDirection.UP;
-//    private final Texture leftArrowTex;
-//    private final Texture upArrowTex;
-//    private final Texture rightArrowTex;
-//    private final Texture downArrowTex;
-//    private final Sprite leftArrow;
-//    private final Sprite upArrow;
-//    private final Sprite rightArrow;
-//    private final Sprite downArrow;
     private final BoardEntity highlight;
+    private boolean highlightVisible;
 
 
     public Player(TheActualGame newGame, Grid newGrid) {
         super(newGame, newGrid);
         parentTile = grid.getTileAt(gridX, gridY);
 
-        super.loadSprite("img/playerTile.png");
+        super.loadSprite("img/baseTile.png");
+        sprite.setColor(1f, 1f, 0f, 1f);
         sprite.setScale(2f);
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
 
-        highlight = new BoardEntity(newGame, newGrid);
-        highlight.loadSprite("img/projTile.png");
-        highlight.sprite.setScale(2f);
-        highlight.sprite.setCenter(highlight.sprite.getWidth()/2, highlight.sprite.getHeight()/2);
+        highlight = new Highlight(newGame, newGrid);
 
-//        leftArrowTex = new Texture("img/leftArr.png");
-//        upArrowTex = new Texture("img/upArr.png");
-//        rightArrowTex = new Texture("img/rightArr.png");
-//        downArrowTex = new Texture("img/downArr.png");
-//
-//        leftArrow = new Sprite(leftArrowTex);
-//        upArrow = new Sprite(upArrowTex);
-//        rightArrow = new Sprite(rightArrowTex);
-//        downArrow = new Sprite(downArrowTex);
-//
-//        leftArrow.scale(1.5f);
-//        upArrow.scale(1.5f);
-//        rightArrow.scale(1.5f);
-//        downArrow.scale(1.5f);
-//
-//        leftArrow.setCenter(leftArrow.getWidth()/2, leftArrow.getHeight()/2);
-//        upArrow.setCenter(upArrow.getWidth()/2, upArrow.getHeight()/2);
-//        rightArrow.setCenter(rightArrow.getWidth()/2, rightArrow.getHeight()/2);
-//        downArrow.setCenter(downArrow.getWidth()/2, downArrow.getHeight()/2);
+        highlightVisible = true;
+        moveHighlight();
+    }
+    @Override
+    public void setGridPosition(int newGridX, int newGridY) {
+        super.setGridPosition(newGridX, newGridY);
         moveHighlight();
     }
 
@@ -79,8 +61,7 @@ public class Player extends BoardEntity {
                 break;
         }
         Vector2 nextPos = Grid.getFinalPosition(gridX + offset[0], gridY + offset[1]);
-        highlight.gridX = (int)nextPos.x;
-        highlight.gridY = (int)nextPos.y;
+        highlight.setGridPosition((int)nextPos.x, (int)nextPos.y);
     }
 
     public void setDirection(moveDirection newDirection) {
@@ -111,44 +92,31 @@ public class Player extends BoardEntity {
         gridX = (int)vec.x;
         gridY = (int)vec.y;
         super.animateJump(grid.getTileAt(gridX, gridY));
+        highlightVisible = false;
+        new ChainedTask()
+            .wait(0.25f)
+            .run(new Task() {
+                @Override
+                public void run() {
+                    highlightVisible = true;
+                }
+            });
         moveHighlight();
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-//        Vector2 spritePos = grid.getSpritePositionFromGridPosition(gridX, gridY);
         super.render();
         super.draw(batch);
-//        sprite.setPosition(spritePos.x, spritePos.y);
-//        super.draw(batch);
-
-        highlight.render();
-        highlight.draw(batch);
-
-        // switch statement threw an exception so i have to use ifs
-        Vector2 newPos;
-//        if (direction == moveDirection.LEFT) {
-//            leftArrow.setPosition(spritePos.x, spritePos.y);
-//            leftArrow.draw(batch);
-//        } else if (direction == moveDirection.UP) {
-//            upArrow.setPosition(spritePos.x, spritePos.y);
-//            upArrow.draw(batch);
-//        } else if (direction == moveDirection.RIGHT) {
-//            rightArrow.setPosition(spritePos.x, spritePos.y);
-//            rightArrow.draw(batch);
-//        } else if (direction == moveDirection.DOWN) {
-//            downArrow.setPosition(spritePos.x, spritePos.y);
-//            downArrow.draw(batch);
-//        }
+        if (highlightVisible) {
+            highlight.render();
+            highlight.draw(batch);
+        }
     }
 
     @Override
     public void dispose() {
         tex.dispose();
         highlight.dispose();
-//        leftArrowTex.dispose();
-//        upArrowTex.dispose();
-//        rightArrowTex.dispose();
-//        downArrowTex.dispose();
     }
 }

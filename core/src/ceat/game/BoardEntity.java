@@ -15,10 +15,15 @@ public class BoardEntity extends Entity {
     public int gridX;
     public int gridY;
     public EmptyTile parentTile;
-    private boolean isAnimating;
+    public boolean isAnimating;
     public BoardEntity(TheActualGame newGame, Grid newGrid) {
         super(newGame, newGrid);
         parentTile = grid.getTileAt(0, 0);
+    }
+    public void setGridPosition(int newGridX, int newGridY) {
+        gridX = newGridX;
+        gridY = newGridY;
+        parentTile = grid.getTileAt(newGridX, newGridY);
     }
     public void render() {
         if (!isAnimating) {

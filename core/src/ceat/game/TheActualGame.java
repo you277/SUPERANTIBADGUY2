@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.utils.Timer;
 
 public class TheActualGame implements InputProcessor {
     private final SpriteBatch batch;
@@ -16,6 +17,7 @@ public class TheActualGame implements InputProcessor {
     private Sprite guy;
     private Grid grid;
     private Music music;
+    private boolean allowStep;
 
     public TheActualGame(SpriteBatch newBatch) {
         batch = newBatch;
@@ -26,6 +28,8 @@ public class TheActualGame implements InputProcessor {
 
         grid = new Grid(this);
         Gdx.input.setInputProcessor(this);
+
+        allowStep = true;
 
         music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
         music.setLooping(true);
@@ -54,7 +58,7 @@ public class TheActualGame implements InputProcessor {
 
         grid.render(gameTime);
 
-        ScreenUtils.clear(1, 0, 0, 1);
+        ScreenUtils.clear(0.25f, 0.25f, 0.25f, 1);
         batch.begin();
         guy.draw(batch);
         grid.draw(batch);
@@ -81,7 +85,18 @@ public class TheActualGame implements InputProcessor {
                 break;
             }
             case Keys.ENTER: {
-                grid.player.step();
+                if (allowStep){
+                    allowStep = false;
+                    grid.doTurn();
+                    new ChainedTask()
+                        .wait(0.25f)
+                        .run(new Timer.Task() {
+                            @Override
+                            public void run() {
+                                allowStep = true;
+                            }
+                        });
+                }
             }
         }
         return false;

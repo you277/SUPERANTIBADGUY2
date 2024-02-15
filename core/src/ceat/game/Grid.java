@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import ceat.game.Entity;
+import com.badlogic.gdx.utils.Timer;
 
 public class Grid {
     public static int width = 10;
@@ -47,10 +48,18 @@ public class Grid {
 
         enemies = new ArrayList();
         player = new Player(game, this);
+        player.setGridPosition(width/2, height/2);
     }
 
     public EmptyTile getTileAt(int x, int y) {
         return grid[x][y];
+    }
+
+    public void addEnemy() {
+        Enemy enemy = new Enemy(game, this);
+        enemy.setGridPosition((int)(Math.random()*width), (int)(Math.random()*height));
+        enemy.animateEntry();
+        enemies.add(enemy);
     }
 
     private static int[] left = {-20, 20};
@@ -77,6 +86,34 @@ public class Grid {
         }
     }
 
+    public void doTurn() {
+        // step projectiles here
+        new ChainedTask()
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    player.step();
+                }
+            })
+            .wait(0.25f)
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    for (Enemy enemy: enemies) {
+                        enemy.step();
+                    }
+                }
+            })
+            .wait(0.25f)
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 3; i ++)
+                        addEnemy();
+                }
+            });
+    }
+
     public void draw(SpriteBatch batch) {
         for (EmptyTile[] row: grid) {
             for (EmptyTile tile: row) {
@@ -84,6 +121,7 @@ public class Grid {
             }
         }
         for(Enemy enemy: enemies) {
+            enemy.render();
             enemy.draw(batch);
         }
 //        for(Projectile proj: projectiles) {
