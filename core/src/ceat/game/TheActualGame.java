@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.Timer;
 
+import java.util.ArrayList;
+
 public class TheActualGame implements InputProcessor {
     private final SpriteBatch batch;
     private float gameTime;
@@ -18,9 +20,12 @@ public class TheActualGame implements InputProcessor {
     private Grid grid;
     private Music music;
     private boolean allowStep;
+    public ArrayList<Effect> effects;
 
     public TheActualGame(SpriteBatch newBatch) {
         batch = newBatch;
+
+        effects = new ArrayList<Effect>();
 
         Texture hi = new Texture("img/what.png");
         guy = new Sprite(hi);
@@ -62,7 +67,37 @@ public class TheActualGame implements InputProcessor {
         batch.begin();
         guy.draw(batch);
         grid.draw(batch);
+        for (Effect effect: effects) {
+            effect.draw(batch);
+        }
         batch.end();
+    }
+
+    private void doTurn() {
+        new ChainedTask()
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    grid.player.step();
+                }
+            })
+            .wait(0.25f)
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    for (Enemy enemy: grid.enemies) {
+                        enemy.step();
+                    }
+                }
+            })
+            .wait(0.25f)
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 3; i ++)
+                        grid.addEnemy();
+                }
+            });
     }
 
     @Override
@@ -87,7 +122,7 @@ public class TheActualGame implements InputProcessor {
             case Keys.ENTER: {
                 if (allowStep){
                     allowStep = false;
-                    grid.doTurn();
+                    doTurn();
                     new ChainedTask()
                         .wait(0.25f)
                         .run(new Timer.Task() {

@@ -2,13 +2,9 @@ package ceat.game;
 
 import java.util.ArrayList;
 
+import ceat.game.fx.BeamEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-
-import ceat.game.Entity;
-import com.badlogic.gdx.utils.Timer;
 
 public class Grid {
     public static int width = 10;
@@ -59,6 +55,9 @@ public class Grid {
         Enemy enemy = new Enemy(game, this);
         enemy.setGridPosition((int)(Math.random()*width), (int)(Math.random()*height));
         enemy.animateEntry();
+//        new BeamEffect(game, enemy.parentTile)
+//                .setColor(1f, 0f, 0f)
+//                .setScale(5f, 100f).play();
         enemies.add(enemy);
     }
 
@@ -84,34 +83,6 @@ public class Grid {
                 tile.y = (float)(topLeftY + down[0]*y + right[1]*x + Math.sin(gameTime*2 + x*0.5 + y*0.5)*5);
             }
         }
-    }
-
-    public void doTurn() {
-        // step projectiles here
-        new ChainedTask()
-            .run(new Timer.Task() {
-                @Override
-                public void run() {
-                    player.step();
-                }
-            })
-            .wait(0.25f)
-            .run(new Timer.Task() {
-                @Override
-                public void run() {
-                    for (Enemy enemy: enemies) {
-                        enemy.step();
-                    }
-                }
-            })
-            .wait(0.25f)
-            .run(new Timer.Task() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 3; i ++)
-                        addEnemy();
-                }
-            });
     }
 
     public void draw(SpriteBatch batch) {

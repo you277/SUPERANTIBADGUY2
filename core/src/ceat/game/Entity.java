@@ -53,14 +53,6 @@ public class Entity {
 
     public void step() {}
 
-    public void stepJumpAnim(float x1, float y1, float x2, float y2, float a) {
-
-    }
-
-    public void stepJumpAnim(Vector2 pos1, Vector2 pos2, float a) {
-        stepJumpAnim(pos1.x, pos1.y, pos2.x, pos2.y, a);
-    }
-
     public void draw(SpriteBatch batch) {
         if (loadedSprite) sprite.draw(batch);
     }
