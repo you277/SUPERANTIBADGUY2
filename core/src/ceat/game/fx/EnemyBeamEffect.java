@@ -13,7 +13,7 @@ public class EnemyBeamEffect extends Effect {
         parentTile = enemy.parentTile;
 
         super.loadSprite("img/beam.png");
-        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight());
+        sprite.setCenter(sprite.getWidth()/2, 0);
     }
 
     public EnemyBeamEffect setColor(float r, float g, float b) {
@@ -25,7 +25,7 @@ public class EnemyBeamEffect extends Effect {
         xScale = x;
         yScale = y;
         sprite.setScale(x, y);
-        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+        sprite.setCenter(sprite.getWidth()/2, 0);
         return this;
     }
 
@@ -36,7 +36,7 @@ public class EnemyBeamEffect extends Effect {
             @Override
             public void run(float deltaTime, float elapsed) {
                 sprite.setScale(xScale*((0.2f - elapsed)/0.2f), yScale);
-                sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+                sprite.setCenter(sprite.getWidth()/2, 0);
             }
         };
         new ChainedTask().wait(0.2f).run(new Timer.Task() {
