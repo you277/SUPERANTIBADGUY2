@@ -1,13 +1,7 @@
 package ceat.game;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
-
-import ceat.game.Loop;
-import ceat.game.ChainedTask;
-import ceat.game.Lerp;
 
 public class BoardEntity extends Entity {
     public float x;
@@ -16,7 +10,7 @@ public class BoardEntity extends Entity {
     public int gridY;
     public EmptyTile parentTile;
     public boolean isAnimating;
-    public BoardEntity(TheActualGame newGame, Grid newGrid) {
+    public BoardEntity(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         parentTile = grid.getTileAt(0, 0);
     }
@@ -34,20 +28,22 @@ public class BoardEntity extends Entity {
         sprite.setPosition(x, y);
     }
 
-    public void animateJump(EmptyTile nextTile) {
+    public void animateJump(EmptyTile nextTile, float duration, float height) {
         isAnimating = true;
-        new Loop(0.25f) {
+        float initX = parentTile.x;
+        float initY = parentTile.y;
+        new Loop(duration) {
             @Override
             public void run(float delta, float elapsed) {
-                float midX = (parentTile.x + nextTile.x)/2;
-                float midY = (parentTile.y + nextTile.y)/2 + 75;
-                Vector2 newPos = Lerp.threePointBezier(parentTile.x, parentTile.y, midX, midY, nextTile.x, nextTile.y, elapsed*4);
+                float midX = (initX + nextTile.x)/2;
+                float midY = (initY + nextTile.y)/2 + height;
+                Vector2 newPos = Lerp.threePointBezier(parentTile.x, initY, midX, midY, nextTile.x, nextTile.y, elapsed/duration);
                 x = newPos.x;
                 y = newPos.y;
             }
         };
         new ChainedTask()
-            .wait(0.25f)
+            .wait(duration)
             .run(new Task() {
             @Override
             public void run() {
@@ -55,5 +51,13 @@ public class BoardEntity extends Entity {
                 parentTile = nextTile;
             }
         });
+    }
+
+    public void animateJump(EmptyTile nextTile, float duration) {
+        animateJump(nextTile, duration, 75);
+    }
+
+    public void animateJump(EmptyTile nextTile) {
+        animateJump(nextTile, 0.25f, 75);
     }
 }

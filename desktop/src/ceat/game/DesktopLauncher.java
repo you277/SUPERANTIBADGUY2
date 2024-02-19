@@ -2,7 +2,6 @@ package ceat.game;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import ceat.game.Game;
 
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 public class DesktopLauncher {
@@ -11,8 +10,8 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setWindowedMode(800, 500);
 		config.useVsync(true);
-		config.setTitle("epic gaem");
+		config.setTitle("SUPERBADGUYDESTROYER2200 DELUXE+");
 		config.setResizable(false);
-		new Lwjgl3Application(new Game(), config);
+		new Lwjgl3Application(new GameHandler(), config);
 	}
 }

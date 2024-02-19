@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 
 public class Highlight extends BoardEntity {
 
-    public Highlight(TheActualGame newGame, Grid newGrid) {
+    public Highlight(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         parentTile = grid.getTileAt(gridX, gridY);
 
@@ -12,6 +12,10 @@ public class Highlight extends BoardEntity {
         sprite.setColor(1f, 1f, 1f, 0.5f);
         sprite.setScale(2f);
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+    }
+
+    public void setGrid(Grid newGrid) {
+        grid = newGrid;
     }
 
     @Override

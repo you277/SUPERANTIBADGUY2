@@ -1,31 +1,27 @@
 package ceat.game.fx;
 
 import ceat.game.*;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Timer;
 
-public class BeamEffect extends Effect {
-    private Texture tex;
-    private Sprite sprite;
-    private EmptyTile parentTile;
+public class EnemyBeamEffect extends Effect {
+    private final EmptyTile parentTile;
     private float xScale = 1;
     private float yScale = 1;
 
-    public BeamEffect(TheActualGame game, EmptyTile parent) {
+    public EnemyBeamEffect(Game game, Enemy enemy) {
         super(game);
-        parentTile = parent;
+        parentTile = enemy.parentTile;
 
         super.loadSprite("img/beam.png");
-        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight());
     }
 
-    public BeamEffect setColor(float r, float g, float b) {
+    public EnemyBeamEffect setColor(float r, float g, float b) {
         sprite.setColor(r, g, b, 1);
         return this;
     }
 
-    public BeamEffect setScale(float x, float y) {
+    public EnemyBeamEffect setScale(float x, float y) {
         xScale = x;
         yScale = y;
         sprite.setScale(x, y);
@@ -35,18 +31,18 @@ public class BeamEffect extends Effect {
 
     @Override
     public void play() {
-        super.registerEffect();
+        registerEffect();
         new Loop(0.2f) {
             @Override
             public void run(float deltaTime, float elapsed) {
-                sprite.setScale(xScale, yScale*((0.2f - elapsed)/0.2f));
+                sprite.setScale(xScale*((0.2f - elapsed)/0.2f), yScale);
                 sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
             }
         };
         new ChainedTask().wait(0.2f).run(new Timer.Task() {
             @Override
             public void run() {
-                BeamEffect.super.unregisterEffect();
+                unregisterEffect();
                 tex.dispose();
             }
         });

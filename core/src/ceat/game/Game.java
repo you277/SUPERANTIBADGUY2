@@ -1,107 +1,220 @@
 package ceat.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
+import ceat.game.fx.Effect;
 import com.badlogic.gdx.Gdx;
-//import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-//import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
-//import com.badlogic.gdx.math.Rectangle;
-//import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.utils.Timer;
 
-import ceat.game.TheActualGame;
+import java.util.ArrayList;
 
-public class Game extends ApplicationAdapter {
-	SpriteBatch batch;
+public class Game implements InputProcessor {
+    private final SpriteBatch batch;
+    private float gameTime;
+    private Grid grid;
+    private Grid nextGrid;
+    private Grid lastGrid;
+    private boolean lastGridPresent;
+    private Music music;
+    private boolean allowStep;
+    public ArrayList<Effect> effects;
+    public Player player;
 
-	Texture title1;
-	Texture title2;
+    public Game(SpriteBatch newBatch) {
+        batch = newBatch;
 
-	private int screen = 0;
-	private boolean gameRunning;
-	private TheActualGame game;
+        effects = new ArrayList<>();
 
+        grid = new Grid(this);
+        nextGrid = new Grid(this);
 
-	private void renderSplash1() {
-		ScreenUtils.clear(0, 0, 0, 1);
-		batch.begin();
-		batch.draw(title1, 0, 0);
-		batch.end();
-	}
+        player = new Player(this, grid);
+        grid.setPlayer(player);
+        player.setGridPosition(Grid.width/2, Grid.height/2);
 
-	private void renderSplash2() {
-		ScreenUtils.clear(1, 0, 0, 1);
-		batch.begin();
-		batch.draw(title2, 0, 0);
-		batch.end();
-	}
+        grid.setGridPosition(Grid.gridPosition.CENTER);
+        nextGrid.setGridPosition(Grid.gridPosition.TOP);
+        Gdx.input.setInputProcessor(this);
 
-	private void doGame() {
-		Sound switchSound = Gdx.audio.newSound(Gdx.files.internal("snd/kb.mp3"));
+        allowStep = true;
 
-		new ChainedTask()
-				.run(new Task() {
-					@Override
-					public void run() {
-						screen = 0;
-						switchSound.play();
-					}
-				})
-				.wait(1.5f)
-			.run(new Task() {
-				@Override
-				public void run() {
-					screen = 1;
-					switchSound.play();
-				}
-			})
-			.wait(1.5f)
-			.run(new Task() {
-				@Override
-				public void run() {
-					screen = 2;
-					gameRunning = true;
-					game = new TheActualGame(batch);
-					switchSound.play();
-					title1.dispose();
-					title2.dispose();
-				}
-			})
-			.wait(1.5f)
-			.run(new Task() {
-				@Override
-				public void run() {
-					switchSound.dispose();
-				}
-			});
-	}
-	
-	@Override
-	public void create() {
-		batch = new SpriteBatch();
-		title1 = new Texture("img/title1.png");
-		title2 = new Texture("img/title2.png");
-		doGame();
-	}
+        music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
+        music.setLooping(true);
+        music.play();
+    }
 
-	@Override
-	public void render() {
+    private void stepGame(float delta, double elapsed) {
+        Loop.runLoops(delta);
+    }
+    public void render() {
+        float delta = Gdx.graphics.getDeltaTime();
+        gameTime += delta;
+        stepGame(delta, gameTime);
 
-		if (screen == 0) renderSplash1();
-		else if (screen == 1) renderSplash2();
-		else {
-			if (gameRunning) game.render();
-		}
-	}
-	
-	@Override
-	public void dispose() {
-		batch.dispose();
-		title1.dispose();
-	}
+        if (lastGridPresent)
+            lastGrid.render(gameTime);
+        nextGrid.render(gameTime);
+        grid.render(gameTime);
+
+        ScreenUtils.clear(0.15f, 0.15f, 0.15f, 1);
+        batch.begin();
+        if (lastGridPresent)
+            lastGrid.draw(batch);
+        nextGrid.draw(batch);
+        grid.draw(batch);
+        for (Effect effect: effects) {
+            effect.render();
+            effect.draw(batch);
+        }
+        batch.end();
+    }
+
+    private void changeGrids() {
+        Grid oldGrid = grid;
+        oldGrid.explode();
+
+        lastGrid = grid;
+        grid = nextGrid;
+        nextGrid = new Grid(this);
+
+        lastGridPresent = true;
+
+        grid.setPlayer(player);
+
+        player.animateJump(grid.getTileAt(Grid.width/2, Grid.height/2), 0.5f, 400);
+        player.setGrid(grid);
+        new ChainedTask().wait(0.2f).run(new Timer.Task() {
+            @Override
+            public void run() {
+                player.setGridPosition(Grid.width/2, Grid.height/2);
+            }
+        }).wait(0.4f).run(new Timer.Task() {
+            @Override
+            public void run() {
+                grid.setGridPosition(Grid.gridPosition.CENTER);
+                nextGrid.setGridPosition(Grid.gridPosition.TOP);
+            }
+        });
+        new ChainedTask().wait(1f).run(new Timer.Task() {
+            @Override
+            public void run() {
+                lastGridPresent = false;
+                lastGrid = null;
+            }
+        });
+    }
+
+    private void doTurn() {
+        new ChainedTask()
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    player.step();
+                }
+            })
+            .wait(0.25f)
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    for (Enemy enemy: grid.enemies) {
+                        enemy.step();
+                    }
+                }
+            })
+            .wait(0.25f)
+            .run(new Timer.Task() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 3; i ++)
+                        grid.addEnemy();
+                }
+            });
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        switch (keycode) {
+            case Keys.W: {
+                player.setDirection(Entity.moveDirection.UP);
+                break;
+            }
+            case Keys.A: {
+                player.setDirection(Entity.moveDirection.LEFT);
+                break;
+            }
+            case Keys.S: {
+                player.setDirection(Entity.moveDirection.DOWN);
+                break;
+            }
+            case Keys.D: {
+                player.setDirection(Entity.moveDirection.RIGHT);
+                break;
+            }
+            case Keys.ENTER: {
+                if (allowStep) {
+                    allowStep = false;
+                    doTurn();
+                    new ChainedTask()
+                        .wait(0.25f)
+                        .run(new Timer.Task() {
+                            @Override
+                            public void run() {
+                                allowStep = true;
+                            }
+                        });
+                }
+                break;
+            }
+            case Keys.L: {
+                changeGrids();
+            }
+        }
+        return false;
+    }
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
+    }
+
+    public void dispose() {
+
+    }
 }

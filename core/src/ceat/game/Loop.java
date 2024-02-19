@@ -2,9 +2,9 @@ package ceat.game;
 
 import java.util.ArrayList;
 public class Loop {
-    private static ArrayList<Loop> loops = new ArrayList();
+    private final static ArrayList<Loop> loops = new ArrayList<>();
     private float elapsed;
-    private float duration;
+    private final float duration;
     public static void runLoops(float deltaTime) {
         for (int i = 0; i < loops.size(); i++) {
             Loop f = loops.get(i);

@@ -5,10 +5,12 @@ import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
+import ceat.game.fx.EnemyBeamEffect;
+
 public class Enemy extends BoardEntity {
     public final entityType type = entityType.ENEMY;
 
-    public Enemy(TheActualGame newGame, Grid newGrid) {
+    public Enemy(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         super.loadSprite("img/baseTile.png");
         sprite.setColor(1f, 0f, 0f, 1f);
@@ -17,16 +19,19 @@ public class Enemy extends BoardEntity {
     }
 
     public void animateEntry() {
+        new EnemyBeamEffect(game, this)
+                .setColor(1f, 0f, 0f)
+                .setScale(13f, 150f).play();
         isAnimating = true;
-        new Loop(0.1f) {
+        new Loop(0.2f) {
             @Override
             public void run(float delta, float elapsed) {
                 x = parentTile.x;
-                y = parentTile.y + 400 - (elapsed/0.1f)*400;
+                y = parentTile.y + 400 - (elapsed/0.2f)*400;
             }
         };
         new ChainedTask()
-            .wait(0.1f)
+            .wait(0.2f)
             .run(new Timer.Task() {
                 @Override
                 public void run() {
@@ -46,13 +51,14 @@ public class Enemy extends BoardEntity {
 
         if (playerX > x) newX++;
         else if (playerX < x) newX--;
+
         if (playerY > y) newY++;
         else if (playerY < y) newY--;
 
         int[] xPositions = { gridX, newX };
         int[] yPositions = { newY, gridY };
 
-        ArrayList<Integer> allowedMoves = new ArrayList();
+        ArrayList<Integer> allowedMoves = new ArrayList<>();
 
         for (Enemy otherEnemy: grid.enemies) {
             if (otherEnemy == this) continue;
@@ -66,7 +72,7 @@ public class Enemy extends BoardEntity {
             }
         }
 
-        if (allowedMoves.size() == 0) return;
+        if (allowedMoves.isEmpty()) return;
 
         int finalX;
         int finalY;

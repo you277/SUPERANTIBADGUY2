@@ -1,22 +1,17 @@
 package ceat.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer.Task;
-
-import ceat.game.ChainedTask;
 
 public class Player extends BoardEntity {
     public final entityType type = entityType.PLAYER;
     private moveDirection direction = moveDirection.UP;
-    private final BoardEntity highlight;
+    private final Highlight highlight;
     private boolean highlightVisible;
 
 
-    public Player(TheActualGame newGame, Grid newGrid) {
+    public Player(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         parentTile = grid.getTileAt(gridX, gridY);
 
@@ -33,6 +28,13 @@ public class Player extends BoardEntity {
     @Override
     public void setGridPosition(int newGridX, int newGridY) {
         super.setGridPosition(newGridX, newGridY);
+        moveHighlight();
+    }
+
+    public void setGrid(Grid newGrid) {
+        grid = newGrid;
+        super.setGridPosition(Grid.width/2, Grid.height/2);
+        highlight.setGrid(newGrid);
         moveHighlight();
     }
 
@@ -55,9 +57,6 @@ public class Player extends BoardEntity {
                 break;
             case DOWN:
                 offset = down;
-                break;
-            case LEFT:
-                offset = left; // INTELLISENSE WHAT DO YOU WANT???
                 break;
         }
         Vector2 nextPos = Grid.getFinalPosition(gridX + offset[0], gridY + offset[1]);
@@ -86,22 +85,36 @@ public class Player extends BoardEntity {
                 vec = Grid.getFinalPosition(gridX, gridY + 1);
                 break;
             default:
-                vec = new Vector2();
-                vec.set(gridX, gridY);
+                vec = new Vector2(gridX, gridY);
         }
         gridX = (int)vec.x;
         gridY = (int)vec.y;
-        super.animateJump(grid.getTileAt(gridX, gridY));
+        animateJump(grid.getTileAt(gridX, gridY));
+        moveHighlight();
+    }
+
+    @Override
+    public void animateJump(EmptyTile tile, float duration, float height) {
+        super.animateJump(tile, duration, height);
         highlightVisible = false;
         new ChainedTask()
-            .wait(0.25f)
-            .run(new Task() {
-                @Override
-                public void run() {
-                    highlightVisible = true;
-                }
-            });
-        moveHighlight();
+                .wait(0.25f)
+                .run(new Task() {
+                    @Override
+                    public void run() {
+                        highlightVisible = true;
+                    }
+                });
+    }
+
+    @Override
+    public void animateJump(EmptyTile tile, float duration) {
+        animateJump(tile, duration, 75);
+    }
+
+    @Override
+    public void animateJump(EmptyTile tile) {
+        animateJump(tile, 0.25f, 75);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package ceat.game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
@@ -27,9 +26,9 @@ public class Entity {
     public Sprite sprite;
     private boolean loadedSprite;
     public Grid grid;
-    public TheActualGame game;
+    public Game game;
 
-    public Entity(TheActualGame newGame, Grid newGrid) {
+    public Entity(Game newGame, Grid newGrid) {
         grid = newGrid;
         game = newGame;
     }
@@ -42,11 +41,10 @@ public class Entity {
         return sprite;
     }
 
-    public Sprite loadSprite(String path) {
+    public void loadSprite(String path) {
         tex = new Texture(path);
         sprite = new Sprite(tex);
         loadedSprite = true;
-        return sprite;
     }
 
     public void render() {}
