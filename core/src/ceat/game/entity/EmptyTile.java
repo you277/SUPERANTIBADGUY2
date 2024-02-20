@@ -4,14 +4,11 @@ import ceat.game.ChainedTask;
 import ceat.game.Game;
 import ceat.game.Grid;
 import ceat.game.Loop;
-import ceat.game.entity.Entity;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 public class EmptyTile extends Entity {
-    public final entityType type = entityType.EMPTY;
     public float x;
     public float y;
 

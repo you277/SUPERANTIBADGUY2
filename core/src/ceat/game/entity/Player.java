@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer.Task;
 
 public class Player extends BoardEntity {
-    public final entityType type = entityType.PLAYER;
     private moveDirection direction = moveDirection.UP;
     private final Highlight highlight;
     private boolean highlightVisible;

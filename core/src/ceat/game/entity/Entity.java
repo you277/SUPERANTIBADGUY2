@@ -7,13 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Entity {
-    public enum entityType {
-        EMPTY,
-        PLAYER,
-        ENEMY,
-        PROJECTILE,
-        HIGHLIGHT
-    }
 
     public enum moveDirection {
         LEFT,
@@ -21,8 +14,6 @@ public class Entity {
         RIGHT,
         DOWN
     }
-
-    public final entityType type = entityType.EMPTY;
 
     public Texture tex;
     public Sprite sprite;

@@ -189,13 +189,13 @@ public class Grid {
                 tile.draw(batch);
             }
         }
-        for(Enemy enemy: enemies) {
-            enemy.render();
-            enemy.draw(batch);
-        }
         for(Projectile proj: projectiles) {
             proj.render();
             proj.draw(batch);
+        }
+        for(Enemy enemy: enemies) {
+            enemy.render();
+            enemy.draw(batch);
         }
         if (playerSet) {
             player.render();

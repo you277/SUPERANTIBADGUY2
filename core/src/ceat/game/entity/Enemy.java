@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import ceat.game.fx.EnemyBeamEffect;
 
 public class Enemy extends BoardEntity {
-    public final entityType type = entityType.ENEMY;
-
     public Enemy(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         super.loadSprite("img/baseTile.png");
