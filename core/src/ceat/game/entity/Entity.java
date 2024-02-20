@@ -1,5 +1,7 @@
-package ceat.game;
+package ceat.game.entity;
 
+import ceat.game.Game;
+import ceat.game.Grid;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -55,5 +57,7 @@ public class Entity {
         if (loadedSprite) sprite.draw(batch);
     }
 
-    public void dispose() {}
+    public void dispose() {
+        tex.dispose();
+    }
 }

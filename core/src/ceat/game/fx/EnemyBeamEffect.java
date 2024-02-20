@@ -1,6 +1,8 @@
 package ceat.game.fx;
 
 import ceat.game.*;
+import ceat.game.entity.EmptyTile;
+import ceat.game.entity.Enemy;
 import com.badlogic.gdx.utils.Timer;
 
 public class EnemyBeamEffect extends Effect {

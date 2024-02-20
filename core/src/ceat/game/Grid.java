@@ -2,12 +2,14 @@ package ceat.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
+import ceat.game.entity.EmptyTile;
+import ceat.game.entity.Enemy;
+import ceat.game.entity.Player;
+import ceat.game.entity.Projectile;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Timer;
 
 public class Grid {
     public enum gridPosition {
@@ -33,14 +35,12 @@ public class Grid {
         if (proposedY < 0) y = height + proposedY;
         else if (proposedY >= height) y = proposedY - height;
         else y = proposedY;
-        Vector2 newVec = new Vector2();
-        newVec.set(x, y);
-        return newVec;
+        return new Vector2(x, y);
     }
 
     public EmptyTile[][] grid;
     public ArrayList<Enemy> enemies;
-//    private ArrayList<Projectile> projectiles;
+    public ArrayList<Projectile> projectiles;
     public Player player;
 
     public float centerX;
@@ -70,6 +70,7 @@ public class Grid {
         position = gridPosition.OFF;
 
         enemies = new ArrayList<>();
+        projectiles = new ArrayList<>();
     }
 
     public void setPlayer(Player newPlayer) {
@@ -103,6 +104,12 @@ public class Grid {
         enemy.setGridPosition((int)newPos.x, (int)newPos.y);
         enemy.animateEntry();
         enemies.add(enemy);
+    }
+
+    public void addProjectile() {
+        Projectile projectile = new Projectile(game, this, player, player.getDirection());
+        projectile.animateSpawn();
+        projectiles.add(projectile);
     }
 
     private static final float[] left = {-25, 12.5f};
@@ -171,7 +178,6 @@ public class Grid {
                 break;
             case TOP:
                 centerY = Lerp.lerp(centerY, topCenterY, Lerp.alpha(delta, 5));
-
         }
         if (!isAnimating)
             positionTiles(centerX, centerY, gameTime);
@@ -187,17 +193,19 @@ public class Grid {
             enemy.render();
             enemy.draw(batch);
         }
-//        for(Projectile proj: projectiles) {
-//            proj.draw(batch);
-//        }
-        if (playerSet)
+        for(Projectile proj: projectiles) {
+            proj.render();
+            proj.draw(batch);
+        }
+        if (playerSet) {
+            player.render();
             player.draw(batch);
+        }
     }
 
     public void dispose() {
-//        for(Projectile proj: projectiles) {
-//            proj.dispose();
-//        }
+        for(Projectile proj: projectiles)
+            proj.dispose();
 
         for (Enemy enemy: enemies)
             enemy.dispose();

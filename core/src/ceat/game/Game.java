@@ -1,8 +1,9 @@
 package ceat.game;
 
+import ceat.game.entity.*;
 import ceat.game.fx.Effect;
+import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -11,7 +12,14 @@ import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
-public class Game implements InputProcessor {
+public class Game {
+    public enum attackMode {
+        NONE,
+        BULLET,
+        BEAM,
+        CLEAR
+    }
+
     private final SpriteBatch batch;
     private float gameTime;
     private Grid grid;
@@ -37,7 +45,6 @@ public class Game implements InputProcessor {
 
         grid.setGridPosition(Grid.gridPosition.CENTER);
         nextGrid.setGridPosition(Grid.gridPosition.TOP);
-        Gdx.input.setInputProcessor(this);
 
         allowStep = true;
 
@@ -54,6 +61,8 @@ public class Game implements InputProcessor {
         gameTime += delta;
         stepGame(delta, gameTime);
 
+        ScreenOffset.render(delta);
+
         if (lastGridPresent)
             lastGrid.render(gameTime);
         nextGrid.render(gameTime);
@@ -61,6 +70,7 @@ public class Game implements InputProcessor {
 
         ScreenUtils.clear(0.15f, 0.15f, 0.15f, 1);
         batch.begin();
+
         if (lastGridPresent)
             lastGrid.draw(batch);
         nextGrid.draw(batch);
@@ -69,6 +79,7 @@ public class Game implements InputProcessor {
             effect.render();
             effect.draw(batch);
         }
+
         batch.end();
     }
 
@@ -107,8 +118,49 @@ public class Game implements InputProcessor {
         });
     }
 
+    private attackMode currentAttackMode = attackMode.NONE;
+
+    private void processProjectilesAndEnemies(EntityQuery<Enemy, Projectile> query) {
+        if (query.a.isEmpty()) return;
+        ScreenOffset.shake(20f, 0.25f);
+        for (Enemy enemy : query.a) {
+            grid.enemies.remove(enemy);
+            enemy.animateDeath();
+            enemy.dispose();
+        }
+        for (Projectile projectile : query.b) {
+            grid.projectiles.remove(projectile);
+            projectile.dispose();
+        }
+    }
+
     private void doTurn() {
-        new ChainedTask()
+        if (!allowStep) return;
+        allowStep = false;
+
+        ChainedTask chain = new ChainedTask();
+
+        switch (currentAttackMode) {
+            case BULLET: {
+                grid.addProjectile();
+                break;
+            }
+        }
+        currentAttackMode = attackMode.NONE;
+
+        if (!grid.projectiles.isEmpty()) {
+            for (Projectile projectile: grid.projectiles) {
+                projectile.step();
+            }
+            chain.wait(0.1f)
+                .run(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        processProjectilesAndEnemies(new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles));
+                    }
+                });
+        }
+        chain
             .run(new Timer.Task() {
                 @Override
                 public void run() {
@@ -119,8 +171,16 @@ public class Game implements InputProcessor {
             .run(new Timer.Task() {
                 @Override
                 public void run() {
-                    for (Enemy enemy: grid.enemies) {
+                    for (Enemy enemy: grid.enemies)
                         enemy.step();
+                    EntityQuery<Enemy, Projectile> queryAgain = new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles);
+                    if (!queryAgain.a.isEmpty()) {
+                        new ChainedTask().wait(0.25f).run(new Timer.Task() {
+                            @Override
+                            public void run() {
+                                processProjectilesAndEnemies(queryAgain);
+                            }
+                        });
                     }
                 }
             })
@@ -131,87 +191,66 @@ public class Game implements InputProcessor {
                     for (int i = 0; i < 3; i ++)
                         grid.addEnemy();
                 }
-            });
+            }).wait(0.2f).run(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        processProjectilesAndEnemies(new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles));
+                        allowStep = true;
+                    }
+                });
     }
 
-    @Override
-    public boolean keyDown(int keycode) {
+    public void keyDown(int keycode) {
         switch (keycode) {
+            case Keys.UP:
             case Keys.W: {
                 player.setDirection(Entity.moveDirection.UP);
                 break;
             }
+            case Keys.LEFT:
             case Keys.A: {
                 player.setDirection(Entity.moveDirection.LEFT);
                 break;
             }
+            case Keys.DOWN:
             case Keys.S: {
                 player.setDirection(Entity.moveDirection.DOWN);
                 break;
             }
+            case Keys.RIGHT:
             case Keys.D: {
                 player.setDirection(Entity.moveDirection.RIGHT);
                 break;
             }
+            case Keys.NUMPAD_0:
+            case Keys.NUM_0: {
+                currentAttackMode = attackMode.NONE;
+                break;
+            }
+            case Keys.NUMPAD_1:
+            case Keys.NUM_1: {
+                currentAttackMode = attackMode.BULLET;
+                break;
+            }
+            case Keys.NUMPAD_2:
+            case Keys.NUM_2: {
+                currentAttackMode = attackMode.BEAM;
+                break;
+            }
+            case Keys.NUMPAD_3:
+            case Keys.NUM_3: {
+                currentAttackMode = attackMode.CLEAR;
+                break;
+            }
+            case Keys.NUMPAD_ENTER:
             case Keys.ENTER: {
-                if (allowStep) {
-                    allowStep = false;
-                    doTurn();
-                    new ChainedTask()
-                        .wait(0.25f)
-                        .run(new Timer.Task() {
-                            @Override
-                            public void run() {
-                                allowStep = true;
-                            }
-                        });
-                }
+                doTurn();
                 break;
             }
             case Keys.L: {
                 changeGrids();
             }
         }
-        return false;
-    }
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(float amountX, float amountY) {
-        return false;
     }
 
     public void dispose() {

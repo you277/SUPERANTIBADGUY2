@@ -1,5 +1,6 @@
-package ceat.game;
+package ceat.game.entity;
 
+import ceat.game.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
@@ -38,6 +39,10 @@ public class Enemy extends BoardEntity {
                     isAnimating = false;
                 }
             });
+    }
+
+    public void animateDeath() {
+
     }
 
     // epic enemy ai

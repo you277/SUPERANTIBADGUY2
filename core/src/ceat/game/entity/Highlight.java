@@ -1,5 +1,9 @@
-package ceat.game;
+package ceat.game.entity;
 
+import ceat.game.Game;
+import ceat.game.Grid;
+import ceat.game.Lerp;
+import ceat.game.entity.BoardEntity;
 import com.badlogic.gdx.Gdx;
 
 public class Highlight extends BoardEntity {

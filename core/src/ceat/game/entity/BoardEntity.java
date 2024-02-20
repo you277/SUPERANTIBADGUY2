@@ -1,7 +1,11 @@
-package ceat.game;
+package ceat.game.entity;
 
+import ceat.game.*;
+import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer.Task;
+
+import java.util.ArrayList;
 
 public class BoardEntity extends Entity {
     public float x;
@@ -25,7 +29,7 @@ public class BoardEntity extends Entity {
             x = spritePos.x;
             y = spritePos.y;
         }
-        sprite.setPosition(x, y);
+        sprite.setPosition(x + ScreenOffset.offsetX, y + ScreenOffset.offsetY);
     }
 
     public void animateJump(EmptyTile nextTile, float duration, float height) {

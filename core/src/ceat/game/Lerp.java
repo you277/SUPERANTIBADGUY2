@@ -17,9 +17,7 @@ public class Lerp {
         float newY1 = lerp(y1, y2, a);
         float newX2 = lerp(x2, x3, a);
         float newY2 = lerp(y2, y3, a);
-        Vector2 newVec = new Vector2();
-        newVec.set(lerp(newX1, newX2, a), lerp(newY1, newY2, a));
-        return newVec;
+        return new Vector2(lerp(newX1, newX2, a), lerp(newY1, newY2, a));
     }
 
     public static Vector2 threePointBezier(Vector2 p1, Vector2 p2, Vector2 p3, float a) {

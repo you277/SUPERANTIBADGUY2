@@ -1,5 +1,8 @@
-package ceat.game;
+package ceat.game.entity;
 
+import ceat.game.ChainedTask;
+import ceat.game.Game;
+import ceat.game.Grid;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer.Task;
@@ -119,7 +122,6 @@ public class Player extends BoardEntity {
 
     @Override
     public void draw(SpriteBatch batch) {
-        super.render();
         super.draw(batch);
         if (highlightVisible) {
             highlight.render();
@@ -129,7 +131,7 @@ public class Player extends BoardEntity {
 
     @Override
     public void dispose() {
-        tex.dispose();
+        super.dispose();
         highlight.dispose();
     }
 }
