@@ -1,33 +1,45 @@
 package ceat.game.fx;
 
 import ceat.game.*;
+import ceat.game.entity.BoardEntity;
 import ceat.game.entity.EmptyTile;
-import ceat.game.entity.Enemy;
+import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.utils.Timer;
 
-public class EnemyBeamEffect extends Effect {
+public class SkyBeam extends Effect {
     private final EmptyTile parentTile;
     private float xScale = 1;
     private float yScale = 1;
 
-    public EnemyBeamEffect(Game game, Enemy enemy) {
+    public SkyBeam(Game game, BoardEntity boardEntity) {
         super(game);
-        parentTile = enemy.parentTile;
-
+        parentTile = boardEntity.parentTile;
         super.loadSprite("img/beam.png");
         sprite.setCenter(sprite.getWidth()/2, 0);
     }
 
-    public EnemyBeamEffect setColor(float r, float g, float b) {
+    public SkyBeam(Game game, EmptyTile emptyTile) {
+        super(game);
+        parentTile = emptyTile;
+        super.loadSprite("img/beam.png");
+        sprite.setCenter(sprite.getWidth()/2, 0);
+    }
+
+    public SkyBeam setColor(float r, float g, float b) {
         sprite.setColor(r, g, b, 1);
         return this;
     }
 
-    public EnemyBeamEffect setScale(float x, float y) {
+    public SkyBeam setScale(float x, float y) {
         xScale = x;
         yScale = y;
         sprite.setScale(x, y);
         sprite.setCenter(sprite.getWidth()/2, 0);
+        return this;
+    }
+
+    public SkyBeam setRotation(float degrees) {
+        sprite.setRotation(degrees);
         return this;
     }
 
@@ -45,13 +57,13 @@ public class EnemyBeamEffect extends Effect {
             @Override
             public void run() {
                 unregisterEffect();
-                tex.dispose();
+                dispose();
             }
         });
     }
 
     @Override
     public void render() {
-        sprite.setPosition(parentTile.x, parentTile.y);
+        sprite.setPosition(parentTile.x + ScreenOffset.offsetX, parentTile.y + ScreenOffset.offsetY);
     }
 }

@@ -11,6 +11,7 @@ public class Loop {
             f.elapsed += deltaTime;
             if (f.elapsed > f.duration) {
                 loops.remove(f);
+                f.onEnd();
                 i--;
             }
             else f.run(deltaTime, f.elapsed);
@@ -22,4 +23,5 @@ public class Loop {
         loops.add(this);
     }
     public void run(float deltaTime, float elapsed) {}
+    public void onEnd() {}
 }

@@ -2,10 +2,12 @@ package ceat.game;
 
 import ceat.game.entity.*;
 import ceat.game.fx.Effect;
+import ceat.game.fx.SkyBeam;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.Timer;
@@ -85,7 +87,6 @@ public class Game {
 
     private void changeGrids() {
         Grid oldGrid = grid;
-        oldGrid.explode();
 
         lastGrid = grid;
         grid = nextGrid;
@@ -95,7 +96,8 @@ public class Game {
 
         grid.setPlayer(player);
 
-        player.animateJump(grid.getTileAt(Grid.width/2, Grid.height/2), 0.5f, 400);
+        player.animateJump(grid.getTileAt(Grid.width/2, Grid.height/2), 1.15f, 400);
+        oldGrid.explode();
         player.setGrid(grid);
         new ChainedTask().wait(0.2f).run(new Timer.Task() {
             @Override
@@ -120,18 +122,167 @@ public class Game {
 
     private attackMode currentAttackMode = attackMode.NONE;
 
-    private void processProjectilesAndEnemies(EntityQuery<Enemy, Projectile> query) {
+    private void killEnemy(Enemy enemy) {
+        grid.enemies.remove(enemy);
+        enemy.animateDeath();
+        enemy.dispose();
+    }
+
+    private void processProjectilesAndEnemies() {
+        EntityQuery<Enemy, Projectile> query = new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles);
         if (query.a.isEmpty()) return;
         ScreenOffset.shake(20f, 0.25f);
-        for (Enemy enemy : query.a) {
-            grid.enemies.remove(enemy);
-            enemy.animateDeath();
-            enemy.dispose();
-        }
+        for (Enemy enemy : query.a)
+            killEnemy(enemy);
         for (Projectile projectile : query.b) {
             grid.projectiles.remove(projectile);
             projectile.dispose();
         }
+    }
+
+    private void onPlayerDeath() {
+//        player.kill();
+//        music.setVolume(0);
+    }
+
+    private void processPlayerAndEnemies() {
+        if (!player.isAlive) return;
+        for (Enemy enemy: grid.enemies) {
+            if (BoardEntity.overlap(player, enemy)) {
+                onPlayerDeath();
+                return;
+            }
+        }
+    }
+
+    private void clearAttack() {
+        ScreenOffset.shake(5f, 0.25f);
+        for (int xOff = -2; xOff <= 2; xOff++) {
+            for (int yOff = -2; yOff <= 2; yOff++) {
+                if (xOff == 0 && yOff == 0) continue;
+                Vector2 finalPos = Grid.getFinalPosition(player.gridX + xOff, player.gridY + yOff);
+                int gridX = (int)finalPos.x;
+                int gridY = (int)finalPos.y;
+                ArrayList<Enemy> enemiesToKill = new ArrayList<>();
+                for (Enemy enemy: grid.enemies) {
+                    if (BoardEntity.overlap(enemy, gridX, gridY)) {
+                        enemiesToKill.add(enemy);
+                    }
+                }
+                if (!enemiesToKill.isEmpty()) {
+                    ScreenOffset.shake(17f, 0.25f);
+                    for (Enemy enemy: enemiesToKill)
+                        killEnemy(enemy);
+                }
+                new SkyBeam(this, grid.getTileAt(gridX, gridY))
+                        .setColor(1f, 1f, 1f)
+                        .setScale(10f, 10f).play();
+            }
+        }
+    }
+
+    private enum beamDirection {
+        HORIZONTAL,
+        VERTICAL
+    }
+
+    private void theActualBeamAttack(beamDirection direction) {
+        ArrayList<Enemy> enemiesToKill = new ArrayList<>();
+        if (direction == beamDirection.VERTICAL) {
+            for (int i = 0; i < Grid.height; i++)
+                for (Enemy enemy: grid.enemies)
+                    if (BoardEntity.overlap(enemy, player.gridX, i))
+                        enemiesToKill.add(enemy);
+        } else {
+            for (int i = 0; i < Grid.width; i++)
+                for (Enemy enemy: grid.enemies)
+                    if (BoardEntity.overlap(enemy, i, player.gridY))
+                        enemiesToKill.add(enemy);
+        }
+        if (!enemiesToKill.isEmpty()) {
+            ScreenOffset.shake(35f, 0.5f);
+            for (Enemy enemy: enemiesToKill)
+                killEnemy(enemy);
+        }
+    }
+
+    private void beamAttack(ChainedTask chain) {
+        Entity.moveDirection dir = player.getDirection();
+        float rotation =
+            dir == Entity.moveDirection.UP ? -60 :
+            dir == Entity.moveDirection.RIGHT ? -120 :
+            dir == Entity.moveDirection.DOWN ? 120 :
+            60 // left
+            ;
+        ScreenOffset.shake(5f, 0.25f);
+        theActualBeamAttack(dir == Entity.moveDirection.UP || dir == Entity.moveDirection.DOWN ? beamDirection.VERTICAL : beamDirection.HORIZONTAL);
+        new SkyBeam(this, grid.getTileAt(player.gridX, player.gridY))
+            .setColor(1f, 1f, 1f)
+            .setScale(10f, 100f)
+            .setRotation(rotation)
+            .play();
+    }
+
+    private void projectileStep(ChainedTask chain) {
+        if (grid.projectiles.isEmpty()) return;
+        chain.run(new Timer.Task() {
+            @Override
+            public void run() {
+                for (Projectile projectile: grid.projectiles) {
+                    projectile.step();
+                }
+            }
+        }).wait(0.1f).run(new Timer.Task() {
+            @Override
+            public void run() {
+                processProjectilesAndEnemies();
+            }
+        });
+    }
+
+    private void playerStep(ChainedTask chain) {
+        chain.run(new Timer.Task() {
+            @Override
+            public void run() {
+                player.step();
+            }
+        }).wait(0.25f).run(new Timer.Task() {
+            @Override
+            public void run() {
+                processPlayerAndEnemies();
+            }
+        });
+    }
+
+    private void enemyStep(ChainedTask chain) {
+        chain.run(new Timer.Task() {
+            @Override
+            public void run() {
+                for (Enemy enemy: grid.enemies)
+                    enemy.step();
+            }
+        }).wait(0.25f).run(new Timer.Task() {
+            @Override
+            public void run() {
+                processProjectilesAndEnemies();
+                processPlayerAndEnemies();
+            }
+        });
+    }
+
+    private void spawnEnemies(ChainedTask chain) {
+        chain.run(new Timer.Task() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 3; i ++)
+                    grid.addEnemy();
+            }
+        }).wait(0.2f).run(new Timer.Task() {
+            @Override
+            public void run() {
+                processProjectilesAndEnemies();
+            }
+        });
     }
 
     private void doTurn() {
@@ -145,59 +296,26 @@ public class Game {
                 grid.addProjectile();
                 break;
             }
+            case BEAM: {
+                beamAttack(chain);
+                break;
+            }
+            case CLEAR: {
+                clearAttack();
+            }
         }
         currentAttackMode = attackMode.NONE;
 
-        if (!grid.projectiles.isEmpty()) {
-            for (Projectile projectile: grid.projectiles) {
-                projectile.step();
+        projectileStep(chain);
+        playerStep(chain);
+        enemyStep(chain);
+        spawnEnemies(chain);
+        chain.run(new Timer.Task() {
+            @Override
+            public void run() {
+                allowStep = true;
             }
-            chain.wait(0.1f)
-                .run(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        processProjectilesAndEnemies(new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles));
-                    }
-                });
-        }
-        chain
-            .run(new Timer.Task() {
-                @Override
-                public void run() {
-                    player.step();
-                }
-            })
-            .wait(0.25f)
-            .run(new Timer.Task() {
-                @Override
-                public void run() {
-                    for (Enemy enemy: grid.enemies)
-                        enemy.step();
-                    EntityQuery<Enemy, Projectile> queryAgain = new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles);
-                    if (!queryAgain.a.isEmpty()) {
-                        new ChainedTask().wait(0.25f).run(new Timer.Task() {
-                            @Override
-                            public void run() {
-                                processProjectilesAndEnemies(queryAgain);
-                            }
-                        });
-                    }
-                }
-            })
-            .wait(0.25f)
-            .run(new Timer.Task() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < 3; i ++)
-                        grid.addEnemy();
-                }
-            }).wait(0.2f).run(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        processProjectilesAndEnemies(new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles));
-                        allowStep = true;
-                    }
-                });
+        });
     }
 
     public void keyDown(int keycode) {

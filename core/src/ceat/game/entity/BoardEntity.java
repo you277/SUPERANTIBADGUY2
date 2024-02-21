@@ -3,11 +3,14 @@ package ceat.game.entity;
 import ceat.game.*;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Timer.Task;
-
-import java.util.ArrayList;
 
 public class BoardEntity extends Entity {
+    public static boolean overlap(BoardEntity a, BoardEntity b) {
+        return a.gridX == b.gridX && a.gridY == b.gridY;
+    }
+    public static boolean overlap(BoardEntity boardEntity, int gridX, int gridY) {
+        return boardEntity.gridX == gridX && boardEntity.gridY == gridY;
+    }
     public float x;
     public float y;
     public int gridX;
@@ -41,20 +44,16 @@ public class BoardEntity extends Entity {
             public void run(float delta, float elapsed) {
                 float midX = (initX + nextTile.x)/2;
                 float midY = (initY + nextTile.y)/2 + height;
-                Vector2 newPos = Lerp.threePointBezier(parentTile.x, initY, midX, midY, nextTile.x, nextTile.y, elapsed/duration);
+                Vector2 newPos = Lerp.threePointBezier(initX, initY, midX, midY, nextTile.x, nextTile.y, elapsed/duration);
                 x = newPos.x;
                 y = newPos.y;
             }
-        };
-        new ChainedTask()
-            .wait(duration)
-            .run(new Task() {
             @Override
-            public void run() {
+            public void onEnd() {
                 isAnimating = false;
                 parentTile = nextTile;
             }
-        });
+        };
     }
 
     public void animateJump(EmptyTile nextTile, float duration) {

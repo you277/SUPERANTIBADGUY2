@@ -2,7 +2,7 @@ package ceat.game.entity;
 
 import java.util.ArrayList;
 
-public class EntityQuery<E extends BoardEntity, T extends BoardEntity> {
+public class EntityQuery <E extends BoardEntity, T extends BoardEntity> {
     public ArrayList<E> a;
     public ArrayList<T> b;
 

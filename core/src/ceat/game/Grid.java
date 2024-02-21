@@ -206,13 +206,10 @@ public class Grid {
     public void dispose() {
         for(Projectile proj: projectiles)
             proj.dispose();
-
         for (Enemy enemy: enemies)
             enemy.dispose();
-
-        for (EmptyTile[] row: grid) {
+        for (EmptyTile[] row: grid)
             for (EmptyTile tile: row)
                 tile.dispose();
-        }
     }
 }

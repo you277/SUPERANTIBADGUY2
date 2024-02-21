@@ -11,6 +11,7 @@ public class Player extends BoardEntity {
     private moveDirection direction = moveDirection.UP;
     private final Highlight highlight;
     private boolean highlightVisible;
+    public boolean isAlive;
 
 
     public Player(Game newGame, Grid newGrid) {
@@ -23,6 +24,8 @@ public class Player extends BoardEntity {
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
 
         highlight = new Highlight(newGame, newGrid);
+
+        isAlive = true;
 
         highlightVisible = true;
         moveHighlight();
@@ -38,6 +41,11 @@ public class Player extends BoardEntity {
         super.setGridPosition(Grid.width/2, Grid.height/2);
         highlight.setGrid(newGrid);
         moveHighlight();
+    }
+
+    public void kill() {
+        isAlive = false;
+        // effect stuff here
     }
 
     public moveDirection getDirection() {
@@ -121,6 +129,7 @@ public class Player extends BoardEntity {
 
     @Override
     public void draw(SpriteBatch batch) {
+        if (!isAlive) return;
         super.draw(batch);
         if (highlightVisible) {
             highlight.render();

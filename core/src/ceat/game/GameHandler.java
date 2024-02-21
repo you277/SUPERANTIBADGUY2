@@ -1,14 +1,12 @@
 package ceat.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
 public class GameHandler extends ApplicationAdapter implements InputProcessor {
@@ -41,14 +39,14 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 		GameHandler hi = this;
 
 		new ChainedTask()
-				.run(new Task() {
-					@Override
-					public void run() {
-						screen = 0;
-						switchSound.play();
-					}
-				})
-				.wait(1.5f)
+			.run(new Task() {
+				@Override
+				public void run() {
+					screen = 0;
+					switchSound.play();
+				}
+			})
+			.wait(1.5f)
 			.run(new Task() {
 				@Override
 				public void run() {

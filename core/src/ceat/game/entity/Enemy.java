@@ -1,12 +1,12 @@
 package ceat.game.entity;
 
 import ceat.game.*;
+import ceat.game.fx.EnemyDeathEffect;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
-import ceat.game.fx.EnemyBeamEffect;
+import ceat.game.fx.SkyBeam;
 
 public class Enemy extends BoardEntity {
     public Enemy(Game newGame, Grid newGrid) {
@@ -18,7 +18,7 @@ public class Enemy extends BoardEntity {
     }
 
     public void animateEntry() {
-        new EnemyBeamEffect(game, this)
+        new SkyBeam(game, this)
                 .setColor(1f, 0f, 0f)
                 .setScale(13f, 150f).play();
         isAnimating = true;
@@ -28,19 +28,15 @@ public class Enemy extends BoardEntity {
                 x = parentTile.x;
                 y = parentTile.y + 400 - (elapsed/0.2f)*400;
             }
+            @Override
+            public void onEnd() {
+                isAnimating = false;
+            }
         };
-        new ChainedTask()
-            .wait(0.2f)
-            .run(new Timer.Task() {
-                @Override
-                public void run() {
-                    isAnimating = false;
-                }
-            });
     }
 
     public void animateDeath() {
-
+        new EnemyDeathEffect(game, this).play();
     }
 
     // epic enemy ai
