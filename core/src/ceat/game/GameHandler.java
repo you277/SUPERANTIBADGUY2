@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -18,7 +19,6 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	private int screen = 0;
 	private boolean gameRunning;
 	private Game game;
-
 
 	private void renderSplash1() {
 		ScreenUtils.clear(0, 0, 0, 1);

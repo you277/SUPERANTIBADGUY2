@@ -2,6 +2,7 @@ package ceat.game;
 
 import ceat.game.entity.*;
 import ceat.game.fx.Effect;
+import ceat.game.fx.NewFloorBanner;
 import ceat.game.fx.SkyBeam;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
@@ -32,6 +33,7 @@ public class Game {
     private boolean allowStep;
     public ArrayList<Effect> effects;
     public Player player;
+    private int floor = 1;
 
     public Game(SpriteBatch newBatch) {
         batch = newBatch;
@@ -53,6 +55,8 @@ public class Game {
         music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
         music.setLooping(true);
         music.play();
+
+        new NewFloorBanner(this, 1).play();
     }
 
     private void stepGame(float delta, double elapsed) {
@@ -96,6 +100,8 @@ public class Game {
 
         grid.setPlayer(player);
 
+        Game hi = this;
+
         player.animateJump(grid.getTileAt(Grid.width/2, Grid.height/2), 1.15f, 400);
         oldGrid.explode();
         player.setGrid(grid);
@@ -109,6 +115,8 @@ public class Game {
             public void run() {
                 grid.setGridPosition(Grid.gridPosition.CENTER);
                 nextGrid.setGridPosition(Grid.gridPosition.TOP);
+                floor++;
+                new NewFloorBanner(hi, floor).play();
             }
         });
         new ChainedTask().wait(1f).run(new Timer.Task() {
