@@ -52,14 +52,20 @@ public class SkyBeam extends Effect {
                 sprite.setScale(xScale*((0.2f - elapsed)/0.2f), yScale);
                 sprite.setCenter(sprite.getWidth()/2, 0);
             }
-        };
-        new ChainedTask().wait(0.2f).run(new Timer.Task() {
+
             @Override
-            public void run() {
+            public void onEnd() {
                 unregisterEffect();
                 dispose();
             }
-        });
+        };
+//        new ChainedTask().wait(0.2f).run(new Timer.Task() {
+//            @Override
+//            public void run() {
+//                unregisterEffect();
+//                dispose();
+//            }
+//        });
     }
 
     @Override
