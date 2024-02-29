@@ -1,6 +1,7 @@
 package ceat.game.fx;
 
 import ceat.game.ChainedTask;
+import ceat.game.Font;
 import ceat.game.Game;
 import ceat.game.GameHandler;
 import com.badlogic.gdx.Gdx;
@@ -13,29 +14,37 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 public class NewFloorBanner extends Effect {
-    private final BitmapFont[] fonts = new BitmapFont[5];
+    private static BitmapFont[] fonts;
+
+    private static boolean fontsCreated = false;
+    private static void createFonts() {
+        fontsCreated = true;
+
+        int fontMaxSize = 150;
+        int fontMinSize = 50;
+        int numFonts = 20;
+
+        int increment = (fontMaxSize-fontMinSize)/numFonts;
+
+        fonts = new BitmapFont[numFonts];
+        for (int i = 0; i < numFonts; i++) {
+            int i2 = i;
+            fonts[i] = Font.create(new Font.ParamSetter() {
+                public void run(FreeTypeFontParameter params) {
+                    params.size = fontMaxSize - increment*i2;
+                }
+            });
+        }
+    }
     private BitmapFont currentFont;
     private final String text;
+    private int y = 325;
 
     public NewFloorBanner(Game game, int floor) {
         super(game);
         text = "FLOOR " + floor;
 
-        FreeTypeFontGenerator fontGen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/ARCADE_N.ttf"));
-
-        FreeTypeFontParameter params = new FreeTypeFontParameter();
-
-        params.size = 150;
-        fonts[0] = fontGen.generateFont(params);
-        params.size = 125;
-        fonts[1] = fontGen.generateFont(params);
-        params.size = 100;
-        fonts[2] = fontGen.generateFont(params);
-        params.size = 75;
-        fonts[3] = fontGen.generateFont(params);
-        params.size = 50;
-        fonts[4] = fontGen.generateFont(params);
-        fontGen.dispose();
+        if (!fontsCreated) createFonts();
 
         currentFont = fonts[0];
     }
@@ -44,9 +53,10 @@ public class NewFloorBanner extends Effect {
     public void play() {
         registerEffect();
         ChainedTask chain = new ChainedTask();
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < fonts.length; i++) {
             int hi = i;
-            chain.wait(0.04f).run(new Timer.Task() {
+            fonts[hi].setColor(1, 1, 1, 1);
+            chain.wait(0.01f).run(new Timer.Task() {
                 @Override
                 public void run() {
                     currentFont = fonts[hi];
@@ -54,21 +64,20 @@ public class NewFloorBanner extends Effect {
             });
         }
         chain.wait(1f);
-        for (int i = 4; i >= 2; i--) {
+        for (int i = fonts.length - 1; i >= 0; i--) {
             int hi = i;
             chain.run(new Timer.Task() {
                 @Override
                 public void run() {
                     currentFont = fonts[hi];
+                    currentFont.setColor(1, 1, 1, (float)hi/fonts.length);
                 }
-            }).wait(0.04f);
+            }).wait(0.01f);
         }
         chain.run(new Timer.Task() {
             @Override
             public void run() {
                 unregisterEffect();
-                for (BitmapFont font: fonts)
-                    font.dispose();
             }
         });
     }
@@ -80,6 +89,7 @@ public class NewFloorBanner extends Effect {
 
     @Override
     public void draw(SpriteBatch batch) {
-        currentFont.draw(batch, text, 50, 300);
+        y -= Gdx.graphics.getDeltaTime()*10;
+        currentFont.draw(batch, text, 50, y);
     }
 }

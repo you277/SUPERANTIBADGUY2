@@ -81,6 +81,7 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 		batch = new SpriteBatch();
 		title1 = new Texture("img/title1.png");
 		title2 = new Texture("img/title2.png");
+		Font.createGenerator();
 		doGame();
 	}
 
