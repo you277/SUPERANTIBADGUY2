@@ -4,6 +4,7 @@ import ceat.game.entity.*;
 import ceat.game.fx.Effect;
 import ceat.game.fx.NewFloorBanner;
 import ceat.game.fx.SkyBeam;
+import ceat.game.gameGui.GameGui;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -33,13 +34,14 @@ public class Game {
     private boolean allowStep;
     public ArrayList<Effect> effects;
     public Player player;
+    private GameGui gameGui;
     private int floor = 1;
 
     public Game(SpriteBatch newBatch) {
         batch = newBatch;
-
         effects = new ArrayList<>();
 
+        gameGui = new GameGui();
         grid = new Grid(this);
         nextGrid = new Grid(this);
 
@@ -86,10 +88,11 @@ public class Game {
             effect.draw(batch);
         }
 
+        gameGui.draw(batch);
         batch.end();
     }
 
-    private void changeGrids() {
+    public void changeGrids() {
         Grid oldGrid = grid;
 
         lastGrid = grid;
@@ -236,6 +239,7 @@ public class Game {
         chain.run(new Timer.Task() {
             @Override
             public void run() {
+                gameGui.stageBar.highlight(0);
                 for (Projectile projectile: grid.projectiles) {
                     projectile.step();
                 }
@@ -252,6 +256,7 @@ public class Game {
         chain.run(new Timer.Task() {
             @Override
             public void run() {
+                gameGui.stageBar.highlight(1);
                 player.step();
             }
         }).wait(0.25f).run(new Timer.Task() {
@@ -266,6 +271,7 @@ public class Game {
         chain.run(new Timer.Task() {
             @Override
             public void run() {
+                gameGui.stageBar.highlight(2);
                 for (Enemy enemy: grid.enemies)
                     enemy.step();
             }
@@ -282,6 +288,7 @@ public class Game {
         chain.run(new Timer.Task() {
             @Override
             public void run() {
+                gameGui.stageBar.highlight(3);
                 for (int i = 0; i < 3; i ++)
                     grid.addEnemy();
             }
@@ -298,6 +305,8 @@ public class Game {
         allowStep = false;
 
         ChainedTask chain = new ChainedTask();
+
+        gameGui.stageBarEnabled = true;
 
         switch (currentAttackMode) {
             case BULLET: {
@@ -321,6 +330,7 @@ public class Game {
         chain.run(new Timer.Task() {
             @Override
             public void run() {
+                gameGui.stageBarEnabled = false;
                 allowStep = true;
             }
         });

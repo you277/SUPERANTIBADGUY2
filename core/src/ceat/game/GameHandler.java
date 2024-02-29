@@ -136,6 +136,7 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 
 	@Override
 	public boolean scrolled(float amountX, float amountY) {
+		game.changeGrids();
 		return false;
 	}
 	
