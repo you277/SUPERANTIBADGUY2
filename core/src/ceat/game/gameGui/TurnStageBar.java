@@ -13,5 +13,29 @@ public class TurnStageBar {
             sprite.setScale(15, 5);
             sprite.setCenter(sprite.getWidth()/2, 0);
         }
+
+        private float r;
+        private float g;
+        private float b;
+        private float a;
+
+        public Bar setColor(float r, float g, float b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            sprite.setColor(r, g, b, a);
+            return this;
+        }
+
+        public Bar setOpacity(float a) {
+            this.a = a;
+            sprite.setColor(r, g, b, a);
+            return this;
+        }
+
+        public Bar setPosition(float x, float y) {
+            sprite.setPosition(x, y);
+            return this;
+        }
     }
 }
