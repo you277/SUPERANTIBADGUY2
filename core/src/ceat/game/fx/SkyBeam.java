@@ -4,7 +4,6 @@ import ceat.game.*;
 import ceat.game.entity.BoardEntity;
 import ceat.game.entity.EmptyTile;
 import ceat.game.screen.ScreenOffset;
-import com.badlogic.gdx.utils.Timer;
 
 public class SkyBeam extends Effect {
     private final EmptyTile parentTile;
@@ -59,13 +58,6 @@ public class SkyBeam extends Effect {
                 dispose();
             }
         };
-//        new ChainedTask().wait(0.2f).run(new Timer.Task() {
-//            @Override
-//            public void run() {
-//                unregisterEffect();
-//                dispose();
-//            }
-//        });
     }
 
     @Override

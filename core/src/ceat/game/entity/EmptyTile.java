@@ -26,13 +26,12 @@ public class EmptyTile extends Entity {
             public void run(float delta, float elapsed) {
                 sprite.setColor(0f, 0f, 0f, 0.15f + (elapsed)*0.25f);
             }
-        };
-        new ChainedTask().wait(1f).run(new Timer.Task() {
+
             @Override
-            public void run() {
+            public void onEnd() {
                 sprite.setColor(0f, 0f, 0f, 0.4f);
             }
-        });
+        };
     }
 
     @Override

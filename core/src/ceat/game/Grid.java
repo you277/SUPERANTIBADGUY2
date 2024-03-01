@@ -45,6 +45,9 @@ public class Grid {
 
     public float centerX;
     public float centerY;
+    public int totalEnemies;
+    public int waveSpawnAmount;
+    private int enemiesSpawned;
 
     private gridPosition position;
     private final float wavePhaseShift;
@@ -52,7 +55,7 @@ public class Grid {
     private boolean isAnimating;
 
 
-    public Grid(Game newGame) {
+    public Grid(Game newGame, int floor) {
         grid = new EmptyTile[10][10];
         for (EmptyTile[] row: grid) {
             for (int i = 0; i < 10; i++) {
@@ -71,6 +74,9 @@ public class Grid {
 
         enemies = new ArrayList<>();
         projectiles = new ArrayList<>();
+
+        totalEnemies = (int)(floor*Math.sqrt(floor) + 0.5)*5;
+        waveSpawnAmount = Math.max((int)(Math.log(floor) + 0.5), 1);
     }
 
     public void setPlayer(Player newPlayer) {
@@ -97,13 +103,27 @@ public class Grid {
         return new Vector2(x, y);
     }
 
-    public void addEnemy() {
-        if (!getIsFreeSpaceAvailable()) return;
+    private void addEnemy() {
         Vector2 newPos = getFreeSpace();
         Enemy enemy = new Enemy(game, this);
         enemy.setGridPosition((int)newPos.x, (int)newPos.y);
         enemy.animateEntry();
         enemies.add(enemy);
+    }
+
+    public void addEnemies() {
+        System.out.println(totalEnemies);
+        System.out.println(waveSpawnAmount);
+        if (!getIsFreeSpaceAvailable()) return;
+        if (enemiesSpawned == totalEnemies) return;
+        for (int i = 0; i < waveSpawnAmount; i++) {
+            enemiesSpawned++;
+            addEnemy();
+            if (enemiesSpawned == totalEnemies || !getIsFreeSpaceAvailable()) return;
+        }
+    }
+    public boolean didWin() {
+        return enemies.size() == 0 && enemiesSpawned == totalEnemies;
     }
 
     public void addProjectile() {

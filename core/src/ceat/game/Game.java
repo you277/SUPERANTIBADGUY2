@@ -30,11 +30,12 @@ public class Game {
     private Grid nextGrid;
     private Grid lastGrid;
     private boolean lastGridPresent;
-    private Music music;
+    private final Music music;
     private boolean allowStep;
     public ArrayList<Effect> effects;
     public Player player;
-    private GameGui gameGui;
+    private final GameGui gameGui;
+    private int turns = 0;
     private int floor = 1;
 
     public Game(SpriteBatch newBatch) {
@@ -42,8 +43,8 @@ public class Game {
         effects = new ArrayList<>();
 
         gameGui = new GameGui();
-        grid = new Grid(this);
-        nextGrid = new Grid(this);
+        grid = new Grid(this, 1);
+        nextGrid = new Grid(this, 2);
 
         player = new Player(this, grid);
         grid.setPlayer(player);
@@ -76,7 +77,7 @@ public class Game {
         nextGrid.render(gameTime);
         grid.render(gameTime);
 
-        ScreenUtils.clear(0.15f, 0.15f, 0.15f, 1);
+        ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
         batch.begin();
 
         if (lastGridPresent)
@@ -92,12 +93,12 @@ public class Game {
         batch.end();
     }
 
-    public void changeGrids() {
+    private void changeGrids(ChainedTask chain) {
         Grid oldGrid = grid;
 
         lastGrid = grid;
         grid = nextGrid;
-        nextGrid = new Grid(this);
+        nextGrid = new Grid(this, floor + 1);
 
         lastGridPresent = true;
 
@@ -122,7 +123,7 @@ public class Game {
                 new NewFloorBanner(hi, floor).play();
             }
         });
-        new ChainedTask().wait(1f).run(new Timer.Task() {
+        chain.wait(1f).run(new Timer.Task() {
             @Override
             public void run() {
                 lastGridPresent = false;
@@ -135,7 +136,6 @@ public class Game {
 
     private void killEnemy(Enemy enemy) {
         grid.enemies.remove(enemy);
-        enemy.animateDeath();
         enemy.dispose();
     }
 
@@ -217,7 +217,7 @@ public class Game {
         }
     }
 
-    private void beamAttack(ChainedTask chain) {
+    private void beamAttack() {
         Entity.moveDirection dir = player.getDirection();
         float rotation =
             dir == Entity.moveDirection.UP ? -60 :
@@ -239,7 +239,6 @@ public class Game {
         chain.run(new Timer.Task() {
             @Override
             public void run() {
-                gameGui.stageBar.highlight(0);
                 for (Projectile projectile: grid.projectiles) {
                     projectile.step();
                 }
@@ -256,7 +255,6 @@ public class Game {
         chain.run(new Timer.Task() {
             @Override
             public void run() {
-                gameGui.stageBar.highlight(1);
                 player.step();
             }
         }).wait(0.25f).run(new Timer.Task() {
@@ -271,7 +269,6 @@ public class Game {
         chain.run(new Timer.Task() {
             @Override
             public void run() {
-                gameGui.stageBar.highlight(2);
                 for (Enemy enemy: grid.enemies)
                     enemy.step();
             }
@@ -285,12 +282,12 @@ public class Game {
     }
 
     private void spawnEnemies(ChainedTask chain) {
+        System.out.println(turns + " " + turns%2);
+        if (turns%2 == 0) return;
         chain.run(new Timer.Task() {
             @Override
             public void run() {
-                gameGui.stageBar.highlight(3);
-                for (int i = 0; i < 3; i ++)
-                    grid.addEnemy();
+                grid.addEnemies();
             }
         }).wait(0.2f).run(new Timer.Task() {
             @Override
@@ -300,13 +297,15 @@ public class Game {
         });
     }
 
+    private void endOfTurn(ChainedTask chain) {
+        if (grid.didWin()) changeGrids(chain);
+    }
+
     private void doTurn() {
         if (!allowStep) return;
         allowStep = false;
 
         ChainedTask chain = new ChainedTask();
-
-        gameGui.stageBarEnabled = true;
 
         switch (currentAttackMode) {
             case BULLET: {
@@ -314,7 +313,7 @@ public class Game {
                 break;
             }
             case BEAM: {
-                beamAttack(chain);
+                beamAttack();
                 break;
             }
             case CLEAR: {
@@ -323,14 +322,16 @@ public class Game {
         }
         currentAttackMode = attackMode.NONE;
 
+        turns++;
+
         projectileStep(chain);
         playerStep(chain);
         enemyStep(chain);
         spawnEnemies(chain);
+        endOfTurn(chain);
         chain.run(new Timer.Task() {
             @Override
             public void run() {
-                gameGui.stageBarEnabled = false;
                 allowStep = true;
             }
         });
@@ -384,12 +385,16 @@ public class Game {
                 break;
             }
             case Keys.L: {
-                changeGrids();
+                changeGrids(new ChainedTask());
             }
         }
     }
 
     public void dispose() {
-
+        player.dispose();
+        grid.dispose();
+        nextGrid.dispose();
+        if (lastGridPresent) lastGrid.dispose();
+        gameGui.dispose();
     }
 }

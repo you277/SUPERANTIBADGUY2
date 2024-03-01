@@ -3,14 +3,10 @@ package ceat.game.fx;
 import ceat.game.ChainedTask;
 import ceat.game.Font;
 import ceat.game.Game;
-import ceat.game.GameHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 public class NewFloorBanner extends Effect {
@@ -80,11 +76,6 @@ public class NewFloorBanner extends Effect {
                 unregisterEffect();
             }
         });
-    }
-
-    @Override
-    public void render() {
-
     }
 
     @Override
