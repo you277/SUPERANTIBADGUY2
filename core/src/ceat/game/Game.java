@@ -316,7 +316,6 @@ public class Game {
         playerStep(chain);
         enemyStep(chain);
         spawnEnemies(chain);
-        chain.wait(0.15f);
         endOfTurn(chain);
         chain.run(new Timer.Task() {
             public void run() {
