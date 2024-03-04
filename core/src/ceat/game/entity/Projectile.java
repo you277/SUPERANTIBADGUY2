@@ -22,7 +22,6 @@ public class Projectile extends BoardEntity {
 
     }
 
-    @Override
     public void step() {
         int x = gridX;
         int y = gridY;

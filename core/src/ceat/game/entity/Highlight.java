@@ -20,7 +20,6 @@ public class Highlight extends BoardEntity {
         grid = newGrid;
     }
 
-    @Override
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         float alpha = Lerp.alpha(delta, 20);

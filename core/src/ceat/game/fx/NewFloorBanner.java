@@ -45,7 +45,6 @@ public class NewFloorBanner extends Effect {
         currentFont = fonts[0];
     }
 
-    @Override
     public void play() {
         registerEffect();
         ChainedTask chain = new ChainedTask();
@@ -78,7 +77,6 @@ public class NewFloorBanner extends Effect {
         });
     }
 
-    @Override
     public void draw(SpriteBatch batch) {
         y -= Gdx.graphics.getDeltaTime()*10;
         currentFont.draw(batch, text, 50, y);

@@ -42,17 +42,14 @@ public class SkyBeam extends Effect {
         return this;
     }
 
-    @Override
     public void play() {
         registerEffect();
         new Loop(0.2f) {
-            @Override
             public void run(float deltaTime, float elapsed) {
                 sprite.setScale(xScale*((0.2f - elapsed)/0.2f), yScale);
                 sprite.setCenter(sprite.getWidth()/2, 0);
             }
 
-            @Override
             public void onEnd() {
                 unregisterEffect();
                 dispose();
@@ -60,7 +57,6 @@ public class SkyBeam extends Effect {
         };
     }
 
-    @Override
     public void render() {
         sprite.setPosition(parentTile.x + ScreenOffset.offsetX, parentTile.y + ScreenOffset.offsetY);
     }

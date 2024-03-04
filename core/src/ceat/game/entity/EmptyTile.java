@@ -22,19 +22,16 @@ public class EmptyTile extends Entity {
 
     public void fadeIn() {
         new Loop(1f) {
-            @Override
             public void run(float delta, float elapsed) {
                 sprite.setColor(0f, 0f, 0f, 0.15f + (elapsed)*0.25f);
             }
 
-            @Override
             public void onEnd() {
                 sprite.setColor(0f, 0f, 0f, 0.4f);
             }
         };
     }
 
-    @Override
     public void draw(SpriteBatch batch) {
         sprite.setPosition(x + ScreenOffset.offsetX, y + ScreenOffset.offsetY);
         super.draw(batch);

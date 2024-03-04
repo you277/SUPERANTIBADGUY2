@@ -40,7 +40,6 @@ public class BoardEntity extends Entity {
         float initX = parentTile.x;
         float initY = parentTile.y;
         new Loop(duration) {
-            @Override
             public void run(float delta, float elapsed) {
                 float midX = (initX + nextTile.x)/2;
                 float midY = (initY + nextTile.y)/2 + height;
@@ -48,7 +47,6 @@ public class BoardEntity extends Entity {
                 x = newPos.x;
                 y = newPos.y;
             }
-            @Override
             public void onEnd() {
                 isAnimating = false;
                 parentTile = nextTile;

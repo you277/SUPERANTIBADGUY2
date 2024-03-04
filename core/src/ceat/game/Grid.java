@@ -75,8 +75,8 @@ public class Grid {
         enemies = new ArrayList<>();
         projectiles = new ArrayList<>();
 
-        totalEnemies = (int)(floor*Math.sqrt(floor) + 0.5)*5;
-        waveSpawnAmount = Math.max((int)(Math.log(floor) + 0.5), 1);
+        totalEnemies = (int)(floor*Math.sqrt(floor) + 0.5)*15;
+        waveSpawnAmount = Math.max((int)(Math.log(floor*3) + 0.5), 1);
     }
 
     public void setPlayer(Player newPlayer) {
@@ -122,8 +122,13 @@ public class Grid {
             if (enemiesSpawned == totalEnemies || !getIsFreeSpaceAvailable()) return;
         }
     }
+
+    public boolean didSpawnAllEnemies() {
+        return enemiesSpawned == totalEnemies;
+    }
     public boolean didWin() {
-        return enemies.size() == 0 && enemiesSpawned == totalEnemies;
+        System.out.println("didwin:" + enemies.size() + ", " + enemiesSpawned + "/" + totalEnemies);
+        return enemies.size() == 0 && didSpawnAllEnemies();
     }
 
     public void addProjectile() {
@@ -178,7 +183,6 @@ public class Grid {
         }
         isAnimating = true;
         new Loop(1f) {
-            @Override
             public void run(float delta, float elapsed) {
                 for (EmptyTile tile: velocities.keySet()) {
                     float[] velocity = velocities.get(tile);

@@ -21,7 +21,6 @@ public class EnemyDeathEffect extends Effect {
         y = enemy.y;
     }
 
-    @Override
     public void draw(SpriteBatch batch) {
         System.out.println("draw");
         batch.draw(tex, x + ScreenOffset.offsetY, y + ScreenOffset.offsetY, frame*15, 0);
@@ -31,7 +30,6 @@ public class EnemyDeathEffect extends Effect {
     public void play() {
         registerEffect();
         new Loop(0.3f) {
-            @Override
             public void run(float delta, float elapsed) {
                 frame = (int)(elapsed/0.3f*8); // 8 frames
             }

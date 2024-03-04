@@ -30,7 +30,7 @@ public class Player extends BoardEntity {
         highlightVisible = true;
         moveHighlight();
     }
-    @Override
+
     public void setGridPosition(int newGridX, int newGridY) {
         super.setGridPosition(newGridX, newGridY);
         moveHighlight();
@@ -78,7 +78,6 @@ public class Player extends BoardEntity {
         moveHighlight();
     }
 
-    @Override
     public void step() {
         Vector2 vec;
         switch(direction) {
@@ -103,7 +102,6 @@ public class Player extends BoardEntity {
         moveHighlight();
     }
 
-    @Override
     public void animateJump(EmptyTile tile, float duration, float height) {
         super.animateJump(tile, duration, height);
         highlightVisible = false;
@@ -117,17 +115,14 @@ public class Player extends BoardEntity {
                 });
     }
 
-    @Override
     public void animateJump(EmptyTile tile, float duration) {
         animateJump(tile, duration, 75);
     }
 
-    @Override
     public void animateJump(EmptyTile tile) {
         animateJump(tile, 0.25f, 75);
     }
 
-    @Override
     public void draw(SpriteBatch batch) {
         if (!isAlive) return;
         super.draw(batch);
@@ -137,7 +132,6 @@ public class Player extends BoardEntity {
         }
     }
 
-    @Override
     public void dispose() {
         super.dispose();
         highlight.dispose();

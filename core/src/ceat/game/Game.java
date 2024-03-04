@@ -110,12 +110,10 @@ public class Game {
         oldGrid.explode();
         player.setGrid(grid);
         new ChainedTask().wait(0.2f).run(new Timer.Task() {
-            @Override
             public void run() {
                 player.setGridPosition(Grid.width/2, Grid.height/2);
             }
         }).wait(0.4f).run(new Timer.Task() {
-            @Override
             public void run() {
                 grid.setGridPosition(Grid.gridPosition.CENTER);
                 nextGrid.setGridPosition(Grid.gridPosition.TOP);
@@ -124,7 +122,6 @@ public class Game {
             }
         });
         chain.wait(1f).run(new Timer.Task() {
-            @Override
             public void run() {
                 lastGridPresent = false;
                 lastGrid = null;
@@ -235,16 +232,14 @@ public class Game {
     }
 
     private void projectileStep(ChainedTask chain) {
-        if (grid.projectiles.isEmpty()) return;
         chain.run(new Timer.Task() {
-            @Override
             public void run() {
+                if (grid.projectiles.isEmpty()) return;
                 for (Projectile projectile: grid.projectiles) {
                     projectile.step();
                 }
             }
         }).wait(0.1f).run(new Timer.Task() {
-            @Override
             public void run() {
                 processProjectilesAndEnemies();
             }
@@ -253,12 +248,10 @@ public class Game {
 
     private void playerStep(ChainedTask chain) {
         chain.run(new Timer.Task() {
-            @Override
             public void run() {
                 player.step();
             }
         }).wait(0.25f).run(new Timer.Task() {
-            @Override
             public void run() {
                 processPlayerAndEnemies();
             }
@@ -267,13 +260,11 @@ public class Game {
 
     private void enemyStep(ChainedTask chain) {
         chain.run(new Timer.Task() {
-            @Override
             public void run() {
                 for (Enemy enemy: grid.enemies)
                     enemy.step();
             }
         }).wait(0.25f).run(new Timer.Task() {
-            @Override
             public void run() {
                 processProjectilesAndEnemies();
                 processPlayerAndEnemies();
@@ -282,15 +273,12 @@ public class Game {
     }
 
     private void spawnEnemies(ChainedTask chain) {
-        System.out.println(turns + " " + turns%2);
-        if (turns%2 == 0) return;
         chain.run(new Timer.Task() {
-            @Override
             public void run() {
+                if (grid.didSpawnAllEnemies()) return;
                 grid.addEnemies();
             }
         }).wait(0.2f).run(new Timer.Task() {
-            @Override
             public void run() {
                 processProjectilesAndEnemies();
             }
@@ -328,9 +316,9 @@ public class Game {
         playerStep(chain);
         enemyStep(chain);
         spawnEnemies(chain);
+        chain.wait(0.15f);
         endOfTurn(chain);
         chain.run(new Timer.Task() {
-            @Override
             public void run() {
                 allowStep = true;
             }

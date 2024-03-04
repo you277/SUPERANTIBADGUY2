@@ -17,20 +17,17 @@ public class FastEnemy extends Enemy {
                 .setScale(13, 150).play();
         isAnimating = true;
         new Loop(0.2f) {
-            @Override
             public void run(float delta, float elapsed) {
                 x = parentTile.x;
                 y = parentTile.y + 400 - (elapsed / 0.2f) * 400;
             }
 
-            @Override
             public void onEnd() {
                 isAnimating = false;
             }
         };
     }
 
-    @Override
     public void step() {
         int[] newCoords = calcStep(true);
         if (newCoords[0] == -1) return;

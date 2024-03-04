@@ -22,12 +22,10 @@ public class Enemy extends BoardEntity {
                 .setScale(13f, 150f).play();
         isAnimating = true;
         new Loop(0.2f) {
-            @Override
             public void run(float delta, float elapsed) {
                 x = parentTile.x;
                 y = parentTile.y + 400 - (elapsed/0.2f)*400;
             }
-            @Override
             public void onEnd() {
                 isAnimating = false;
             }
@@ -54,16 +52,17 @@ public class Enemy extends BoardEntity {
         ArrayList<Integer> allowedMoves = new ArrayList<>();
         int maxMoveIdx = allowDiagonals ? 2 : 1;
 
-        for (Enemy otherEnemy: grid.enemies) {
-            if (otherEnemy == this) continue;
-
-            int otherX = otherEnemy.gridX;
-            int otherY = otherEnemy.gridY;
-            for (int i = 0; i < maxMoveIdx; i++) {
-                if (xPositions[i] == otherX && yPositions[i] == otherY) continue;
-                if (allowedMoves.contains(i)) continue;
-                allowedMoves.add(i);
+        for (int i = 0; i <= maxMoveIdx; i++) {
+            int x = xPositions[i];
+            int y = yPositions[i];
+            boolean allowMove = true;
+            for (Enemy otherEnemy: grid.enemies) {
+                if (otherEnemy.gridX == x && otherEnemy.gridY == y) {
+                    allowMove = false;
+                    break;
+                }
             }
+            if (allowMove) allowedMoves.add(i);
         }
 
         if (allowedMoves.isEmpty()) return new int[] {-1, -1};
@@ -85,7 +84,6 @@ public class Enemy extends BoardEntity {
         return new int[] {(int)hi.x, (int)hi.y};
     }
 
-    @Override
     public void step() {
         int[] newCoords = calcStep(false);
         if (newCoords[0] == -1) return;
