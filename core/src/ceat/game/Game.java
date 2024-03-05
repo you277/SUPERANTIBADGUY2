@@ -25,16 +25,19 @@ public class Game {
     }
 
     private final SpriteBatch batch;
+    private final GameGui gameGui;
+    private final Music music;
     private float gameTime;
+    
     private Grid grid;
     private Grid nextGrid;
     private Grid lastGrid;
     private boolean lastGridPresent;
-    private final Music music;
-    private boolean allowStep;
+    
     public ArrayList<Effect> effects;
     public Player player;
-    private final GameGui gameGui;
+    
+    private boolean allowStep;
     private int turns = 0;
     private int floor = 1;
 
