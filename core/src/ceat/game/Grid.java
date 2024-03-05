@@ -2,11 +2,9 @@ package ceat.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import ceat.game.entity.EmptyTile;
-import ceat.game.entity.Enemy;
-import ceat.game.entity.Player;
-import ceat.game.entity.Projectile;
+import ceat.game.entity.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -41,13 +39,15 @@ public class Grid {
     public EmptyTile[][] grid;
     public ArrayList<Enemy> enemies;
     public ArrayList<Projectile> projectiles;
+    public ArrayList<FreeProjectile> freeProjectiles;
     public Player player;
 
     public float centerX;
     public float centerY;
     public int totalEnemies;
     public int waveSpawnAmount;
-    private int enemiesSpawned;
+    public int enemiesDead;
+    private int floor;
 
     private gridPosition position;
     private final float wavePhaseShift;
@@ -66,6 +66,7 @@ public class Grid {
         game = newGame;
 
         wavePhaseShift = (float)Math.random()*3.14159f;
+        this.floor = floor;
 
         centerX = 400;
         centerY = defaultY;
@@ -74,9 +75,10 @@ public class Grid {
 
         enemies = new ArrayList<>();
         projectiles = new ArrayList<>();
+        freeProjectiles = new ArrayList<>();
 
-        totalEnemies = (int)(floor*Math.sqrt(floor) + 0.5)*15;
-        waveSpawnAmount = Math.max((int)(Math.log(floor*3) + 0.5), 1);
+        totalEnemies = (int)(Math.sqrt(floor)*7 + 0.5);
+        waveSpawnAmount = Math.max((int)(Math.sqrt(floor) + 0.5), 1);
     }
 
     public void setPlayer(Player newPlayer) {
@@ -103,9 +105,21 @@ public class Grid {
         return new Vector2(x, y);
     }
 
+    private Enemy randomEnemyType() {
+        if (floor > 3) {
+            if (floor > 10) {
+//                if (Math.random() < 0.2) return new SentryEnemy(game, this);
+                return new SentryEnemy(game, this);
+            }
+//            if (Math.random() < 0.2) return new FastEnemy(game, this);
+            return new FastEnemy(game, this);
+        }
+        return new Enemy(game, this);
+    }
+
     private void addEnemy() {
         Vector2 newPos = getFreeSpace();
-        Enemy enemy = new Enemy(game, this);
+        Enemy enemy = randomEnemyType();
         enemy.setGridPosition((int)newPos.x, (int)newPos.y);
         enemy.animateEntry();
         enemies.add(enemy);
@@ -115,20 +129,14 @@ public class Grid {
         System.out.println(totalEnemies);
         System.out.println(waveSpawnAmount);
         if (!getIsFreeSpaceAvailable()) return;
-        if (enemiesSpawned == totalEnemies) return;
         for (int i = 0; i < waveSpawnAmount; i++) {
-            enemiesSpawned++;
             addEnemy();
-            if (enemiesSpawned == totalEnemies || !getIsFreeSpaceAvailable()) return;
+            if (!getIsFreeSpaceAvailable()) return;
         }
     }
 
-    public boolean didSpawnAllEnemies() {
-        return enemiesSpawned == totalEnemies;
-    }
     public boolean didWin() {
-        System.out.println("didwin:" + enemies.size() + ", " + enemiesSpawned + "/" + totalEnemies);
-        return enemies.size() == 0 && didSpawnAllEnemies();
+        return enemiesDead >= totalEnemies;
     }
 
     public void addProjectile() {
@@ -225,10 +233,19 @@ public class Grid {
             player.render();
             player.draw(batch);
         }
+        ArrayList<FreeProjectile> freeProjectilesToRemove = new ArrayList<>();
+        for(FreeProjectile proj: freeProjectiles) {
+            proj.render();
+            if (proj.active) proj.draw(batch);
+            else freeProjectilesToRemove.add(proj);
+        }
+        for (FreeProjectile proj: freeProjectilesToRemove) freeProjectiles.remove(proj);
     }
 
     public void dispose() {
-        for(Projectile proj: projectiles)
+        for (Projectile proj: projectiles)
+            proj.dispose();
+        for (FreeProjectile proj: freeProjectiles)
             proj.dispose();
         for (Enemy enemy: enemies)
             enemy.dispose();

@@ -27,7 +27,7 @@ public class Game {
     private final SpriteBatch batch;
     private final GameGui gameGui;
     private final Music music;
-    private float gameTime;
+    public float gameTime;
     
     private Grid grid;
     private Grid nextGrid;
@@ -45,13 +45,16 @@ public class Game {
         batch = newBatch;
         effects = new ArrayList<>();
 
-        gameGui = new GameGui();
+        gameGui = new GameGui(this);
         grid = new Grid(this, 1);
         nextGrid = new Grid(this, 2);
 
         player = new Player(this, grid);
         grid.setPlayer(player);
         player.setGridPosition(Grid.width/2, Grid.height/2);
+
+        gameGui.enemyCounter.setAlive(grid.totalEnemies);
+        gameGui.enemyCounter.setTotal(grid.totalEnemies);
 
         grid.setGridPosition(Grid.gridPosition.CENTER);
         nextGrid.setGridPosition(Grid.gridPosition.TOP);
@@ -103,6 +106,9 @@ public class Game {
         grid = nextGrid;
         nextGrid = new Grid(this, floor + 1);
 
+        gameGui.enemyCounter.setAlive(grid.totalEnemies);
+        gameGui.enemyCounter.setTotal(grid.totalEnemies);
+
         lastGridPresent = true;
 
         grid.setPlayer(player);
@@ -135,8 +141,10 @@ public class Game {
     private attackMode currentAttackMode = attackMode.NONE;
 
     private void killEnemy(Enemy enemy) {
+        grid.enemiesDead++;
         grid.enemies.remove(enemy);
         enemy.dispose();
+        gameGui.enemyCounter.setAlive(grid.totalEnemies - grid.enemiesDead);
     }
 
     private void processProjectilesAndEnemies() {
@@ -278,7 +286,6 @@ public class Game {
     private void spawnEnemies(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
-                if (grid.didSpawnAllEnemies()) return;
                 grid.addEnemies();
             }
         }).wait(0.2f).run(new Timer.Task() {
