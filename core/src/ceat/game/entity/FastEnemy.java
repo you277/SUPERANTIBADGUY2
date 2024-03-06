@@ -29,7 +29,7 @@ public class FastEnemy extends Enemy {
     }
 
     public void step() {
-        int[] newCoords = calcStep(true);
+        int[] newCoords = calcStep(false, 2);
         if (newCoords[0] == -1) return;
         gridX = newCoords[0];
         gridY = newCoords[1];

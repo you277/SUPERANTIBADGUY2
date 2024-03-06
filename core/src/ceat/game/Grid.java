@@ -41,6 +41,7 @@ public class Grid {
     public ArrayList<Projectile> projectiles;
     public ArrayList<FreeProjectile> freeProjectiles;
     public Player player;
+    public boolean active;
 
     public float centerX;
     public float centerY;
@@ -53,6 +54,7 @@ public class Grid {
     private final float wavePhaseShift;
     private boolean playerSet;
     private boolean isAnimating;
+    private boolean shouldDraw;
 
 
     public Grid(Game newGame, int floor) {
@@ -79,6 +81,8 @@ public class Grid {
 
         totalEnemies = (int)(Math.sqrt(floor)*7 + 0.5);
         waveSpawnAmount = Math.max((int)(Math.sqrt(floor) + 0.5), 1);
+
+        shouldDraw = true;
     }
 
     public void setPlayer(Player newPlayer) {
@@ -103,36 +107,6 @@ public class Grid {
             if (enemy.gridX == x && enemy.gridY == y)
                 return getFreeSpace();
         return new Vector2(x, y);
-    }
-
-    private Enemy randomEnemyType() {
-        if (floor > 3) {
-            if (floor > 10) {
-//                if (Math.random() < 0.2) return new SentryEnemy(game, this);
-                return new SentryEnemy(game, this);
-            }
-//            if (Math.random() < 0.2) return new FastEnemy(game, this);
-            return new FastEnemy(game, this);
-        }
-        return new Enemy(game, this);
-    }
-
-    private void addEnemy() {
-        Vector2 newPos = getFreeSpace();
-        Enemy enemy = randomEnemyType();
-        enemy.setGridPosition((int)newPos.x, (int)newPos.y);
-        enemy.animateEntry();
-        enemies.add(enemy);
-    }
-
-    public void addEnemies() {
-        System.out.println(totalEnemies);
-        System.out.println(waveSpawnAmount);
-        if (!getIsFreeSpaceAvailable()) return;
-        for (int i = 0; i < waveSpawnAmount; i++) {
-            addEnemy();
-            if (!getIsFreeSpaceAvailable()) return;
-        }
     }
 
     public boolean didWin() {
@@ -182,6 +156,8 @@ public class Grid {
 
     public void explode() {
         HashMap<EmptyTile, float[]> velocities = new HashMap<>();
+        for (FreeProjectile proj: freeProjectiles)
+            proj.kill();
         for (EmptyTile[] tiles: grid) {
             for (EmptyTile tile: tiles) {
                 float xVelocity = -400 + (float)Math.random()*800;
@@ -199,6 +175,9 @@ public class Grid {
                     velocity[1] -= 1000*delta;
                 }
             }
+            public void onEnd() {
+                shouldDraw = false;
+            }
         };
     }
 
@@ -213,33 +192,29 @@ public class Grid {
         }
         if (!isAnimating)
             positionTiles(centerX, centerY, gameTime);
-    }
 
-    public void draw(SpriteBatch batch) {
-        for (EmptyTile[] row: grid) {
-            for (EmptyTile tile: row) {
-                tile.draw(batch);
-            }
-        }
-        for(Projectile proj: projectiles) {
-            proj.render();
-            proj.draw(batch);
-        }
-        for(Enemy enemy: enemies) {
-            enemy.render();
-            enemy.draw(batch);
-        }
-        if (playerSet) {
-            player.render();
-            player.draw(batch);
-        }
+        for (Projectile proj: projectiles) proj.render();
+        for (Enemy enemy: enemies) enemy.render();
+        if (playerSet) player.render();
         ArrayList<FreeProjectile> freeProjectilesToRemove = new ArrayList<>();
         for(FreeProjectile proj: freeProjectiles) {
             proj.render();
-            if (proj.active) proj.draw(batch);
-            else freeProjectilesToRemove.add(proj);
+            if (!proj.active) freeProjectilesToRemove.add(proj);
         }
         for (FreeProjectile proj: freeProjectilesToRemove) freeProjectiles.remove(proj);
+    }
+
+    public void draw(SpriteBatch batch) {
+        if (!shouldDraw) return;
+        for (EmptyTile[] row: grid)
+            for (EmptyTile tile: row)
+                tile.draw(batch);
+
+        for (Projectile proj: projectiles) proj.draw(batch);
+        for (Enemy enemy: enemies) enemy.draw(batch);
+        if (playerSet) player.draw(batch);
+
+        for(FreeProjectile proj: freeProjectiles) proj.draw(batch);
     }
 
     public void dispose() {

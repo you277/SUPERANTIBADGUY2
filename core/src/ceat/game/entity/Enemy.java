@@ -33,18 +33,18 @@ public class Enemy extends BoardEntity {
     }
 
     // epic enemy ai
-    public int[] calcStep(boolean allowDiagonals) {
+    public int[] calcStep(boolean allowDiagonals, int stepDistance) {
         int playerX = grid.player.gridX;
         int playerY = grid.player.gridY;
 
         int newX = gridX;
         int newY = gridY;
 
-        if (playerX > x) newX++;
-        else if (playerX < x) newX--;
+        if (playerX > x) newX = Math.min(playerX, newX + stepDistance);
+        else if (playerX < x) newX = Math.max(playerX, newX - stepDistance);
 
-        if (playerY > y) newY++;
-        else if (playerY < y) newY--;
+        if (playerY > y) newY = Math.min(playerY, newY + stepDistance);
+        else if (playerY < y) newY = Math.max(playerY, newY - stepDistance);
 
         int[] xPositions = { gridX, newX, newX };
         int[] yPositions = { newY, gridY, newY };
@@ -85,7 +85,7 @@ public class Enemy extends BoardEntity {
     }
 
     public void step() {
-        int[] newCoords = calcStep(false);
+        int[] newCoords = calcStep(false, 1);
         if (newCoords[0] == -1) return;
         gridX = newCoords[0];
         gridY = newCoords[1];

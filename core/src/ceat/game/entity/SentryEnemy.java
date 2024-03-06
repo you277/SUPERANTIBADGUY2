@@ -31,13 +31,14 @@ public class SentryEnemy extends Enemy {
     }
 
     private void spawnProjectiles() {
+        if (!grid.active) return;
         if (Math.random() < 0.3) return;
         float baseAngle = (float)(Math.random()*6.28);
         for (int i = 0; i < 8; i++) {
             float angle = baseAngle + i*(float)(6.28/8);
             FreeProjectile proj = new FreeProjectile(game, grid).setPosition(x, y).setVelocity(
-                    (float)Math.cos(angle)*15,
-                    (float)Math.sin(angle)*15
+                    (float)Math.cos(angle)*45,
+                    (float)Math.sin(angle)*45
             );
             grid.freeProjectiles.add(proj);
         }

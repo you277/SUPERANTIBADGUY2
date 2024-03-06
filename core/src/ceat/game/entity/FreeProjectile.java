@@ -3,6 +3,7 @@ package ceat.game.entity;
 import ceat.game.Game;
 import ceat.game.Grid;
 import ceat.game.Loop;
+import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -19,7 +20,6 @@ public class FreeProjectile extends Entity {
         super.loadSprite("img/square.png");
         sprite.setScale(5, 5);
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
-        alive = true;
     }
 
     public FreeProjectile setPosition(float x, float y) {
@@ -37,8 +37,8 @@ public class FreeProjectile extends Entity {
     public void doFadeAnimation() {
         new Loop(0.5f) {
             public void run(float delta, float elapsed) {
-                float extraScale = elapsed*2;
-                sprite.setColor(1, 1, 1, (lifetime - 5)*2);
+                float extraScale = elapsed*5;
+                sprite.setColor(1, 1, 1, 1 - elapsed*2);
                 sprite.setScale(5 + extraScale, 5 + extraScale);
                 sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
             }
@@ -48,18 +48,23 @@ public class FreeProjectile extends Entity {
         };
     }
 
-    public void render() {
+    public void kill() {
         if (!alive) return;
-        if (lifetime > 5) {
-            alive = false;
-            doFadeAnimation();
-            return;
+        alive = false;
+        doFadeAnimation();
+    }
+
+    public void render() {
+        if (alive) {
+            if (lifetime > 5) {
+                kill();
+            }
         }
         float delta = Gdx.graphics.getDeltaTime();
         lifetime += delta;
         x += xVelocity*delta;
         y += yVelocity*delta;
-        sprite.setPosition(x, y);
+        sprite.setPosition(x + ScreenOffset.offsetX, y + ScreenOffset.offsetY);
     }
     public void draw(SpriteBatch batch) {
         sprite.draw(batch);

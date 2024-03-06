@@ -49,6 +49,8 @@ public class Game {
         grid = new Grid(this, 1);
         nextGrid = new Grid(this, 2);
 
+        grid.active = true;
+
         player = new Player(this, grid);
         grid.setPlayer(player);
         player.setGridPosition(Grid.width/2, Grid.height/2);
@@ -105,6 +107,9 @@ public class Game {
         lastGrid = grid;
         grid = nextGrid;
         nextGrid = new Grid(this, floor + 1);
+
+        lastGrid.active = false;
+        grid.active = true;
 
         gameGui.enemyCounter.setAlive(grid.totalEnemies);
         gameGui.enemyCounter.setTotal(grid.totalEnemies);
@@ -283,10 +288,32 @@ public class Game {
         });
     }
 
+    private Enemy randomEnemyType() {
+        if (floor > 3) {
+            if (floor > 10) {
+                if (Math.random() < 0.3) return new SentryEnemy(this, grid);
+            }
+            if (Math.random() < 0.3) return new FastEnemy(this, grid);
+        }
+        return new Enemy(this, grid);
+    }
+
+    private void addEnemy() {
+        Vector2 newPos = grid.getFreeSpace();
+        Enemy enemy = randomEnemyType();
+        enemy.setGridPosition((int)newPos.x, (int)newPos.y);
+        enemy.animateEntry();
+        grid.enemies.add(enemy);
+    }
+
     private void spawnEnemies(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
-                grid.addEnemies();
+                if (!grid.getIsFreeSpaceAvailable()) return;
+                for (int i = 0; i < grid.waveSpawnAmount; i++) {
+                    addEnemy();
+                    if (!grid.getIsFreeSpaceAvailable()) return;
+                }
             }
         }).wait(0.2f).run(new Timer.Task() {
             public void run() {
