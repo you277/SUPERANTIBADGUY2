@@ -60,7 +60,7 @@ public class Game {
         // gamegui setup
         gameGui.enemyCounter.setAlive(grid.totalEnemies);
         gameGui.enemyCounter.setTotal(grid.totalEnemies);
-        gameGui.cardHolder.pullUp(0);
+//        gameGui.cardHolder.pullUp(0);
 
         grid.setGridPosition(Grid.gridPosition.CENTER);
         nextGrid.setGridPosition(Grid.gridPosition.TOP);
@@ -328,12 +328,14 @@ public class Game {
 
     private void endOfTurn(ChainedTask chain) {
         if (grid.didWin()) changeGrids(chain);
-        gameGui.cardHolder.pullUp(0);
+//        gameGui.cardHolder.pullUp(0);
     }
+
+    private int beamCooldown = 0;
+    private int clearCooldown = 0;
 
     private void doTurn() {
         if (!allowStep) return;
-        allowStep = false;
 
         ChainedTask chain = new ChainedTask();
 
@@ -343,17 +345,32 @@ public class Game {
                 break;
             }
             case BEAM: {
+                if (beamCooldown != 0) {
+                    gameGui.turnText.shake();
+                    return;
+                }
                 beamAttack();
+                beamCooldown = 3;
                 break;
             }
             case CLEAR: {
+                if (clearCooldown != 0) {
+                    gameGui.turnText.shake();
+                    return;
+                }
                 clearAttack();
+                clearCooldown = 4;
             }
         }
+        gameGui.turnText.text = "";
         currentAttackMode = attackMode.NONE;
-        gameGui.cardHolder.closeAllCards();
+//        gameGui.cardHolder.closeAllCards();
 
+        allowStep = false;
         turns++;
+
+        if (clearCooldown != 0) clearCooldown--;
+        if (beamCooldown != 0) beamCooldown--;
 
         projectileStep(chain);
         playerStep(chain);
@@ -365,6 +382,10 @@ public class Game {
                 allowStep = true;
             }
         });
+    }
+
+    private String getTurnText(boolean b, String s1, String s2) {
+        return b ? s1 : s2;
     }
 
     public void keyDown(int keycode) {
@@ -392,25 +413,32 @@ public class Game {
             case Keys.NUMPAD_0:
             case Keys.NUM_0: {
                 currentAttackMode = attackMode.NONE;
-                gameGui.cardHolder.pullUp(0);
+//                gameGui.cardHolder.pullUp(0);
+                gameGui.turnText.text = "";
                 break;
             }
             case Keys.NUMPAD_1:
             case Keys.NUM_1: {
                 currentAttackMode = attackMode.BULLET;
-                gameGui.cardHolder.pullUp(1);
+//                gameGui.cardHolder.pullUp(1);
+                gameGui.turnText.text = "USING ATTACK 1";
+                gameGui.turnText.pop();
                 break;
             }
             case Keys.NUMPAD_2:
             case Keys.NUM_2: {
                 currentAttackMode = attackMode.BEAM;
-                gameGui.cardHolder.pullUp(2);
+//                gameGui.cardHolder.pullUp(2);
+                gameGui.turnText.text = getTurnText(beamCooldown == 0, "USING ATTACK 2", "ATTACK 2 ON COOLDOWN");
+                gameGui.turnText.pop();
                 break;
             }
             case Keys.NUMPAD_3:
             case Keys.NUM_3: {
                 currentAttackMode = attackMode.CLEAR;
-                gameGui.cardHolder.pullUp(3);
+//                gameGui.cardHolder.pullUp(3);
+                gameGui.turnText.text = getTurnText(clearCooldown == 0, "USING ATTACK 3", "ATTACK 3 ON COOLDOWN");
+                gameGui.turnText.pop();
                 break;
             }
             case Keys.NUMPAD_ENTER:
