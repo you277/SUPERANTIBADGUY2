@@ -8,15 +8,18 @@ public class GameGui {
     private Game game;
 
     public EnemyCounter enemyCounter;
+    public CardHolder cardHolder;
 
     public GameGui(Game game) {
         currentGui = this;
         this.game = game;
         enemyCounter = new EnemyCounter(game);
+        cardHolder = new CardHolder(game);
     }
 
     public void draw(SpriteBatch batch) {
         enemyCounter.draw(batch);
+        cardHolder.draw(batch);
     }
 
     public void dispose() {

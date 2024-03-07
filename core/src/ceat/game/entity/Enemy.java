@@ -40,11 +40,11 @@ public class Enemy extends BoardEntity {
         int newX = gridX;
         int newY = gridY;
 
-        if (playerX > x) newX = Math.min(playerX, newX + stepDistance);
-        else if (playerX < x) newX = Math.max(playerX, newX - stepDistance);
+        if (playerX > x) newX += stepDistance;
+        else if (playerX < x) newX -= stepDistance;
 
-        if (playerY > y) newY = Math.min(playerY, newY + stepDistance);
-        else if (playerY < y) newY = Math.max(playerY, newY - stepDistance);
+        if (playerY > y) newY += stepDistance;
+        else if (playerY < y) newY -= stepDistance;
 
         int[] xPositions = { gridX, newX, newX };
         int[] yPositions = { newY, gridY, newY };

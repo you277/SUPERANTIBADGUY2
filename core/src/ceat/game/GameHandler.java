@@ -59,7 +59,7 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 				public void run() {
 					screen = 2;
 					gameRunning = true;
-					game = new Game(batch);
+					game = new Game(batch, 1);
 					switchSound.play();
 					title1.dispose();
 					title2.dispose();

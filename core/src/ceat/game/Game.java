@@ -41,13 +41,15 @@ public class Game {
     private int turns = 0;
     private int floor = 1;
 
-    public Game(SpriteBatch newBatch) {
+    public Game(SpriteBatch newBatch, int startingFloor) {
         batch = newBatch;
         effects = new ArrayList<>();
 
+        floor = startingFloor;
+
         gameGui = new GameGui(this);
-        grid = new Grid(this, 1);
-        nextGrid = new Grid(this, 2);
+        grid = new Grid(this, startingFloor);
+        nextGrid = new Grid(this, startingFloor + 1);
 
         grid.active = true;
 
@@ -55,8 +57,10 @@ public class Game {
         grid.setPlayer(player);
         player.setGridPosition(Grid.width/2, Grid.height/2);
 
+        // gamegui setup
         gameGui.enemyCounter.setAlive(grid.totalEnemies);
         gameGui.enemyCounter.setTotal(grid.totalEnemies);
+        gameGui.cardHolder.pullUp(0);
 
         grid.setGridPosition(Grid.gridPosition.CENTER);
         nextGrid.setGridPosition(Grid.gridPosition.TOP);
@@ -289,8 +293,8 @@ public class Game {
     }
 
     private Enemy randomEnemyType() {
-        if (floor > 3) {
-            if (floor > 10) {
+        if (floor >= 3) {
+            if (floor >= 10) {
                 if (Math.random() < 0.3) return new SentryEnemy(this, grid);
             }
             if (Math.random() < 0.3) return new FastEnemy(this, grid);
@@ -324,6 +328,7 @@ public class Game {
 
     private void endOfTurn(ChainedTask chain) {
         if (grid.didWin()) changeGrids(chain);
+        gameGui.cardHolder.pullUp(0);
     }
 
     private void doTurn() {
@@ -346,6 +351,7 @@ public class Game {
             }
         }
         currentAttackMode = attackMode.NONE;
+        gameGui.cardHolder.closeAllCards();
 
         turns++;
 
@@ -386,21 +392,25 @@ public class Game {
             case Keys.NUMPAD_0:
             case Keys.NUM_0: {
                 currentAttackMode = attackMode.NONE;
+                gameGui.cardHolder.pullUp(0);
                 break;
             }
             case Keys.NUMPAD_1:
             case Keys.NUM_1: {
                 currentAttackMode = attackMode.BULLET;
+                gameGui.cardHolder.pullUp(1);
                 break;
             }
             case Keys.NUMPAD_2:
             case Keys.NUM_2: {
                 currentAttackMode = attackMode.BEAM;
+                gameGui.cardHolder.pullUp(2);
                 break;
             }
             case Keys.NUMPAD_3:
             case Keys.NUM_3: {
                 currentAttackMode = attackMode.CLEAR;
+                gameGui.cardHolder.pullUp(3);
                 break;
             }
             case Keys.NUMPAD_ENTER:
