@@ -36,7 +36,7 @@ public class SentryEnemy extends Enemy {
         float baseAngle = (float)(Math.random()*6.28);
         for (int i = 0; i < 8; i++) {
             float angle = baseAngle + i*(float)(6.28/8);
-            FreeProjectile proj = new FreeProjectile(game, grid).setPosition(x, y).setVelocity(
+            FreeProjectile proj = new FreeProjectile(game, grid, this).setPosition(x, y).setVelocity(
                     (float)Math.cos(angle)*45,
                     (float)Math.sin(angle)*45
             );

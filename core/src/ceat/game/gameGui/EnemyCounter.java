@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 public class EnemyCounter {
     private int alive;
     private int total;
-    private Game game;
-    private BitmapFont font;
+    private final Game game;
+    private final BitmapFont font;
     public EnemyCounter(Game game) {
         this.game = game;
         font = Font.create(new Font.ParamSetter() {

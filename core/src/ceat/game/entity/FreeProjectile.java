@@ -13,13 +13,15 @@ public class FreeProjectile extends Entity {
     private float xVelocity;
     private float yVelocity;
     private float lifetime;
+    public final Enemy parent;
     public boolean alive = true;
     public boolean active = true;
-    public FreeProjectile(Game newGame, Grid newGrid) {
+    public FreeProjectile(Game newGame, Grid newGrid, Enemy parent) {
         super(newGame, newGrid);
         super.loadSprite("img/square.png");
         sprite.setScale(5, 5);
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+        this.parent = parent;
     }
 
     public FreeProjectile setPosition(float x, float y) {

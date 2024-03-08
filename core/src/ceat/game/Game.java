@@ -153,6 +153,7 @@ public class Game {
         grid.enemiesDead++;
         grid.enemies.remove(enemy);
         enemy.dispose();
+        grid.clearFreeProjectiles(enemy);
         gameGui.enemyCounter.setAlive(grid.totalEnemies - grid.enemiesDead);
     }
 
@@ -369,8 +370,14 @@ public class Game {
         allowStep = false;
         turns++;
 
-        if (clearCooldown != 0) clearCooldown--;
-        if (beamCooldown != 0) beamCooldown--;
+        if (clearCooldown != 0) {
+            clearCooldown--;
+            gameGui.cooldownBarList.setBarProgress(2, 1 - clearCooldown/4);
+        }
+        if (beamCooldown != 0) {
+            beamCooldown--;
+            gameGui.cooldownBarList.setBarProgress(1, 1 - beamCooldown/4);
+        }
 
         projectileStep(chain);
         playerStep(chain);

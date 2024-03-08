@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
-public class TurnText {
+public class StatusText {
     private BitmapFont font = Font.create(new Font.ParamSetter() {
         public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
             params.size = 7;
@@ -20,7 +20,7 @@ public class TurnText {
     public boolean visible;
     public String text = "";
 
-    public TurnText(Game game) {
+    public StatusText(Game game) {
         this.game = game;
         visible = true;
     }
@@ -42,7 +42,7 @@ public class TurnText {
         new Loop(0.15f) {
             public void run(float delta, float elapsed) {
                 float mult = 1 - elapsed/0.15f;
-                yOffset = mult*10;
+                yOffset = mult*5;
             }
             public void onEnd() {
                 yOffset = 0;

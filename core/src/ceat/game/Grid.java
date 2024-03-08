@@ -2,7 +2,6 @@ package ceat.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import ceat.game.entity.*;
 import com.badlogic.gdx.Gdx;
@@ -48,7 +47,7 @@ public class Grid {
     public int totalEnemies;
     public int waveSpawnAmount;
     public int enemiesDead;
-    private int floor;
+    private final int floor;
 
     private gridPosition position;
     private final float wavePhaseShift;
@@ -179,6 +178,13 @@ public class Grid {
                 shouldDraw = false;
             }
         };
+    }
+
+    public void clearFreeProjectiles(Enemy enemy) {
+        ArrayList<FreeProjectile> toRemove = new ArrayList<>();
+        for (FreeProjectile proj: freeProjectiles)
+            if (proj.parent == enemy)
+                proj.kill();
     }
 
     public void render(float gameTime) {
