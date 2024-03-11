@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.Timer;
+import com.sun.tools.javac.jvm.Code;
 
 import java.util.ArrayList;
 
@@ -186,6 +187,7 @@ public class Game {
 
     private void clearAttack() {
         ScreenOffset.shake(5f, 0.25f);
+        gameGui.cooldownBarList.setBarProgress(2, 0);
         for (int xOff = -2; xOff <= 2; xOff++) {
             for (int yOff = -2; yOff <= 2; yOff++) {
                 if (xOff == 0 && yOff == 0) continue;
@@ -243,6 +245,7 @@ public class Game {
             dir == Entity.moveDirection.DOWN ? 120 :
             60 // left
             ;
+        gameGui.cooldownBarList.setBarProgress(1, 0);
         ScreenOffset.shake(5f, 0.25f);
         theActualBeamAttack(dir == Entity.moveDirection.UP || dir == Entity.moveDirection.DOWN ? beamDirection.VERTICAL : beamDirection.HORIZONTAL);
         new SkyBeam(this, grid.getTileAt(player.gridX, player.gridY))
@@ -327,9 +330,20 @@ public class Game {
         });
     }
 
+    private void postEnemyProcesses(ChainedTask chain) {
+        chain.run(new Timer.Task() {
+            public void run() {
+                if (grid.didWin()) changeGrids(chain);
+            }
+        });
+    }
+
     private void endOfTurn(ChainedTask chain) {
-        if (grid.didWin()) changeGrids(chain);
-//        gameGui.cardHolder.pullUp(0);
+        chain.run(new Timer.Task() {
+            public void run() {
+                gameGui.cooldownBarList.setBarProgress(0, 1f);
+            }
+        });
     }
 
     private int beamCooldown = 0;
@@ -340,8 +354,12 @@ public class Game {
 
         ChainedTask chain = new ChainedTask();
 
+        boolean didBeamAttack = false;
+        boolean didClearAttack = false;
+
         switch (currentAttackMode) {
             case BULLET: {
+                gameGui.cooldownBarList.setBarProgress(0, 0f);
                 grid.addProjectile();
                 break;
             }
@@ -350,8 +368,9 @@ public class Game {
                     gameGui.turnText.shake();
                     return;
                 }
+                didBeamAttack = true;
                 beamAttack();
-                beamCooldown = 3;
+                beamCooldown = 2;
                 break;
             }
             case CLEAR: {
@@ -359,29 +378,31 @@ public class Game {
                     gameGui.turnText.shake();
                     return;
                 }
+                didClearAttack = true;
                 clearAttack();
-                clearCooldown = 4;
+                clearCooldown = 3;
             }
         }
         gameGui.turnText.text = "";
         currentAttackMode = attackMode.NONE;
-//        gameGui.cardHolder.closeAllCards();
 
         allowStep = false;
         turns++;
 
-        if (clearCooldown != 0) {
-            clearCooldown--;
-            gameGui.cooldownBarList.setBarProgress(2, 1 - clearCooldown/4);
-        }
-        if (beamCooldown != 0) {
+        if (beamCooldown != 0 && !didBeamAttack) {
             beamCooldown--;
-            gameGui.cooldownBarList.setBarProgress(1, 1 - beamCooldown/4);
+            System.out.println(1 - beamCooldown/3);
+            gameGui.cooldownBarList.setBarProgress(1, 1 - beamCooldown/2f);
+        }
+        if (clearCooldown != 0 && !didClearAttack) {
+            clearCooldown--;
+            gameGui.cooldownBarList.setBarProgress(2, 1 - clearCooldown/3f);
         }
 
         projectileStep(chain);
         playerStep(chain);
         enemyStep(chain);
+        postEnemyProcesses(chain);
         spawnEnemies(chain);
         endOfTurn(chain);
         chain.run(new Timer.Task() {

@@ -15,9 +15,9 @@ public class CooldownBar {
             params.size = 10;
         }
     });
-    private static final int barWidth = 40;
+    private static final int barWidth = 80;
     private static final int barHeight = 2;
-    private static final int barGap = 40;
+    private static final int barGap = 5;
     private static final int padding = 10;
     private final Texture bgTex;
     private final Sprite bgSprite;
@@ -30,36 +30,46 @@ public class CooldownBar {
     private float y;
     private float progress;
     private float renderProgress;
+    private float lifetime;
     public CooldownBar(int index) {
         bgTex = new Texture("img/square.png");
         barTex = new Texture("img/square.png");
         bgSprite = new Sprite(bgTex);
         barSprite = new Sprite(barTex);
         this.index = index;
-        indexStr = "" + index;
+        indexStr = "" + (index + 1);
 
         bgSprite.setScale(barWidth, barHeight);
         bgSprite.setColor(1, 1, 1, 0.25f);
         barSprite.setScale(0, barHeight);
 
-        x = 800 - padding - (barWidth + barGap)*index;
+        x = 400 + (barWidth + barGap)*index;
         y = padding;
     }
 
     public void draw(SpriteBatch batch) {
         float delta = Gdx.graphics.getDeltaTime();
-        renderProgress = Lerp.lerp(renderProgress, progress, Lerp.alpha(delta, 15));
+        float a = Lerp.alpha(delta, 15);
+        lifetime += delta;
+        renderProgress = Lerp.lerp(renderProgress, progress, a);
 
         barSprite.setScale(renderProgress*barWidth, barHeight);
 
+        if (progress == 1) {
+            y = Lerp.lerp(y, padding, a);
+        } else {
+            y = Lerp.lerp(y, 2 + (float)Math.sin(lifetime)*2, a);
+        }
+
         bgSprite.setPosition(x, y);
-        barSprite.setPosition(x, y);
+        barSprite.setPosition(x - (1 - renderProgress)*barWidth/2, y);
         bgSprite.draw(batch);
         barSprite.draw(batch);
-        font.draw(batch, indexStr, x, y + barHeight + 5);
+        font.draw(batch, indexStr, x - barWidth/2, y + barHeight + 10 + 2);
     }
 
     public void setProgress(float progress) {
+        System.out.println(index + " " + progress);
         this.progress = progress;
     }
 

@@ -15,7 +15,9 @@ public class CooldownBarList {
     public CooldownBarList(Game game) {
         this.game = game;
         for (int i = 0; i < numBars; i++) {
-            bars.add(new CooldownBar(i));
+            CooldownBar bar = new CooldownBar(i);
+            bar.setProgress(1);
+            bars.add(bar);
         }
     }
 
