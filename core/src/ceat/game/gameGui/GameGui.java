@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class GameGui {
     public static GameGui currentGui;
     private final Game game;
+    public boolean enabled;
 
     public final EnemyCounter enemyCounter;
     public CooldownBarList cooldownBarList;
@@ -13,6 +14,7 @@ public class GameGui {
 
     public GameGui(Game game) {
         currentGui = this;
+        enabled = true;
         this.game = game;
         enemyCounter = new EnemyCounter(game);
         cooldownBarList = new CooldownBarList(game);
@@ -20,6 +22,7 @@ public class GameGui {
     }
 
     public void draw(SpriteBatch batch) {
+        if (!enabled) return;
         enemyCounter.draw(batch);
         cooldownBarList.draw(batch);
         turnText.draw(batch);

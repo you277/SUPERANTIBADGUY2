@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.Timer;
-import com.sun.tools.javac.jvm.Code;
 
 import java.util.ArrayList;
 
@@ -27,7 +26,7 @@ public class Game {
 
     private final SpriteBatch batch;
     private final GameGui gameGui;
-    private final Music music;
+    private Music music;
     public float gameTime;
     
     private Grid grid;
@@ -40,9 +39,11 @@ public class Game {
     
     private boolean allowStep;
     private int turns = 0;
+    private int enemiesKilled = 0;
     private int floor = 1;
+    public boolean showFloorBanner;
 
-    public Game(SpriteBatch newBatch, int startingFloor) {
+    public Game(SpriteBatch newBatch, int startingFloor, boolean guiEnabled, boolean musicEnabled) {
         batch = newBatch;
         effects = new ArrayList<>();
 
@@ -52,6 +53,8 @@ public class Game {
         grid = new Grid(this, startingFloor);
         nextGrid = new Grid(this, startingFloor + 1);
 
+        this.showFloorBanner = guiEnabled;
+        gameGui.enabled = guiEnabled;
         grid.active = true;
 
         player = new Player(this, grid);
@@ -68,11 +71,14 @@ public class Game {
 
         allowStep = true;
 
-        music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
-        music.setLooping(true);
-        music.play();
+        if (musicEnabled) {
+            music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
+            music.setLooping(true);
+            music.play();
+        }
 
-        new NewFloorBanner(this, 1).play();
+        if (showFloorBanner)
+            new NewFloorBanner(this, 1).play();
     }
 
     private void stepGame(float delta, double elapsed) {
@@ -137,7 +143,8 @@ public class Game {
                 grid.setGridPosition(Grid.gridPosition.CENTER);
                 nextGrid.setGridPosition(Grid.gridPosition.TOP);
                 floor++;
-                new NewFloorBanner(hi, floor).play();
+                if (showFloorBanner)
+                    new NewFloorBanner(hi, floor).play();
             }
         });
         chain.wait(1f).run(new Timer.Task() {
@@ -152,6 +159,7 @@ public class Game {
 
     private void killEnemy(Enemy enemy) {
         grid.enemiesDead++;
+        enemiesKilled++;
         grid.enemies.remove(enemy);
         enemy.dispose();
         grid.clearFreeProjectiles(enemy);
@@ -486,5 +494,6 @@ public class Game {
         nextGrid.dispose();
         if (lastGridPresent) lastGrid.dispose();
         gameGui.dispose();
+        if (music != null) music.dispose();
     }
 }

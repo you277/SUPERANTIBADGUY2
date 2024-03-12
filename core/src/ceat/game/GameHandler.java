@@ -1,5 +1,6 @@
 package ceat.game;
 
+import ceat.game.titleScreenGui.TitleScreen;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,8 +17,8 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	Texture title2;
 
 	private int screen = 0;
-	private boolean gameRunning;
 	private Game game;
+	private TitleScreen titleScreen;
 
 	private void renderSplash1() {
 		ScreenUtils.clear(0, 0, 0, 1);
@@ -31,6 +32,14 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 		batch.begin();
 		batch.draw(title2, 0, 0);
 		batch.end();
+	}
+
+	public void toTitleScreen() {
+		titleScreen = new TitleScreen(batch);
+	}
+
+	public void toGame(int startFloor) {
+		game = new Game(batch, startFloor, true, true);
 	}
 
 	private void doGame() {
@@ -58,12 +67,12 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 				@Override
 				public void run() {
 					screen = 2;
-					gameRunning = true;
-					game = new Game(batch, 1);
+//					game = new Game(batch, 1, true, true);
 					switchSound.play();
 					title1.dispose();
 					title2.dispose();
 					Gdx.input.setInputProcessor(hi);
+					toTitleScreen();
 				}
 			})
 			.wait(1.5f)
@@ -89,17 +98,20 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 		if (screen == 0) renderSplash1();
 		else if (screen == 1) renderSplash2();
 		else {
-			if (gameRunning) game.render();
+			if (game != null) game.render();
+			if (titleScreen != null) titleScreen.render();
 		}
 	}
 
 	@Override
 	public boolean keyDown(int keycode) {
-		if (gameRunning) game.keyDown(keycode);
+		if (game != null) game.keyDown(keycode);
+		if (titleScreen != null) titleScreen.keyDown(keycode);
 		return false;
 	}
 	@Override
 	public boolean keyUp(int keycode) {
+		if (titleScreen != null) titleScreen.keyUp(keycode);
 		return false;
 	}
 
