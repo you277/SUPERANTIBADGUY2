@@ -33,8 +33,6 @@ public class Game {
     private Grid nextGrid;
     private Grid lastGrid;
     private boolean lastGridPresent;
-    
-    public ArrayList<Effect> effects;
     public Player player;
     
     private boolean allowStep;
@@ -45,7 +43,6 @@ public class Game {
 
     public Game(SpriteBatch newBatch, int startingFloor, boolean guiEnabled, boolean musicEnabled) {
         batch = newBatch;
-        effects = new ArrayList<>();
 
         floor = startingFloor;
 
@@ -78,7 +75,7 @@ public class Game {
         }
 
         if (showFloorBanner)
-            new NewFloorBanner(this, 1).play();
+            new NewFloorBanner(floor).play();
     }
 
     private void stepGame(float delta, double elapsed) {
@@ -103,10 +100,7 @@ public class Game {
             lastGrid.draw(batch);
         nextGrid.draw(batch);
         grid.draw(batch);
-        for (Effect effect: effects) {
-            effect.render();
-            effect.draw(batch);
-        }
+        Effect.renderEffects(batch);
 
         gameGui.draw(batch);
         batch.end();
@@ -144,7 +138,7 @@ public class Game {
                 nextGrid.setGridPosition(Grid.gridPosition.TOP);
                 floor++;
                 if (showFloorBanner)
-                    new NewFloorBanner(hi, floor).play();
+                    new NewFloorBanner(floor).play();
             }
         });
         chain.wait(1f).run(new Timer.Task() {
@@ -213,7 +207,7 @@ public class Game {
                     for (Enemy enemy: enemiesToKill)
                         killEnemy(enemy);
                 }
-                new SkyBeam(this, grid.getTileAt(gridX, gridY))
+                new SkyBeam(grid.getTileAt(gridX, gridY))
                         .setColor(1f, 1f, 1f)
                         .setScale(10f, 10f).play();
             }
@@ -256,7 +250,7 @@ public class Game {
         gameGui.cooldownBarList.setBarProgress(1, 0);
         ScreenOffset.shake(5f, 0.25f);
         theActualBeamAttack(dir == Entity.moveDirection.UP || dir == Entity.moveDirection.DOWN ? beamDirection.VERTICAL : beamDirection.HORIZONTAL);
-        new SkyBeam(this, grid.getTileAt(player.gridX, player.gridY))
+        new SkyBeam(grid.getTileAt(player.gridX, player.gridY))
             .setColor(1f, 1f, 1f)
             .setScale(10f, 100f)
             .setRotation(rotation)

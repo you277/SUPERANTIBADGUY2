@@ -10,15 +10,15 @@ public class SkyBeam extends Effect {
     private float xScale = 1;
     private float yScale = 1;
 
-    public SkyBeam(Game game, BoardEntity boardEntity) {
-        super(game);
+    public SkyBeam(BoardEntity boardEntity) {
+        super();
         parentTile = boardEntity.parentTile;
         super.loadSprite("img/beam.png");
         sprite.setCenter(sprite.getWidth()/2, 0);
     }
 
-    public SkyBeam(Game game, EmptyTile emptyTile) {
-        super(game);
+    public SkyBeam(EmptyTile emptyTile) {
+        super();
         parentTile = emptyTile;
         super.loadSprite("img/beam.png");
         sprite.setCenter(sprite.getWidth()/2, 0);

@@ -9,13 +9,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class StatusText {
-    private BitmapFont font = Font.create(new Font.ParamSetter() {
+    private final BitmapFont font = Font.create(new Font.ParamSetter() {
         public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
             params.size = 7;
         }
     });
 
-    private Game game;
+    private final Game game;
     private float yOffset;
     public boolean visible;
     public String text = "";

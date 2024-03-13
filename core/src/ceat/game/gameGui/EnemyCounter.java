@@ -2,9 +2,8 @@ package ceat.game.gameGui;
 
 import ceat.game.Font;
 import ceat.game.Game;
-import com.badlogic.gdx.graphics.Texture;
+import ceat.game.TexSprite;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
@@ -13,8 +12,7 @@ public class EnemyCounter {
     private int total;
     private final Game game;
     private final BitmapFont font;
-    private Texture tex;
-    private Sprite sprite;
+    private final TexSprite sprite;
     public EnemyCounter(Game game) {
         this.game = game;
         font = Font.create(new Font.ParamSetter() {
@@ -22,8 +20,7 @@ public class EnemyCounter {
                 params.size = 20;
             }
         });
-        tex = new Texture("img/baseTile.png");
-        sprite = new Sprite(tex);
+        sprite = new TexSprite("img/baseTile.png");
 
         sprite.setColor(1, 0, 0, 1);
         sprite.setScale(2);
@@ -41,7 +38,7 @@ public class EnemyCounter {
         sprite.draw(batch);
     }
     public void dispose() {
-        tex.dispose();
+        sprite.dispose();
         font.dispose();
     }
 }

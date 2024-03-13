@@ -73,6 +73,6 @@ public class FreeProjectile extends Entity {
     }
 
     public void dispose() {
-        tex.dispose();
+        sprite.dispose();
     }
 }

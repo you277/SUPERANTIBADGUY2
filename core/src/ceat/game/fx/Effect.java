@@ -1,26 +1,32 @@
 package ceat.game.fx;
 
 import ceat.game.Game;
-import com.badlogic.gdx.graphics.Texture;
+import ceat.game.TexSprite;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.ArrayList;
+
 public class Effect {
-    public Texture tex;
-    public Sprite sprite;
-    public Game game;
-    public Effect(Game newGame) {
-        game = newGame;
+    private static ArrayList<Effect> effects = new ArrayList<>();
+    public static void renderEffects(SpriteBatch batch) {
+        for (Effect effect: effects) {
+            effect.render();
+            effect.draw(batch);
+        }
     }
+
+    public TexSprite sprite;
+    public Game game;
+    public Effect() {}
     public void loadSprite(String path) {
-        tex = new Texture(path);
-        sprite = new Sprite(tex);
+        sprite = new TexSprite(path);
     }
     public void registerEffect() {
-        game.effects.add(this);
+        effects.add(this);
     }
     public void unregisterEffect() {
-        game.effects.remove(this);
+        effects.remove(this);
     }
     public void draw(SpriteBatch batch) {
         sprite.draw(batch);
@@ -28,6 +34,6 @@ public class Effect {
     public void play() {}
     public void render() {}
     public void dispose() {
-        tex.dispose();
+        sprite.dispose();
     }
 }

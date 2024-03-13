@@ -34,14 +34,6 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 		batch.end();
 	}
 
-	public void toTitleScreen() {
-		titleScreen = new TitleScreen(batch);
-	}
-
-	public void toGame(int startFloor) {
-		game = new Game(batch, startFloor, true, true);
-	}
-
 	private void doGame() {
 		Sound switchSound = Gdx.audio.newSound(Gdx.files.internal("snd/kb.mp3"));
 		GameHandler hi = this;
@@ -82,6 +74,20 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 					switchSound.dispose();
 				}
 			});
+	}
+
+	public void toTitleScreen() {
+		titleScreen = new TitleScreen(batch) {
+			public void startGame(int floor) {
+				titleScreen.dispose();
+				titleScreen = null;
+				toGame(floor);
+			}
+		};
+	}
+
+	public void toGame(int startFloor) {
+		game = new Game(batch, startFloor, true, true);
 	}
 	
 	@Override

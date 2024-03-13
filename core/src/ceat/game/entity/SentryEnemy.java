@@ -14,7 +14,7 @@ public class SentryEnemy extends Enemy {
     }
 
     public void animateEntry() {
-        new SkyBeam(game, this)
+        new SkyBeam(this)
                 .setColor(0, 1, 0)
                 .setScale(13, 150).play();
         isAnimating = true;

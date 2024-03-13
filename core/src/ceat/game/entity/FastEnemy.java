@@ -12,7 +12,7 @@ public class FastEnemy extends Enemy {
     }
 
     public void animateEntry() {
-        new SkyBeam(game, this)
+        new SkyBeam( this)
                 .setColor(0, 0, 1)
                 .setScale(13, 150).play();
         isAnimating = true;

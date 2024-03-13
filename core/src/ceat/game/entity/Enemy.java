@@ -17,7 +17,7 @@ public class Enemy extends BoardEntity {
     }
 
     public void animateEntry() {
-        new SkyBeam(game, this)
+        new SkyBeam( this)
                 .setColor(1f, 0f, 0f)
                 .setScale(13f, 150f).play();
         isAnimating = true;

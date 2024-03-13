@@ -2,6 +2,7 @@ package ceat.game.gameGui;
 
 import ceat.game.Font;
 import ceat.game.Lerp;
+import ceat.game.TexSprite;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -19,10 +20,8 @@ public class CooldownBar {
     private static final int barHeight = 2;
     private static final int barGap = 5;
     private static final int padding = 10;
-    private final Texture bgTex;
-    private final Sprite bgSprite;
-    private final Texture barTex;
-    private final Sprite barSprite;
+    private final TexSprite bgSprite;
+    private final TexSprite barSprite;
     private final int index;
     private final String indexStr;
 
@@ -32,10 +31,8 @@ public class CooldownBar {
     private float renderProgress;
     private float lifetime;
     public CooldownBar(int index) {
-        bgTex = new Texture("img/square.png");
-        barTex = new Texture("img/square.png");
-        bgSprite = new Sprite(bgTex);
-        barSprite = new Sprite(barTex);
+        bgSprite = new TexSprite("img/square.png");
+        barSprite = new TexSprite("img/square.png");
         this.index = index;
         indexStr = "" + (index + 1);
 
@@ -74,7 +71,7 @@ public class CooldownBar {
     }
 
     public void dispose() {
-        bgTex.dispose();
-        barTex.dispose();
+        bgSprite.dispose();
+        barSprite.dispose();
     }
 }

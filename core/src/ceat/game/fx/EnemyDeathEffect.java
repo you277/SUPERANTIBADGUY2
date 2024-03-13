@@ -12,8 +12,8 @@ public class EnemyDeathEffect extends Effect {
     private final float x;
     private final float y;
     private int frame;
-    public EnemyDeathEffect(Game game, Enemy enemy) {
-        super(game);
+    public EnemyDeathEffect(Enemy enemy) {
+        super();
         loadSprite("img/enemyDeathSheet.png");
         sprite.setScale(3f, 3f);
         sprite.setCenter(sprite.getWidth()/2, 0);
@@ -23,7 +23,7 @@ public class EnemyDeathEffect extends Effect {
 
     public void draw(SpriteBatch batch) {
         System.out.println("draw");
-        batch.draw(tex, x + ScreenOffset.offsetY, y + ScreenOffset.offsetY, frame*15, 0);
+//        batch.draw(tex, x + ScreenOffset.offsetY, y + ScreenOffset.offsetY, frame*15, 0);
         //sprite.draw(batch, x + ScreenOffset.offsetY, y + ScreenOffset.offsetY);
     }
 

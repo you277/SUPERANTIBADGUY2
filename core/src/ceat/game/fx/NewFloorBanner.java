@@ -36,12 +36,10 @@ public class NewFloorBanner extends Effect {
     private final String text;
     private int y = 325;
 
-    public NewFloorBanner(Game game, int floor) {
-        super(game);
+    public NewFloorBanner(int floor) {
+        super();
         text = "FLOOR " + floor;
-
         if (!fontsCreated) createFonts();
-
         currentFont = fonts[0];
     }
 
@@ -73,6 +71,7 @@ public class NewFloorBanner extends Effect {
             @Override
             public void run() {
                 unregisterEffect();
+                dispose();
             }
         });
     }

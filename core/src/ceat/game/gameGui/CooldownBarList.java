@@ -9,8 +9,6 @@ public class CooldownBarList {
     private Game game;
     private static int numBars = 3;
     private ArrayList<CooldownBar> bars = new ArrayList<>();
-    private CooldownBar currentOpenCard;
-    private boolean hasOpenedCard;
 
     public CooldownBarList(Game game) {
         this.game = game;

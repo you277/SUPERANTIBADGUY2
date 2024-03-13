@@ -2,6 +2,7 @@ package ceat.game.entity;
 
 import ceat.game.Game;
 import ceat.game.Grid;
+import ceat.game.TexSprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -15,8 +16,7 @@ public class Entity {
         DOWN
     }
 
-    public Texture tex;
-    public Sprite sprite;
+    public TexSprite sprite;
     private boolean loadedSprite;
     public Grid grid;
     public Game game;
@@ -26,17 +26,8 @@ public class Entity {
         game = newGame;
     }
 
-    public Sprite loadSprite(String path, float scaleX, float scaleY) {
-        tex = new Texture(path);
-        sprite = new Sprite(tex);
-        sprite.setScale(scaleX, scaleY);
-        loadedSprite = true;
-        return sprite;
-    }
-
     public void loadSprite(String path) {
-        tex = new Texture(path);
-        sprite = new Sprite(tex);
+        sprite = new TexSprite(path);
         loadedSprite = true;
     }
 
@@ -49,6 +40,6 @@ public class Entity {
     }
 
     public void dispose() {
-        tex.dispose();
+        sprite.dispose();
     }
 }
