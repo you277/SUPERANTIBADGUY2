@@ -17,6 +17,7 @@ public class BoardEntity extends Entity {
     public int gridY;
     public EmptyTile parentTile;
     public boolean isAnimating;
+    public boolean isJumping;
     public BoardEntity(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         parentTile = grid.getTileAt(0, 0);
@@ -39,6 +40,7 @@ public class BoardEntity extends Entity {
         isAnimating = true;
         float initX = parentTile.x;
         float initY = parentTile.y;
+        isJumping = true;
         new Loop(duration) {
             public void run(float delta, float elapsed) {
                 float midX = (initX + nextTile.x)/2;
@@ -49,6 +51,7 @@ public class BoardEntity extends Entity {
             }
             public void onEnd() {
                 isAnimating = false;
+                isJumping = false;
                 parentTile = nextTile;
             }
         };

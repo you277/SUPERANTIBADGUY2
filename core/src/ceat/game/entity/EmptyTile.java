@@ -17,7 +17,7 @@ public class EmptyTile extends Entity {
         super.loadSprite("img/baseTile.png");
         sprite.setColor(0f, 0f, 0f, 0.15f);
         sprite.scale(1.5f);
-        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+        sprite.setCenter();
     }
 
     public void fadeIn() {

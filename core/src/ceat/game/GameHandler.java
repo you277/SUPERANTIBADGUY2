@@ -87,7 +87,19 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	}
 
 	public void toGame(int startFloor) {
-		game = new Game(batch, startFloor, true, true);
+		game = new Game(batch, startFloor, true, true) {
+			public void restartGame(int floor) {
+				System.out.println("retsart");
+				game.dispose();
+				toGame(floor);
+			}
+			public void returnToTitle() {
+				System.out.println("title");
+				game.dispose();
+				game = null;
+				toTitleScreen();
+			}
+		};
 	}
 	
 	@Override

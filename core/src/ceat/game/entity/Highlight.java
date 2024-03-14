@@ -13,7 +13,7 @@ public class Highlight extends BoardEntity {
         super.loadSprite("img/baseTile.png");
         sprite.setColor(1f, 1f, 1f, 0.5f);
         sprite.setScale(2f);
-        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+        sprite.setCenter();
     }
 
     public void setGrid(Grid newGrid) {

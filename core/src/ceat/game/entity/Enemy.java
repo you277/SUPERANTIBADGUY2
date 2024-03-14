@@ -13,7 +13,7 @@ public class Enemy extends BoardEntity {
         super.loadSprite("img/baseTile.png");
         sprite.setColor(1, 0, 0, 1);
         sprite.setScale(2);
-        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+        sprite.setCenter();
     }
 
     public void animateEntry() {

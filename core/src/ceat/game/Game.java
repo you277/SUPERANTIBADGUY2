@@ -45,6 +45,7 @@ public class Game {
     private int startFloor = 1;
     private int shotsFired = 0;
     public boolean showFloorBanner;
+    private boolean useAltInput = false;
     private boolean inputActive = true;
 
     public Game(SpriteBatch newBatch, int startingFloor, boolean guiEnabled, boolean musicEnabled) {
@@ -186,6 +187,7 @@ public class Game {
     private void onPlayerDeath() {
 //        player.kill();
 //        music.setVolume(0);
+        useAltInput = true;
         gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns);
         gameGui.deathScreenEnabled = true;
     }
@@ -434,10 +436,37 @@ public class Game {
         return b ? s1 : s2;
     }
 
-//    public
+    private void altInput(int keycode) {
+        switch (keycode) {
+            case Keys.R:
+                inputActive = false;
+                new Transition.In() {
+                    public void onFinish() {
+                        restartGame(startFloor);
+                    }
+                }.play();
+                break;
+            case Keys.ESCAPE:
+                inputActive = false;
+                new Transition.In() {
+                    public void onFinish() {
+                        returnToTitle();
+                    }
+                }.play();
+                break;
+        }
+    }
+
+    // overridden by GameHandler
+    public void restartGame(int floor) {}
+    public void returnToTitle() {}
 
     public void keyDown(int keycode) {
-
+        if (!inputActive) return;
+        if (useAltInput) {
+            altInput(keycode);
+            return;
+        }
         switch (keycode) {
             case Keys.UP:
             case Keys.W: {

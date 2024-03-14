@@ -21,7 +21,7 @@ public class Player extends BoardEntity {
         super.loadSprite("img/baseTile.png");
         sprite.setColor(1f, 1f, 0f, 1f);
         sprite.setScale(2f);
-        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+        sprite.setCenter();
 
         highlight = new Highlight(newGame, newGrid);
 

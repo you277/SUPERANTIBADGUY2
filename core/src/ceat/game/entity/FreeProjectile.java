@@ -20,7 +20,7 @@ public class FreeProjectile extends Entity {
         super(newGame, newGrid);
         super.loadSprite("img/square.png");
         sprite.setScale(5, 5);
-        sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+        sprite.setCenter();
         this.parent = parent;
     }
 

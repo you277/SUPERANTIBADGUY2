@@ -53,7 +53,7 @@ public class TitleScreen {
 
         batch.begin();
         bgSprite.draw(batch);
-        font.draw(batch, "SUPERBADGUYDESSTROY2200++ ULTRA DELUXE\nEDITION", 15, 470);
+        font.draw(batch, "SUPERBADGUYDESTROYER2200++ ULTRA DELUXE\nEDITION", 15, 470);
         startSelect.draw(batch);
         floorSelect.draw(batch);
         if (floorDialog != null)
