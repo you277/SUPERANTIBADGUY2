@@ -3,7 +3,6 @@ package ceat.game.fx;
 import ceat.game.Loop;
 import ceat.game.TexSprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sun.org.apache.xml.internal.serializer.ToTextStream;
 
 public class Transition {
     public static class In extends Effect {
@@ -22,7 +21,7 @@ public class Transition {
                     rotation += delta*360;
                     sprite.setScale(progress*1000, progress*1000);
                     sprite.setCenter();
-                    sprite.setPosition(400, 300);
+                    sprite.setPosition(400, 250);
                     sprite.setRotation(rotation);
                 }
 
@@ -36,7 +35,7 @@ public class Transition {
         public void onFinish() {}
     }
     public static class Out extends Effect {
-        private TexSprite[] sprites;
+        private final TexSprite[] sprites;
         private float rotation;
         public Out() {
             sprites = new TexSprite[4];
@@ -60,7 +59,7 @@ public class Transition {
                         float rot = rotation + i*90;
                         float rad = (float)Math.toRadians(rot);
                         TexSprite sprite = sprites[i];
-                        sprite.setPosition(400 + (float)Math.cos(rad)*distance, 300 + (float)Math.sin(rad)*distance);
+                        sprite.setPosition(400 + (float)Math.cos(rad)*distance, 250 + (float)Math.sin(rad)*distance);
                         sprite.setRotation(rotation);
                     }
                 }

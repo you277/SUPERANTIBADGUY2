@@ -71,8 +71,4 @@ public class FreeProjectile extends Entity {
     public void draw(SpriteBatch batch) {
         sprite.draw(batch);
     }
-
-    public void dispose() {
-        sprite.dispose();
-    }
 }

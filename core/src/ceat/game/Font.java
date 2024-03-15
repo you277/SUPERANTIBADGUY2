@@ -11,7 +11,7 @@ public class Font {
     }
 
     public static class ParamSetter {
-        public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {};
+        public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {}
     }
 
     public static BitmapFont create(ParamSetter paramSetter) {

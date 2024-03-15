@@ -1,7 +1,6 @@
 package ceat.game.fx;
 
 import ceat.game.Loop;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class SelectionParticles extends Effect {
     private float x;

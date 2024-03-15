@@ -2,18 +2,17 @@ package ceat.game.gameGui;
 
 import ceat.game.Font;
 import ceat.game.TexSprite;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class DeathScreen {
-    private TexSprite bgSprite;
-    private GlyphLayout layout;
+    private final TexSprite bgSprite;
+    private final GlyphLayout layout;
 
-    private BitmapFont titleFont;
-    private BitmapFont statFont;
+    private final BitmapFont titleFont;
+    private final BitmapFont statFont;
     private int enemiesKilled;
     private int enemiesIgnored;
     private int turnsTaken;

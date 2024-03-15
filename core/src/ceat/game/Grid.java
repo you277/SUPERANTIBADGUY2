@@ -114,7 +114,6 @@ public class Grid {
 
     public void addProjectile() {
         Projectile projectile = new Projectile(game, this, player, player.getDirection());
-        projectile.animateSpawn();
         projectiles.add(projectile);
     }
 
@@ -181,7 +180,6 @@ public class Grid {
     }
 
     public void clearFreeProjectiles(Enemy enemy) {
-        ArrayList<FreeProjectile> toRemove = new ArrayList<>();
         for (FreeProjectile proj: freeProjectiles)
             if (proj.parent == enemy)
                 proj.kill();

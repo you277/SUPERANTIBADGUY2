@@ -1,10 +1,8 @@
 package ceat.game.fx;
 
 import ceat.game.ChainedTask;
-import ceat.game.Game;
 import ceat.game.Loop;
 import ceat.game.entity.Enemy;
-import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
 

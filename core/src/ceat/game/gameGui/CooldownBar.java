@@ -4,9 +4,7 @@ import ceat.game.Font;
 import ceat.game.Lerp;
 import ceat.game.TexSprite;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
@@ -66,7 +64,6 @@ public class CooldownBar {
     }
 
     public void setProgress(float progress) {
-        System.out.println(index + " " + progress);
         this.progress = progress;
     }
 

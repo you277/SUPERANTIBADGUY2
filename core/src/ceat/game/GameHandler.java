@@ -1,5 +1,6 @@
 package ceat.game;
 
+import ceat.game.fx.NewFloorBanner;
 import ceat.game.titleScreenGui.TitleScreen;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.InputProcessor;
@@ -44,6 +45,7 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 				public void run() {
 					screen = 0;
 					switchSound.play();
+					NewFloorBanner.createFonts(); // mask the terribly slow font loading with the splash
 				}
 			})
 			.wait(1.5f)
@@ -89,12 +91,10 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	public void toGame(int startFloor) {
 		game = new Game(batch, startFloor, true, true) {
 			public void restartGame(int floor) {
-				System.out.println("retsart");
 				game.dispose();
 				toGame(floor);
 			}
 			public void returnToTitle() {
-				System.out.println("title");
 				game.dispose();
 				game = null;
 				toTitleScreen();

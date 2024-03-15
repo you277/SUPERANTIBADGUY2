@@ -10,13 +10,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Selection {
-    private String text;
+    private final String text;
 
     private float baseX;
     private float baseY;
     private float offsetX;
     private float offsetY;
-    private BitmapFont font;
+    private final BitmapFont font;
     private final GlyphLayout layout;
     private boolean selected;
     private float lifetime;

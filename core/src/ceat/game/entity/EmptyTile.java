@@ -1,12 +1,10 @@
 package ceat.game.entity;
 
-import ceat.game.ChainedTask;
 import ceat.game.Game;
 import ceat.game.Grid;
 import ceat.game.Loop;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Timer;
 
 public class EmptyTile extends Entity {
     public float x;

@@ -18,10 +18,6 @@ public class Projectile extends BoardEntity {
         setGridPosition(player.gridX, player.gridY);
     }
 
-    public void animateSpawn() {
-
-    }
-
     public void step() {
         int x = gridX;
         int y = gridY;

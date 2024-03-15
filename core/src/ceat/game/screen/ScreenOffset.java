@@ -1,12 +1,11 @@
 package ceat.game.screen;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
 public class ScreenOffset {
-    private static ArrayList<ScreenShake> shakers = new ArrayList<>();
+    private static final ArrayList<ScreenShake> shakers = new ArrayList<>();
     public static float offsetX = 0;
     public static float offsetY = 0;
     public static Vector2 project(float x, float y) {

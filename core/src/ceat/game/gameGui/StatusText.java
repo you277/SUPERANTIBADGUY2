@@ -52,7 +52,7 @@ public class StatusText {
 
     public void draw(SpriteBatch batch) {
         if (!visible) return;
-        if (text.length() == 0) return;
+        if (text.isEmpty()) return;
         font.draw(batch, text,
                 game.player.x + game.player.sprite.getWidth()/2 + ScreenOffset.offsetX + 5,
                 game.player.y + game.player.sprite.getHeight()/2 + ScreenOffset.offsetY + 20 + yOffset

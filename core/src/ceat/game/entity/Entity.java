@@ -4,8 +4,6 @@ import ceat.game.Game;
 import ceat.game.Grid;
 import ceat.game.TexSprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Entity {
 

@@ -2,8 +2,6 @@ package ceat.game.entity;
 
 import ceat.game.Game;
 import ceat.game.Grid;
-import ceat.game.Loop;
-import ceat.game.fx.SkyBeam;
 import com.badlogic.gdx.Gdx;
 
 public class SentryEnemy extends Enemy {
@@ -14,20 +12,7 @@ public class SentryEnemy extends Enemy {
     }
 
     public void animateEntry() {
-        new SkyBeam(this)
-                .setColor(0, 1, 0)
-                .setScale(13, 150).play();
-        isAnimating = true;
-        new Loop(0.2f) {
-            public void run(float delta, float elapsed) {
-                x = parentTile.x;
-                y = parentTile.y + 400 - (elapsed / 0.2f) * 400;
-            }
-
-            public void onEnd() {
-                isAnimating = false;
-            }
-        };
+        animateEntry(0, 1, 0);
     }
 
     private void spawnProjectiles() {

@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 
 public class CooldownBarList {
-    private Game game;
-    private static int numBars = 3;
-    private ArrayList<CooldownBar> bars = new ArrayList<>();
+    private static final int numBars = 3;
+    private final Game game;
+    private final ArrayList<CooldownBar> bars = new ArrayList<>();
 
     public CooldownBarList(Game game) {
         this.game = game;

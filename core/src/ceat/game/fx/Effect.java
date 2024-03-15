@@ -2,13 +2,12 @@ package ceat.game.fx;
 
 import ceat.game.Game;
 import ceat.game.TexSprite;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
 
 public class Effect {
-    private static ArrayList<Effect> effects = new ArrayList<>();
+    private static final ArrayList<Effect> effects = new ArrayList<>();
     public static void renderEffects(SpriteBatch batch) {
         for (Effect effect: effects) {
             effect.render();

@@ -16,9 +16,9 @@ public class Enemy extends BoardEntity {
         sprite.setCenter();
     }
 
-    public void animateEntry() {
+    public void animateEntry(float r, float g, float b) {
         new SkyBeam( this)
-                .setColor(1f, 0f, 0f)
+                .setColor(r, g, b)
                 .setScale(13f, 150f).play();
         isAnimating = true;
         new Loop(0.2f) {
@@ -30,6 +30,10 @@ public class Enemy extends BoardEntity {
                 isAnimating = false;
             }
         };
+    }
+
+    public void animateEntry() {
+        animateEntry(1, 0, 0);
     }
 
     // epic enemy ai

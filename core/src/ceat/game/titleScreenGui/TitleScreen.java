@@ -4,7 +4,6 @@ import ceat.game.Font;
 import ceat.game.Game;
 import ceat.game.TexSprite;
 import ceat.game.fx.Effect;
-import ceat.game.fx.SelectionParticles;
 import ceat.game.fx.Transition;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -13,15 +12,15 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class TitleScreen {
-    private Game backgroundGame;
-    private SpriteBatch batch;
+    private final Game backgroundGame;
+    private final SpriteBatch batch;
     private float lifetime;
-    private BitmapFont font;
+    private final BitmapFont font;
 
-    private TexSprite bgSprite;
+    private final TexSprite bgSprite;
     private FloorDialog floorDialog;
-    private Selection startSelect;
-    private Selection floorSelect;
+    private final Selection startSelect;
+    private final Selection floorSelect;
     private int currentSelection;
     private boolean acceptInput;
     public TitleScreen(SpriteBatch newBatch) {
@@ -122,6 +121,7 @@ public class TitleScreen {
     public void transitionToGame(int floor) {
         new Transition.In() {
             public void onFinish() {
+                acceptInput = false;
                 startGame(floor);
             }
         }.play();

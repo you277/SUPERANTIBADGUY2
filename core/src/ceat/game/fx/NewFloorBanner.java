@@ -2,7 +2,6 @@ package ceat.game.fx;
 
 import ceat.game.ChainedTask;
 import ceat.game.Font;
-import ceat.game.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -13,7 +12,8 @@ public class NewFloorBanner extends Effect {
     private static BitmapFont[] fonts;
 
     private static boolean fontsCreated = false;
-    private static void createFonts() {
+    public static void createFonts() {
+        if (fontsCreated) return;
         fontsCreated = true;
 
         int fontMaxSize = 150;
@@ -34,12 +34,11 @@ public class NewFloorBanner extends Effect {
     }
     private BitmapFont currentFont;
     private final String text;
-    private int y = 325;
+    private float y = 325;
 
     public NewFloorBanner(int floor) {
         super();
         text = "FLOOR " + floor;
-        if (!fontsCreated) createFonts();
         currentFont = fonts[0];
     }
 

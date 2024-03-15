@@ -2,12 +2,11 @@ package ceat.game.titleScreenGui;
 
 import ceat.game.Font;
 import ceat.game.Lerp;
+import ceat.game.TexSprite;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -23,8 +22,7 @@ public class FloorDialog {
     private int currentInput;
     private float lifetime;
     private float inputYPosition;
-    private Texture bgTex;
-    private Sprite bgSprite;
+    private final TexSprite bgSprite;
     public FloorDialog() {
         layout = new GlyphLayout();
         inputYPosition = 200;
@@ -45,8 +43,7 @@ public class FloorDialog {
             }
         });
 
-        bgTex = new Texture("img/square.png");
-        bgSprite = new Sprite(bgTex);
+        bgSprite = new TexSprite("img/square.png");
 
         textMap = new HashMap<>();
         textMap.put(Keys.NUM_1, 1);
@@ -126,7 +123,7 @@ public class FloorDialog {
         bgSprite.setColor(0, 0, 0, bgOpacity);
         bgSprite.setScale(bgScale, bgScale);
         bgSprite.setCenter(bgSprite.getWidth()/2, bgSprite.getHeight()/2);
-        bgSprite.setPosition(400, 300);
+        bgSprite.setPosition(400, 250);
         bgSprite.setRotation(lifetime*-90);
         bgSprite.draw(batch);
 
@@ -143,7 +140,7 @@ public class FloorDialog {
     }
 
     public void dispose() {
-        bgTex.dispose();
+        bgSprite.dispose();
         titleFont.dispose();
         inputFont.dispose();
         emptyInputFont.dispose();
