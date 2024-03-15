@@ -34,7 +34,7 @@ public class NewFloorBanner extends Effect {
     }
     private BitmapFont currentFont;
     private final String text;
-    private float y = 325;
+    private int y = 325;
 
     public NewFloorBanner(int floor) {
         super();
