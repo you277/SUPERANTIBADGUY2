@@ -3,6 +3,9 @@ package ceat.game.titleScreenGui;
 import ceat.game.Font;
 import ceat.game.Game;
 import ceat.game.TexSprite;
+import ceat.game.fx.Effect;
+import ceat.game.fx.SelectionParticles;
+import ceat.game.fx.Transition;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -20,6 +23,7 @@ public class TitleScreen {
     private Selection startSelect;
     private Selection floorSelect;
     private int currentSelection;
+    private boolean acceptInput;
     public TitleScreen(SpriteBatch newBatch) {
         batch = newBatch;
         backgroundGame = new Game(batch, 10, false, false);
@@ -29,6 +33,7 @@ public class TitleScreen {
                 params.size = 20;
             }
         });
+        acceptInput = true;
 
         bgSprite = new TexSprite("img/square.png");
 
@@ -53,10 +58,12 @@ public class TitleScreen {
         floorSelect.draw(batch);
         if (floorDialog != null)
             floorDialog.draw(batch);
+        Effect.renderEffects(batch);
         batch.end();
     }
 
     public void keyDown(int keycode) {
+        if (!acceptInput) return;
         if (floorDialog != null) {
             floorDialog.keyDown(keycode);
             return;
@@ -81,13 +88,13 @@ public class TitleScreen {
             case Keys.ENTER:
             case Keys.NUMPAD_ENTER:
                 if (currentSelection == 0) {
-                    startGame(1);
+                    transitionToGame(1);
                 } else {
                     floorDialog = new FloorDialog() {
                         public void onConfirm(int floor) {
                             floorDialog.dispose();
                             floorDialog = null;
-                            startGame(floor);
+                            transitionToGame(floor);
                         }
                         public void onCancel() {
                             floorDialog.dispose();
@@ -95,6 +102,7 @@ public class TitleScreen {
                         }
                     };
                 }
+                break;
         }
         if (currentSelection < 0) currentSelection = 1;
         else if (currentSelection > 1) currentSelection = 0;
@@ -108,7 +116,15 @@ public class TitleScreen {
     }
 
     public void keyUp(int keycode) {
+        if (!acceptInput) return;
         if (floorDialog != null) floorDialog.keyUp(keycode);
+    }
+    public void transitionToGame(int floor) {
+        new Transition.In() {
+            public void onFinish() {
+                startGame(floor);
+            }
+        }.play();
     }
     public void startGame(int floor) {}
     public void dispose() {

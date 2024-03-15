@@ -8,6 +8,10 @@ public class TexSprite extends Sprite {
         super(new Texture(path));
     }
 
+    public void setCenter() {
+        setCenter(getWidth()/2, getHeight()/2);
+    }
+
     public void dispose() {
         getTexture().dispose();
     }

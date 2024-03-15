@@ -7,10 +7,12 @@ public class GameGui {
     public static GameGui currentGui;
     private final Game game;
     public boolean enabled;
+    public boolean deathScreenEnabled;
 
     public final EnemyCounter enemyCounter;
-    public CooldownBarList cooldownBarList;
+    public final CooldownBarList cooldownBarList;
     public final StatusText turnText;
+    public final DeathScreen deathScreen;
 
     public GameGui(Game game) {
         currentGui = this;
@@ -19,6 +21,7 @@ public class GameGui {
         enemyCounter = new EnemyCounter(game);
         cooldownBarList = new CooldownBarList(game);
         turnText = new StatusText(game);
+        deathScreen = new DeathScreen();
     }
 
     public void draw(SpriteBatch batch) {
@@ -26,6 +29,8 @@ public class GameGui {
         enemyCounter.draw(batch);
         cooldownBarList.draw(batch);
         turnText.draw(batch);
+        if (deathScreenEnabled)
+            deathScreen.draw(batch);
     }
 
     public void dispose() {

@@ -34,6 +34,6 @@ public class Effect {
     public void play() {}
     public void render() {}
     public void dispose() {
-        sprite.dispose();
+        if (sprite != null) sprite.dispose();
     }
 }

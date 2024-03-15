@@ -2,6 +2,7 @@ package ceat.game.titleScreenGui;
 
 import ceat.game.Font;
 import ceat.game.Lerp;
+import ceat.game.fx.SelectionParticles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -22,12 +23,13 @@ public class Selection {
 
     public Selection(String text) {
         this.text = text;
-        layout = new GlyphLayout();
         font = Font.create(new Font.ParamSetter() {
             public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
                 params.size = 20;
             }
         });
+        layout = new GlyphLayout();
+        layout.setText(font, text);
     }
 
     public Selection setPosition(float x, float y) {
@@ -46,8 +48,10 @@ public class Selection {
         float delta = Gdx.graphics.getDeltaTime();
         lifetime += delta;
 
-        if (lifetime - lastParticleEmitTime > 0.1) {
+        if (lifetime - lastParticleEmitTime > 0.05 && selected) {
             lastParticleEmitTime = lifetime;
+            for (int i = 0; i < 3; i++)
+                new SelectionParticles(0, baseY - (float)Math.random()*layout.height).play();
         }
 
         float targetXOffset = selected ? 50 : 0;

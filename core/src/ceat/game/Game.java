@@ -4,6 +4,7 @@ import ceat.game.entity.*;
 import ceat.game.fx.Effect;
 import ceat.game.fx.NewFloorBanner;
 import ceat.game.fx.SkyBeam;
+import ceat.game.fx.Transition;
 import ceat.game.gameGui.GameGui;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
@@ -38,12 +39,18 @@ public class Game {
     private boolean allowStep;
     private int turns = 0;
     private int enemiesKilled = 0;
+    private int enemiesIgnored = 0;
+    private int floorsDone = 0;
     private int floor = 1;
+    private int startFloor = 1;
+    private int shotsFired = 0;
     public boolean showFloorBanner;
+    private boolean inputActive = true;
 
     public Game(SpriteBatch newBatch, int startingFloor, boolean guiEnabled, boolean musicEnabled) {
         batch = newBatch;
 
+        startFloor = startingFloor;
         floor = startingFloor;
 
         gameGui = new GameGui(this);
@@ -76,6 +83,8 @@ public class Game {
 
         if (showFloorBanner)
             new NewFloorBanner(floor).play();
+
+        new Transition.Out().play();
     }
 
     private void stepGame(float delta, double elapsed) {
@@ -100,14 +109,16 @@ public class Game {
             lastGrid.draw(batch);
         nextGrid.draw(batch);
         grid.draw(batch);
-        Effect.renderEffects(batch);
 
         gameGui.draw(batch);
+        Effect.renderEffects(batch);
         batch.end();
     }
 
     private void changeGrids(ChainedTask chain) {
         Grid oldGrid = grid;
+        floorsDone++;
+        enemiesIgnored += oldGrid.enemies.size();
 
         lastGrid = grid;
         grid = nextGrid;
@@ -175,6 +186,8 @@ public class Game {
     private void onPlayerDeath() {
 //        player.kill();
 //        music.setVolume(0);
+        gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns);
+        gameGui.deathScreenEnabled = true;
     }
 
     private void processPlayerAndEnemies() {
@@ -188,6 +201,7 @@ public class Game {
     }
 
     private void clearAttack() {
+        shotsFired += 24;
         ScreenOffset.shake(5f, 0.25f);
         gameGui.cooldownBarList.setBarProgress(2, 0);
         for (int xOff = -2; xOff <= 2; xOff++) {
@@ -240,6 +254,7 @@ public class Game {
     }
 
     private void beamAttack() {
+        shotsFired++;
         Entity.moveDirection dir = player.getDirection();
         float rotation =
             dir == Entity.moveDirection.UP ? -60 :
@@ -361,6 +376,7 @@ public class Game {
 
         switch (currentAttackMode) {
             case BULLET: {
+                shotsFired++;
                 gameGui.cooldownBarList.setBarProgress(0, 0f);
                 grid.addProjectile();
                 break;
@@ -418,7 +434,10 @@ public class Game {
         return b ? s1 : s2;
     }
 
+//    public
+
     public void keyDown(int keycode) {
+
         switch (keycode) {
             case Keys.UP:
             case Keys.W: {
