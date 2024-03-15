@@ -1,22 +1,35 @@
 package ceat.game.fx;
 
-import ceat.game.Game;
 import ceat.game.TexSprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Effect {
     private static final ArrayList<Effect> effects = new ArrayList<>();
+    private static Comparator<Effect> compareZIndex = Comparator.comparingInt(o -> o.zIndex);
+    private static void sortEffectOrder() {
+        Collections.sort(effects, compareZIndex);
+    }
     public static void renderEffects(SpriteBatch batch) {
+        if (effects.isEmpty()) return;
+        boolean isOrdered = true;
+        int lastZIndex = effects.get(0).zIndex;
         for (Effect effect: effects) {
             effect.render();
+            if (isOrdered && effect.zIndex < lastZIndex) isOrdered = false;
+            lastZIndex = effect.zIndex;
+        }
+        if (!isOrdered) sortEffectOrder();
+        for (Effect effect: effects) {
             effect.draw(batch);
         }
     }
 
     public TexSprite sprite;
-    public Game game;
+    public int zIndex;
     public Effect() {}
     public void loadSprite(String path) {
         sprite = new TexSprite(path);

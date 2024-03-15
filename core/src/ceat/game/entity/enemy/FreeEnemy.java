@@ -1,0 +1,37 @@
+package ceat.game.entity.enemy;
+
+import ceat.game.ChainedTask;
+import ceat.game.Game;
+import ceat.game.Grid;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Timer;
+
+public class FreeEnemy extends Enemy {
+    public FreeEnemy(Game newGame, Grid newGrid) {
+        super(newGame, newGrid);
+        sprite.setColor(0, 1, 1, 1);
+    }
+
+    public void animateEntry() {
+        animateEntry(0, 1, 1);
+    }
+
+    private float lifetime;
+    private float lastTurnTime;
+    public void render() {
+        float delta = Gdx.graphics.getDeltaTime();
+        lifetime += delta;
+        if (lifetime - lastTurnTime > 1.5f) {
+            lastTurnTime = lifetime;
+            super.step();
+            new ChainedTask().wait(0.25f).run(new Timer.Task() {
+                public void run() {
+                    game.processPlayerAndEnemies();
+                }
+            });
+        }
+        super.render();
+    }
+
+    public void step() {}
+}

@@ -3,6 +3,7 @@ package ceat.game.entity;
 import ceat.game.Game;
 import ceat.game.Grid;
 import ceat.game.Loop;
+import ceat.game.entity.enemy.Enemy;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;

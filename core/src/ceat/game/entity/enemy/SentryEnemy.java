@@ -1,7 +1,8 @@
-package ceat.game.entity;
+package ceat.game.entity.enemy;
 
 import ceat.game.Game;
 import ceat.game.Grid;
+import ceat.game.entity.FreeProjectile;
 import com.badlogic.gdx.Gdx;
 
 public class SentryEnemy extends Enemy {

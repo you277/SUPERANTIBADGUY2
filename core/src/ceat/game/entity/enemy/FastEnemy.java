@@ -1,4 +1,4 @@
-package ceat.game.entity;
+package ceat.game.entity.enemy;
 
 import ceat.game.Game;
 import ceat.game.Grid;
@@ -6,11 +6,11 @@ import ceat.game.Grid;
 public class FastEnemy extends Enemy {
     public FastEnemy(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
-        sprite.setColor(0, 0, 1, 1);
+        sprite.setColor(0, 1, 1, 1);
     }
 
     public void animateEntry() {
-        animateEntry(0, 0, 1);
+        animateEntry(0, 1, 1);
     }
 
     public void step() {

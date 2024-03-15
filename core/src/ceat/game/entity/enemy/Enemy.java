@@ -1,6 +1,7 @@
-package ceat.game.entity;
+package ceat.game.entity.enemy;
 
 import ceat.game.*;
+import ceat.game.entity.BoardEntity;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;

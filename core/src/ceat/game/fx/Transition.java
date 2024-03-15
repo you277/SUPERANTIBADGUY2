@@ -11,6 +11,7 @@ public class Transition {
             loadSprite("img/square.png");
             sprite.setColor(0, 0, 0, 1);
             rotation = (float)Math.random()*360;
+            zIndex = 5;
         }
 
         public void play() {
@@ -47,6 +48,7 @@ public class Transition {
                 sprites[i] = sprite;
             }
             rotation = (float)Math.random()*360;
+            zIndex = 5;
         }
 
         public void play() {

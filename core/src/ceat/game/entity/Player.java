@@ -13,7 +13,6 @@ public class Player extends BoardEntity {
     private boolean highlightVisible;
     public boolean isAlive;
 
-
     public Player(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         parentTile = grid.getTileAt(gridX, gridY);

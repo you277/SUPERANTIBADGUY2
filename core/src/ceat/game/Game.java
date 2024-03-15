@@ -1,6 +1,10 @@
 package ceat.game;
 
 import ceat.game.entity.*;
+import ceat.game.entity.enemy.Enemy;
+import ceat.game.entity.enemy.FastEnemy;
+import ceat.game.entity.enemy.FreeEnemy;
+import ceat.game.entity.enemy.SentryEnemy;
 import ceat.game.fx.Effect;
 import ceat.game.fx.NewFloorBanner;
 import ceat.game.fx.SkyBeam;
@@ -185,14 +189,16 @@ public class Game {
     }
 
     private void onPlayerDeath() {
-//        player.kill();
+        if (!player.isAlive) return;
+        ScreenOffset.shake(25f, 1f);
+        player.kill();
 //        music.setVolume(0);
         useAltInput = true;
         gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns);
         gameGui.deathScreenEnabled = true;
     }
 
-    private void processPlayerAndEnemies() {
+    public void processPlayerAndEnemies() {
         if (!player.isAlive) return;
         for (Enemy enemy: grid.enemies) {
             if (BoardEntity.overlap(player, enemy)) {
@@ -317,8 +323,11 @@ public class Game {
 
     private Enemy randomEnemyType() {
         if (floor >= 3) {
-            if (floor >= 10) {
-                if (Math.random() < 0.3) return new SentryEnemy(this, grid);
+            if (floor >= 6) {
+                if (floor >= 10) {
+                    if (Math.random() < 0.3) return new SentryEnemy(this, grid);
+                }
+                if (Math.random() < 0.3) return new FreeEnemy(this, grid);
             }
             if (Math.random() < 0.3) return new FastEnemy(this, grid);
         }
