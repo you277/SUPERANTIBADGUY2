@@ -20,6 +20,13 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	private int screen = 0;
 	private Game game;
 	private TitleScreen titleScreen;
+	public static float speed = 1;
+	public static float getRawDeltaTime() {
+		return Gdx.graphics.getDeltaTime();
+	}
+	public static float getDeltaTime() {
+		return getRawDeltaTime()*speed;
+	}
 
 	private void renderSplash1() {
 		ScreenUtils.clear(0, 0, 0, 1);
@@ -89,7 +96,7 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	}
 
 	public void toGame(int startFloor) {
-		game = new Game(batch, startFloor, true, true) {
+		game = new Game(batch, startFloor, false) {
 			public void restartGame(int floor) {
 				game.dispose();
 				toGame(floor);

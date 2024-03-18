@@ -48,11 +48,12 @@ public class Game {
     private int floor = 1;
     private int startFloor = 1;
     private int shotsFired = 0;
-    public boolean showFloorBanner;
+    public boolean isBackgroundGame;
     private boolean useAltInput = false;
     private boolean inputActive = true;
 
-    public Game(SpriteBatch newBatch, int startingFloor, boolean guiEnabled, boolean musicEnabled) {
+    public Game(SpriteBatch newBatch, int startingFloor, boolean isBackgroundGame) {
+        GameHandler.speed = 1;
         batch = newBatch;
 
         startFloor = startingFloor;
@@ -62,8 +63,8 @@ public class Game {
         grid = new Grid(this, startingFloor);
         nextGrid = new Grid(this, startingFloor + 1);
 
-        this.showFloorBanner = guiEnabled;
-        gameGui.enabled = guiEnabled;
+        this.isBackgroundGame = isBackgroundGame;
+        gameGui.enabled = !isBackgroundGame;
         grid.active = true;
 
         player = new Player(this, grid);
@@ -80,25 +81,22 @@ public class Game {
 
         allowStep = true;
 
-        if (musicEnabled) {
+        if (!isBackgroundGame) {
             music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
             music.setLooping(true);
             music.play();
         }
 
-        if (showFloorBanner)
+        if (!isBackgroundGame)
             new NewFloorBanner(floor).play();
 
         new Transition.Out().play();
     }
 
-    private void stepGame(float delta, double elapsed) {
-        Loop.runLoops(delta);
-    }
     public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         gameTime += delta;
-        stepGame(delta, gameTime);
+        Loop.runLoops();
 
         ScreenOffset.render(delta);
 
@@ -153,7 +151,7 @@ public class Game {
                 grid.setGridPosition(Grid.gridPosition.CENTER);
                 nextGrid.setGridPosition(Grid.gridPosition.TOP);
                 floor++;
-                if (showFloorBanner)
+                if (!isBackgroundGame)
                     new NewFloorBanner(floor).play();
             }
         });
@@ -194,8 +192,17 @@ public class Game {
         player.kill();
 //        music.setVolume(0);
         useAltInput = true;
-        gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns);
+        gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns).play();
         gameGui.deathScreenEnabled = true;
+        if (isBackgroundGame) return;
+        new Loop(Loop.loopType.UNSYNCED,2) {
+            public void run(float delta, float elapsed) {
+                GameHandler.speed = 1 - elapsed/2*0.9f;
+            }
+            public void onEnd() {
+                GameHandler.speed = 0.1f;
+            }
+        };
     }
 
     public void processPlayerAndEnemies() {
@@ -546,5 +553,6 @@ public class Game {
         if (lastGridPresent) lastGrid.dispose();
         gameGui.dispose();
         if (music != null) music.dispose();
+        Loop.cancelAllLoops();
     }
 }

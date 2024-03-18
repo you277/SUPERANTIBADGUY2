@@ -1,6 +1,7 @@
 package ceat.game.entity.enemy;
 
 import ceat.game.Game;
+import ceat.game.GameHandler;
 import ceat.game.Grid;
 import ceat.game.entity.FreeProjectile;
 import com.badlogic.gdx.Gdx;
@@ -31,7 +32,7 @@ public class SentryEnemy extends Enemy {
     }
 
     public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         timeSinceLastSpawn += delta;
         if (timeSinceLastSpawn > 5) {
             timeSinceLastSpawn = 0;

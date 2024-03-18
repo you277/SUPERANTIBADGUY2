@@ -1,6 +1,7 @@
 package ceat.game.entity;
 
 import ceat.game.Game;
+import ceat.game.GameHandler;
 import ceat.game.Grid;
 import ceat.game.Loop;
 import ceat.game.entity.enemy.Enemy;
@@ -63,7 +64,7 @@ public class FreeProjectile extends Entity {
                 kill();
             }
         }
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         lifetime += delta;
         x += xVelocity*delta;
         y += yVelocity*delta;

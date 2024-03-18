@@ -2,6 +2,7 @@ package ceat.game.titleScreenGui;
 
 import ceat.game.Font;
 import ceat.game.Game;
+import ceat.game.GameHandler;
 import ceat.game.TexSprite;
 import ceat.game.fx.Effect;
 import ceat.game.fx.Transition;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class TitleScreen {
     private final Game backgroundGame;
+    private final BackgroundGameAI backgroundAI;
     private final SpriteBatch batch;
     private float lifetime;
     private final BitmapFont font;
@@ -24,8 +26,11 @@ public class TitleScreen {
     private int currentSelection;
     private boolean acceptInput;
     public TitleScreen(SpriteBatch newBatch) {
+        GameHandler.speed = 1;
+
         batch = newBatch;
-        backgroundGame = new Game(batch, 10, false, false);
+        backgroundGame = new Game(batch, 10, true);
+        backgroundAI = new BackgroundGameAI(backgroundGame);
 
         font = Font.create(new Font.ParamSetter() {
             public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
@@ -46,8 +51,9 @@ public class TitleScreen {
     }
 
     public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         lifetime += delta;
+        backgroundAI.step();
         backgroundGame.render();
 
         batch.begin();

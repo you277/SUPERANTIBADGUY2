@@ -187,7 +187,7 @@ public class Grid {
     }
 
     public void render(float gameTime) {
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         switch (position) {
             case CENTER:
                 centerY = Lerp.lerp(centerY, mainCenterY, Lerp.alpha(delta, 5));

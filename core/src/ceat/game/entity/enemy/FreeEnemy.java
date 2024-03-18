@@ -2,6 +2,7 @@ package ceat.game.entity.enemy;
 
 import ceat.game.ChainedTask;
 import ceat.game.Game;
+import ceat.game.GameHandler;
 import ceat.game.Grid;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Timer;
@@ -19,7 +20,7 @@ public class FreeEnemy extends Enemy {
     private float lifetime;
     private float lastTurnTime;
     public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         lifetime += delta;
         if (lifetime - lastTurnTime > 1.5f) {
             lastTurnTime = lifetime;

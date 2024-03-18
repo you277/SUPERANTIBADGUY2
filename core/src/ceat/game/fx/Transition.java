@@ -16,7 +16,7 @@ public class Transition {
 
         public void play() {
             registerEffect();
-            new Loop(0.5f) {
+            new Loop(Loop.loopType.UNSYNCED,0.5f) {
                 public void run(float delta, float elapsed) {
                     float progress = elapsed/0.5f;
                     rotation += delta*360;
@@ -53,7 +53,7 @@ public class Transition {
 
         public void play() {
             registerEffect();
-            new Loop(1f) {
+            new Loop(Loop.loopType.UNSYNCED,1f) {
                 public void run(float delta, float elapsed) {
                     rotation += delta*360;
                     float distance = 450 + elapsed*450;

@@ -1,6 +1,7 @@
 package ceat.game.gameGui;
 
 import ceat.game.Font;
+import ceat.game.GameHandler;
 import ceat.game.Lerp;
 import ceat.game.TexSprite;
 import com.badlogic.gdx.Gdx;
@@ -43,7 +44,7 @@ public class CooldownBar {
     }
 
     public void draw(SpriteBatch batch) {
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         float a = Lerp.alpha(delta, 15);
         lifetime += delta;
         renderProgress = Lerp.lerp(renderProgress, progress, a);

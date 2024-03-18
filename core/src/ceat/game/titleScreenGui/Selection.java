@@ -1,6 +1,7 @@
 package ceat.game.titleScreenGui;
 
 import ceat.game.Font;
+import ceat.game.GameHandler;
 import ceat.game.Lerp;
 import ceat.game.fx.SelectionParticles;
 import com.badlogic.gdx.Gdx;
@@ -45,7 +46,7 @@ public class Selection {
     private float lastParticleEmitTime;
 
     public void draw(SpriteBatch batch) {
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         lifetime += delta;
 
         if (lifetime - lastParticleEmitTime > 0.05 && selected) {

@@ -1,6 +1,7 @@
 package ceat.game.titleScreenGui;
 
 import ceat.game.Font;
+import ceat.game.GameHandler;
 import ceat.game.Lerp;
 import ceat.game.TexSprite;
 import com.badlogic.gdx.Gdx;
@@ -102,7 +103,7 @@ public class FloorDialog {
     private float bgOpacity = 0;
 
     public void draw(SpriteBatch batch) {
-        float delta = Gdx.graphics.getDeltaTime();
+        float delta = GameHandler.getDeltaTime();
         lifetime += delta;
 
         float yOffset = (float)Math.sin(lifetime)*10;
