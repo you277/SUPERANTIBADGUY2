@@ -37,5 +37,6 @@ public class GameGui {
         enemyCounter.dispose();
         cooldownBarList.dispose();
         turnText.dispose();
+        deathScreen.dispose();
     }
 }

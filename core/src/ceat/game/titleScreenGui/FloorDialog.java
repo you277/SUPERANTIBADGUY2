@@ -5,6 +5,7 @@ import ceat.game.GameHandler;
 import ceat.game.Lerp;
 import ceat.game.TexSprite;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -24,6 +25,7 @@ public class FloorDialog {
     private float lifetime;
     private float inputYPosition;
     private final TexSprite bgSprite;
+    private Sound clickSound;
     public FloorDialog() {
         layout = new GlyphLayout();
         inputYPosition = 200;
@@ -67,6 +69,8 @@ public class FloorDialog {
         textMap.put(Keys.NUMPAD_8, 8);
         textMap.put(Keys.NUMPAD_9, 9);
         textMap.put(Keys.NUMPAD_0, 0);
+
+        clickSound = Gdx.audio.newSound(Gdx.files.internal("snd/click.mp3"));
     }
 
     private boolean backspaceDown;
@@ -75,12 +79,14 @@ public class FloorDialog {
     public void keyDown(int keycode) {
         inputYPosition = 207.5f;
         if (textMap.containsKey(keycode)) {
+            clickSound.play(10);
             int nextInput = currentInput*10 + textMap.get(keycode);
             if (nextInput < 0) nextInput = Integer.MAX_VALUE;
             currentInput = nextInput;
             return;
         }
         if (keycode == Keys.BACKSPACE && currentInput > 0) {
+            clickSound.play(10);
             currentInput /= 10;
             backspaceDown = true;
             backspaceDownTime = 0;
@@ -110,6 +116,9 @@ public class FloorDialog {
 
         if (backspaceDown) {
             if (backspaceDownTime > 0.25 && currentInput > 0) {
+                if (currentInput != 0) {
+                    clickSound.play(10);
+                }
                 currentInput /= 10;
                 inputYPosition = 207.5f;
             } else {
@@ -145,5 +154,6 @@ public class FloorDialog {
         titleFont.dispose();
         inputFont.dispose();
         emptyInputFont.dispose();
+        clickSound.dispose();
     }
 }

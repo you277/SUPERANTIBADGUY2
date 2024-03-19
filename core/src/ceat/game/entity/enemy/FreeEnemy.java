@@ -36,4 +36,8 @@ public class FreeEnemy extends Enemy {
     }
 
     public void step() {}
+
+    public String toString() {
+        return "CYAN ENEMY";
+    }
 }

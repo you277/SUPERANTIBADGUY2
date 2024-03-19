@@ -8,6 +8,7 @@ import ceat.game.fx.Effect;
 import ceat.game.fx.Transition;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -25,6 +26,8 @@ public class TitleScreen {
     private final Selection floorSelect;
     private int currentSelection;
     private boolean acceptInput;
+    private Sound clickSound;
+    private Sound keySound;
     public TitleScreen(SpriteBatch newBatch) {
         GameHandler.speed = 1;
 
@@ -48,6 +51,9 @@ public class TitleScreen {
         currentSelection = 0;
         startSelect = new Selection("START FLOOR 1").setPosition(0, 300).setSelected(true);
         floorSelect = new Selection("SELECT FLOOR").setPosition(0, 200).setSelected(false);
+
+        clickSound = Gdx.audio.newSound(Gdx.files.internal("snd/Switch1.mp3"));
+        keySound = Gdx.audio.newSound(Gdx.files.internal("snd/Key.mp3"));
     }
 
     public void render() {
@@ -73,6 +79,7 @@ public class TitleScreen {
             floorDialog.keyDown(keycode);
             return;
         }
+        int previousSelection = currentSelection;
         switch (keycode) {
             case Keys.W:
             case Keys.UP:
@@ -92,16 +99,19 @@ public class TitleScreen {
                 break;
             case Keys.ENTER:
             case Keys.NUMPAD_ENTER:
+                keySound.play();
                 if (currentSelection == 0) {
                     transitionToGame(1);
                 } else {
                     floorDialog = new FloorDialog() {
                         public void onConfirm(int floor) {
+                            keySound.play();
                             floorDialog.dispose();
                             floorDialog = null;
                             transitionToGame(floor);
                         }
                         public void onCancel() {
+                            keySound.play();
                             floorDialog.dispose();
                             floorDialog = null;
                         }
@@ -117,6 +127,9 @@ public class TitleScreen {
         } else {
             startSelect.setSelected(false);
             floorSelect.setSelected(true);
+        }
+        if (previousSelection != currentSelection) {
+            clickSound.play();
         }
     }
 
@@ -138,5 +151,7 @@ public class TitleScreen {
         floorSelect.dispose();
         bgSprite.dispose();
         font.dispose();
+        clickSound.dispose();
+        keySound.dispose();
     }
 }

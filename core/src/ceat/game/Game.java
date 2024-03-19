@@ -13,6 +13,7 @@ import ceat.game.gameGui.GameGui;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -52,6 +53,10 @@ public class Game {
     private boolean useAltInput = false;
     private boolean inputActive = true;
 
+    private Sound clearAttackSound;
+    private Sound playerDeadSound;
+    private Sound playerDeadSound2;
+
     public Game(SpriteBatch newBatch, int startingFloor, boolean isBackgroundGame) {
         GameHandler.speed = 1;
         batch = newBatch;
@@ -85,6 +90,10 @@ public class Game {
             music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
             music.setLooping(true);
             music.play();
+
+            clearAttackSound = Gdx.audio.newSound(Gdx.files.internal("snd/Attack2.mp3"));
+            playerDeadSound = Gdx.audio.newSound(Gdx.files.internal("snd/Kill10.mp3"));
+            playerDeadSound2 = Gdx.audio.newSound(Gdx.files.internal("snd/Rebirth1.mp3"));
         }
 
         if (!isBackgroundGame)
@@ -99,6 +108,7 @@ public class Game {
         Loop.runLoops();
 
         ScreenOffset.render(delta);
+        processPlayerAndSentryProjectiles();
 
         if (lastGridPresent)
             lastGrid.render(gameTime);
@@ -186,15 +196,17 @@ public class Game {
         }
     }
 
-    private void onPlayerDeath() {
+    private void onPlayerDeath(String killedBy) {
         if (!player.isAlive) return;
         ScreenOffset.shake(25f, 1f);
         player.kill();
 //        music.setVolume(0);
         useAltInput = true;
-        gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns).play();
+        gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns, killedBy).play();
         gameGui.deathScreenEnabled = true;
         if (isBackgroundGame) return;
+        playerDeadSound.play();
+        playerDeadSound2.play();
         new Loop(Loop.loopType.UNSYNCED,2) {
             public void run(float delta, float elapsed) {
                 GameHandler.speed = 1 - elapsed/2*0.9f;
@@ -205,11 +217,26 @@ public class Game {
         };
     }
 
+    public void processPlayerAndSentryProjectiles() {
+        if (player.isJumping) return;
+        float playerX = (int)player.x;
+        float playerY = (int)player.y;
+        int killDistance = 5; // in pixels
+        for (FreeProjectile proj: grid.freeProjectiles) {
+            int projX = (int)proj.x;
+            int projY = (int)proj.y;
+            if (Math.pow(projX - playerX, 2) + Math.pow(projY - playerY, 2) <= Math.pow(killDistance, 2)) {
+                onPlayerDeath("SENTRY ENEMY PROJECTILE");
+                break;
+            }
+        }
+    }
+
     public void processPlayerAndEnemies() {
         if (!player.isAlive) return;
         for (Enemy enemy: grid.enemies) {
             if (BoardEntity.overlap(player, enemy)) {
-                onPlayerDeath();
+                onPlayerDeath(enemy.toString());
                 return;
             }
         }
@@ -240,6 +267,9 @@ public class Game {
                         .setColor(1f, 1f, 1f)
                         .setScale(10f, 10f).play();
             }
+        }
+        if (!isBackgroundGame) {
+            clearAttackSound.play();
         }
     }
 
@@ -552,7 +582,12 @@ public class Game {
         nextGrid.dispose();
         if (lastGridPresent) lastGrid.dispose();
         gameGui.dispose();
-        if (music != null) music.dispose();
+        if (!isBackgroundGame) {
+            music.dispose();
+            playerDeadSound.dispose();
+            playerDeadSound2.dispose();
+            clearAttackSound.dispose();
+        }
         Loop.cancelAllLoops();
     }
 }

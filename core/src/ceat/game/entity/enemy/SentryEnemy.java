@@ -42,4 +42,8 @@ public class SentryEnemy extends Enemy {
     }
 
     public void step() {}
+
+    public String toString() {
+        return "GREEN ENEMY";
+    }
 }

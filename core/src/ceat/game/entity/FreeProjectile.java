@@ -10,8 +10,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class FreeProjectile extends Entity {
-    private float x;
-    private float y;
+    public float x;
+    public float y;
     private float xVelocity;
     private float yVelocity;
     private float lifetime;

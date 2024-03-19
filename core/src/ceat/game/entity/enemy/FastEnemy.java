@@ -20,4 +20,8 @@ public class FastEnemy extends Enemy {
         gridY = newCoords[1];
         super.animateJump(grid.getTileAt(gridX, gridY));
     }
+
+    public String toString() {
+        return "BLUE ENEMY";
+    }
 }

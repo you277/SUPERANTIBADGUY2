@@ -1,20 +1,29 @@
 package ceat.game.gameGui;
 
+import ceat.game.ChainedTask;
 import ceat.game.Font;
 import ceat.game.Loop;
 import ceat.game.TexSprite;
+import ceat.game.fx.Effect;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.utils.Timer;
 
-public class DeathScreen {
+public class DeathScreen extends Effect {
     private final TexSprite bgSprite;
     private final GlyphLayout layout;
 
     private final BitmapFont titleFont;
+    private final BitmapFont killedByFont;
     private final BitmapFont statFont;
+    private Sound tickSound;
     private int startFloor;
+    private String killedBy;
+
     private class IntState {
         public int num;
         public int displayNum;
@@ -26,11 +35,20 @@ public class DeathScreen {
             float duration = Math.max(Math.min((float)num/1000, 7.5f), 1);
             new Loop(Loop.loopType.UNSYNCED, duration) {
                 public void run(float delta, float elapsed) {
+                    int previous = displayNum;
                     displayNum = (int)(elapsed/duration * num);
+                    if (previous != displayNum) {
+                        tickSound.play(10);
+                    }
                 }
                 public void onEnd() {
                     displayNum = num;
-                    onFinish();
+                    if (num != 0) new ChainedTask().wait(0.5f).run(new Timer.Task() {
+                        public void run() {
+                            onFinish();
+                        }
+                    });
+                    else onFinish();
                 }
             };
         }
@@ -84,25 +102,26 @@ public class DeathScreen {
                 params.size = 25;
             }
         });
+        killedByFont = Font.create(new Font.ParamSetter() {
+            public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
+                params.size = 10;
+            }
+        });
         statFont = Font.create(new Font.ParamSetter() {
             public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
                 params.size = 15;
             }
         });
+
+        zIndex = 2;
     }
 
-    public DeathScreen set(int startFloor, int finalFloor, int floorsDone, int enemiesKilled, int enemiesIgnored, int shotsFired, int turnsTaken) {
+    public DeathScreen set(int startFloor, int finalFloor, int floorsDone, int enemiesKilled, int enemiesIgnored, int shotsFired, int turnsTaken, String killedBy) {
         this.startFloor = startFloor;
+        this.killedBy = killedBy;
 
         float statsTop = 300;
         float increment = 25;
-
-//        drawStat(batch, "FINAL FLOOR", "" + finalFloor, statsTop);
-//        drawStat(batch, "FLOORS CONQUERED", "" + floorsDone, statsTop - 25);
-//        drawStat(batch, "ENEMIES KILLED", "" + enemiesKilled, statsTop - 50);
-//        drawStat(batch, "ENEMIES IGNORED", "" + enemiesIgnored, statsTop - 75);
-//        drawStat(batch, "SHOTS FIRED", "" + shotsFired, statsTop - 100);
-//        drawStat(batch, "TURNS TAKEN", "" + turnsTaken, statsTop - 125);
 
         statLines = new Stat[] {
                 new Stat("FINAL FLOOR", finalFloor, statsTop),
@@ -125,6 +144,8 @@ public class DeathScreen {
     }
 
     public void play() {
+        registerEffect();
+        tickSound = Gdx.audio.newSound(Gdx.files.internal("snd/click.mp3"));
         statLines[0].play();
     }
 
@@ -133,6 +154,11 @@ public class DeathScreen {
 
         layout.setText(titleFont, "YOU ARE DEAD");
         titleFont.draw(batch, "YOU ARE DEAD", 400 - layout.width/2, 400);
+        if (killedBy != null) {
+            String str = "KILLED BY " + killedBy;
+            layout.setText(killedByFont, str);
+            killedByFont.draw(batch, str, 400 - layout.width/2, 360);
+        }
 
         for (Stat stat: statLines)
             stat.draw(batch);
@@ -140,5 +166,13 @@ public class DeathScreen {
         String hi = "[ESC] TO TITLE - [R] TO RETURN TO FLOOR [" + startFloor + "]";
         layout.setText(statFont, hi);
         statFont.draw(batch, hi, 400 - layout.width/2, 75);
+    }
+
+    public void dispose() {
+        unregisterEffect();
+        titleFont.dispose();
+        killedByFont.dispose();
+        statFont.dispose();
+        tickSound.dispose();
     }
 }
