@@ -23,7 +23,7 @@ public class DeathScreen {
             displayNum = 0;
         }
         public void play() {
-            float duration = Math.max(Math.min((float)num/1000, 3), 0.5f);
+            float duration = Math.max(Math.min((float)num/1000, 7.5f), 1);
             new Loop(Loop.loopType.UNSYNCED, duration) {
                 public void run(float delta, float elapsed) {
                     displayNum = (int)(elapsed/duration * num);

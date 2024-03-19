@@ -27,6 +27,7 @@ public class FreeEnemy extends Enemy {
             super.step();
             new ChainedTask().wait(0.25f).run(new Timer.Task() {
                 public void run() {
+                    game.processProjectilesAndEnemies();
                     game.processPlayerAndEnemies();
                 }
             });

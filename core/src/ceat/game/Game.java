@@ -174,7 +174,7 @@ public class Game {
         gameGui.enemyCounter.setAlive(grid.totalEnemies - grid.enemiesDead);
     }
 
-    private void processProjectilesAndEnemies() {
+    public void processProjectilesAndEnemies() {
         EntityQuery<Enemy, Projectile> query = new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles);
         if (query.a.isEmpty()) return;
         ScreenOffset.shake(20f, 0.25f);
