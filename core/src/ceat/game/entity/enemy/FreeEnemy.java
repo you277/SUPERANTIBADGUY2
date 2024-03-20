@@ -29,6 +29,7 @@ public class FreeEnemy extends Enemy {
                 public void run() {
                     game.processProjectilesAndEnemies();
                     game.processPlayerAndEnemies();
+                    game.postEnemyProcesses();
                 }
             });
         }

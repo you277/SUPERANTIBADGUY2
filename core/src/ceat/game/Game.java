@@ -5,10 +5,7 @@ import ceat.game.entity.enemy.Enemy;
 import ceat.game.entity.enemy.FastEnemy;
 import ceat.game.entity.enemy.FreeEnemy;
 import ceat.game.entity.enemy.SentryEnemy;
-import ceat.game.fx.Effect;
-import ceat.game.fx.NewFloorBanner;
-import ceat.game.fx.SkyBeam;
-import ceat.game.fx.Transition;
+import ceat.game.fx.*;
 import ceat.game.gameGui.GameGui;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
@@ -53,9 +50,10 @@ public class Game {
     private boolean useAltInput = false;
     private boolean inputActive = true;
 
-    private Sound clearAttackSound;
+    private Sound beamAttackSound;
     private Sound playerDeadSound;
     private Sound playerDeadSound2;
+    private Sound multiKillSound;
 
     public Game(SpriteBatch newBatch, int startingFloor, boolean isBackgroundGame) {
         GameHandler.speed = 1;
@@ -91,9 +89,10 @@ public class Game {
             music.setLooping(true);
             music.play();
 
-            clearAttackSound = Gdx.audio.newSound(Gdx.files.internal("snd/Attack2.mp3"));
-            playerDeadSound = Gdx.audio.newSound(Gdx.files.internal("snd/Kill10.mp3"));
+            beamAttackSound = Gdx.audio.newSound(Gdx.files.internal("snd/Attack2_2.mp3"));
+            playerDeadSound = Gdx.audio.newSound(Gdx.files.internal("snd/Kill10_2.mp3"));
             playerDeadSound2 = Gdx.audio.newSound(Gdx.files.internal("snd/Rebirth1.mp3"));
+            multiKillSound = Gdx.audio.newSound(Gdx.files.internal("snd/Fight2_2.mp3"));
         }
 
         if (!isBackgroundGame)
@@ -184,6 +183,18 @@ public class Game {
         gameGui.enemyCounter.setAlive(grid.totalEnemies - grid.enemiesDead);
     }
 
+    private int currentEnemyAmt;
+    private void setCurrentEnemyAmt() {
+        currentEnemyAmt = grid.enemies.size();
+    }
+    public void compareEnemyAmt() {
+        if (isBackgroundGame) return;
+        System.out.println(grid.enemies.size() - currentEnemyAmt);
+        if (currentEnemyAmt - grid.enemies.size() >= 3) {
+            multiKillSound.play();
+        }
+    }
+
     public void processProjectilesAndEnemies() {
         EntityQuery<Enemy, Projectile> query = new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles);
         if (query.a.isEmpty()) return;
@@ -200,10 +211,12 @@ public class Game {
         if (!player.isAlive) return;
         ScreenOffset.shake(25f, 1f);
         player.kill();
-//        music.setVolume(0);
+        if (!isBackgroundGame)
+            music.setVolume(0.3f);
         useAltInput = true;
         gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns, killedBy).play();
         gameGui.deathScreenEnabled = true;
+        new PlayerDeathEffect(player.x, player.y).play();
         if (isBackgroundGame) return;
         playerDeadSound.play();
         playerDeadSound2.play();
@@ -246,6 +259,7 @@ public class Game {
         shotsFired += 24;
         ScreenOffset.shake(5f, 0.25f);
         gameGui.cooldownBarList.setBarProgress(2, 0);
+        setCurrentEnemyAmt();
         for (int xOff = -2; xOff <= 2; xOff++) {
             for (int yOff = -2; yOff <= 2; yOff++) {
                 if (xOff == 0 && yOff == 0) continue;
@@ -269,8 +283,9 @@ public class Game {
             }
         }
         if (!isBackgroundGame) {
-            clearAttackSound.play();
+            beamAttackSound.play(10);
         }
+        compareEnemyAmt();
     }
 
     private enum beamDirection {
@@ -307,6 +322,7 @@ public class Game {
             dir == Entity.moveDirection.DOWN ? 120 :
             60 // left
             ;
+        setCurrentEnemyAmt();
         gameGui.cooldownBarList.setBarProgress(1, 0);
         ScreenOffset.shake(5f, 0.25f);
         theActualBeamAttack(dir == Entity.moveDirection.UP || dir == Entity.moveDirection.DOWN ? beamDirection.VERTICAL : beamDirection.HORIZONTAL);
@@ -315,6 +331,10 @@ public class Game {
             .setScale(10f, 100f)
             .setRotation(rotation)
             .play();
+        if (!isBackgroundGame) {
+            beamAttackSound.play(10);
+        }
+        compareEnemyAmt();
     }
 
     private void projectileStep(ChainedTask chain) {
@@ -395,7 +415,11 @@ public class Game {
         });
     }
 
-    private void postEnemyProcesses(ChainedTask chain) {
+    public void postEnemyProcesses() {
+        if (grid.didWin()) changeGrids(new ChainedTask());
+    }
+
+    public void postEnemyProcesses(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
                 if (grid.didWin()) changeGrids(chain);
@@ -586,7 +610,8 @@ public class Game {
             music.dispose();
             playerDeadSound.dispose();
             playerDeadSound2.dispose();
-            clearAttackSound.dispose();
+            beamAttackSound.dispose();
+            multiKillSound.dispose();
         }
         Loop.cancelAllLoops();
     }

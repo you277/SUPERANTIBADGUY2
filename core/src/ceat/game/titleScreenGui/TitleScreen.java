@@ -26,8 +26,8 @@ public class TitleScreen {
     private final Selection floorSelect;
     private int currentSelection;
     private boolean acceptInput;
-    private Sound clickSound;
-    private Sound keySound;
+    private final Sound clickSound;
+    private final Sound keySound;
     public TitleScreen(SpriteBatch newBatch) {
         GameHandler.speed = 1;
 
@@ -53,7 +53,7 @@ public class TitleScreen {
         floorSelect = new Selection("SELECT FLOOR").setPosition(0, 200).setSelected(false);
 
         clickSound = Gdx.audio.newSound(Gdx.files.internal("snd/Switch1.mp3"));
-        keySound = Gdx.audio.newSound(Gdx.files.internal("snd/Key.mp3"));
+        keySound = Gdx.audio.newSound(Gdx.files.internal("snd/Key2.mp3"));
     }
 
     public void render() {
@@ -138,9 +138,9 @@ public class TitleScreen {
         if (floorDialog != null) floorDialog.keyUp(keycode);
     }
     public void transitionToGame(int floor) {
+        acceptInput = false;
         new Transition.In() {
             public void onFinish() {
-                acceptInput = false;
                 startGame(floor);
             }
         }.play();
