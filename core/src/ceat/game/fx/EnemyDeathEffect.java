@@ -2,6 +2,7 @@ package ceat.game.fx;
 
 import ceat.game.ChainedTask;
 import ceat.game.Loop;
+import ceat.game.TexSprite;
 import ceat.game.entity.enemy.Enemy;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer;
@@ -12,11 +13,11 @@ public class EnemyDeathEffect extends Effect {
     private int frame;
     public EnemyDeathEffect(Enemy enemy) {
         super();
-        loadSprite("img/enemyDeathSheet.png");
+        TexSprite sprite = loadSprite("img/enemyDeathSheet.png");
         sprite.setScale(3f, 3f);
         sprite.setCenter(sprite.getWidth()/2, 0);
-        x = enemy.x;
-        y = enemy.y;
+        x = enemy.getScreenPosition().x;
+        y = enemy.getScreenPosition().y;
     }
 
     public void draw(SpriteBatch batch) {

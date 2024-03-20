@@ -8,10 +8,10 @@ public class Transition {
     public static class In extends Effect {
         private float rotation;
         public In() {
-            loadSprite("img/square.png");
+            TexSprite sprite = loadSprite("img/square.png");
             sprite.setColor(0, 0, 0, 1);
             rotation = (float)Math.random()*360;
-            zIndex = 5;
+            setZIndex(10);
         }
 
         public void play() {
@@ -20,6 +20,7 @@ public class Transition {
                 public void run(float delta, float elapsed) {
                     float progress = elapsed/0.5f;
                     rotation += delta*360;
+                    TexSprite sprite = getSprite();
                     sprite.setScale(progress*1000, progress*1000);
                     sprite.setCenter();
                     sprite.setPosition(400, 250);
@@ -48,7 +49,7 @@ public class Transition {
                 sprites[i] = sprite;
             }
             rotation = (float)Math.random()*360;
-            zIndex = 5;
+            setZIndex(10);
         }
 
         public void play() {

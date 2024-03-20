@@ -25,8 +25,8 @@ public class DeathScreen extends Effect {
     private String killedBy;
 
     private class IntState {
-        public int num;
-        public int displayNum;
+        private final int num;
+        private int displayNum;
         public IntState(int num) {
             this.num = num;
             displayNum = 0;
@@ -56,15 +56,13 @@ public class DeathScreen extends Effect {
     }
 
     private class Stat {
-        private String name;
-        private int value;
-        private IntState state;
-        private float statsTop;
+        private final String name;
+        private final IntState state;
+        private final float statsTop;
         private boolean visible;
         private Stat statToPlayWhenFinished;
         public Stat(String name, int value, float statsTop) {
             this.name = name;
-            this.value = value;
             this.statsTop = statsTop;
             state = new IntState(value) {
                 public void onFinish() {
@@ -113,7 +111,7 @@ public class DeathScreen extends Effect {
             }
         });
 
-        zIndex = 2;
+        setZIndex(5);
     }
 
     public DeathScreen set(int startFloor, int finalFloor, int floorsDone, int enemiesKilled, int enemiesIgnored, int shotsFired, int turnsTaken, String killedBy) {

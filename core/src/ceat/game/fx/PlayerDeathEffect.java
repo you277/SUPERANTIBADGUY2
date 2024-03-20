@@ -1,14 +1,15 @@
 package ceat.game.fx;
 
 import ceat.game.ChainedTask;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 public class PlayerDeathEffect {
     private final float x;
     private final float y;
-    public PlayerDeathEffect(float x, float y) {
-        this.x = x;
-        this.y = y;
+    public PlayerDeathEffect(Vector2 position) {
+        x = position.x;
+        y = position.y;
     }
 
     public void play() {

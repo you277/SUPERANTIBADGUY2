@@ -12,33 +12,34 @@ public class SkyBeam extends Effect {
 
     public SkyBeam(BoardEntity boardEntity) {
         super();
-        parentTile = boardEntity.parentTile;
-        super.loadSprite("img/beam.png");
+        parentTile = boardEntity.getParentTile();
+        TexSprite sprite = loadSprite("img/beam.png");
         sprite.setCenter(sprite.getWidth()/2, 0);
     }
 
     public SkyBeam(EmptyTile emptyTile) {
         super();
         parentTile = emptyTile;
-        super.loadSprite("img/beam.png");
+        TexSprite sprite = loadSprite("img/beam.png");
         sprite.setCenter(sprite.getWidth()/2, 0);
     }
 
     public SkyBeam setColor(float r, float g, float b) {
-        sprite.setColor(r, g, b, 1);
+        getSprite().setColor(r, g, b, 1);
         return this;
     }
 
     public SkyBeam setScale(float x, float y) {
         xScale = x;
         yScale = y;
+        TexSprite sprite = getSprite();
         sprite.setScale(x, y);
         sprite.setCenter(sprite.getWidth()/2, 0);
         return this;
     }
 
     public SkyBeam setRotation(float degrees) {
-        sprite.setRotation(degrees);
+        getSprite().setRotation(degrees);
         return this;
     }
 
@@ -46,6 +47,7 @@ public class SkyBeam extends Effect {
         registerEffect();
         new Loop(0.2f) {
             public void run(float deltaTime, float elapsed) {
+                TexSprite sprite = getSprite();
                 sprite.setScale(xScale*((0.2f - elapsed)/0.2f), yScale);
                 sprite.setCenter(sprite.getWidth()/2, 0);
             }
@@ -58,6 +60,6 @@ public class SkyBeam extends Effect {
     }
 
     public void render() {
-        sprite.setPosition(parentTile.x + ScreenOffset.offsetX, parentTile.y + ScreenOffset.offsetY);
+        getSprite().setPosition(parentTile.getScreenPosition().x + ScreenOffset.offsetX, parentTile.getScreenPosition().y + ScreenOffset.offsetY);
     }
 }

@@ -1,6 +1,7 @@
 package ceat.game.fx;
 
 import ceat.game.Loop;
+import ceat.game.TexSprite;
 
 public class PlayerDeathRing extends Effect {
     private final float x;
@@ -8,7 +9,7 @@ public class PlayerDeathRing extends Effect {
     public PlayerDeathRing(float x, float y) {
         this.x = x;
         this.y = y;
-        loadSprite("img/squareRing.png");
+        TexSprite sprite = loadSprite("img/squareRing.png");
         sprite.setScale(0, 0);
         sprite.setCenter();
         sprite.setPosition(x, y);
@@ -19,6 +20,7 @@ public class PlayerDeathRing extends Effect {
         new Loop(1) {
             public void run(float delta, float elapsed) {
                 float size = elapsed*500;
+                TexSprite sprite = getSprite();
                 sprite.setScale(size);
                 sprite.setCenter();
                 sprite.setPosition(x, y);

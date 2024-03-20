@@ -9,7 +9,7 @@ import java.util.Comparator;
 
 public class Effect {
     private static final ArrayList<Effect> effects = new ArrayList<>();
-    private static Comparator<Effect> compareZIndex = Comparator.comparingInt(o -> o.zIndex);
+    private static final Comparator<Effect> compareZIndex = Comparator.comparingInt(o -> o.zIndex);
     private static void sortEffectOrder() {
         Collections.sort(effects, compareZIndex);
     }
@@ -28,11 +28,21 @@ public class Effect {
         }
     }
 
-    public TexSprite sprite;
-    public int zIndex;
+    private TexSprite sprite;
+    private int zIndex;
     public Effect() {}
-    public void loadSprite(String path) {
+    public TexSprite loadSprite(String path) {
         sprite = new TexSprite(path);
+        return sprite;
+    }
+    public TexSprite getSprite() {
+        return sprite;
+    }
+    public void setZIndex(int zIndex) {
+        this.zIndex = zIndex;
+    }
+    public int getZIndex() {
+        return zIndex;
     }
     public void registerEffect() {
         effects.add(this);

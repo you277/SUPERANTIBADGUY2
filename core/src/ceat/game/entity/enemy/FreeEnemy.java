@@ -4,7 +4,6 @@ import ceat.game.ChainedTask;
 import ceat.game.Game;
 import ceat.game.GameHandler;
 import ceat.game.Grid;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Timer;
 
 public class FreeEnemy extends Enemy {
@@ -27,6 +26,7 @@ public class FreeEnemy extends Enemy {
             super.step();
             new ChainedTask().wait(0.25f).run(new Timer.Task() {
                 public void run() {
+                    Game game = getGame();
                     game.processProjectilesAndEnemies();
                     game.processPlayerAndEnemies();
                     game.postEnemyProcesses();

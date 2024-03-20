@@ -16,8 +16,8 @@ public class Entity {
 
     public TexSprite sprite;
     private boolean loadedSprite;
-    public Grid grid;
-    public Game game;
+    private Grid grid;
+    private Game game;
 
     public Entity(Game newGame, Grid newGrid) {
         grid = newGrid;
@@ -27,6 +27,15 @@ public class Entity {
     public void loadSprite(String path) {
         sprite = new TexSprite(path);
         loadedSprite = true;
+    }
+    public void setGrid(Grid newGrid) {
+        grid = newGrid;
+    }
+    public Grid getGrid() {
+        return grid;
+    }
+    public Game getGame() {
+        return game;
     }
 
     public void render() {}

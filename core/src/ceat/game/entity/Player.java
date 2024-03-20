@@ -3,8 +3,8 @@ package ceat.game.entity;
 import ceat.game.ChainedTask;
 import ceat.game.Game;
 import ceat.game.Grid;
+import ceat.game.IntVector2;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer.Task;
 
 public class Player extends BoardEntity {
@@ -15,7 +15,7 @@ public class Player extends BoardEntity {
 
     public Player(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
-        parentTile = grid.getTileAt(gridX, gridY);
+        setParentTile(getGrid().getTileAt(getGridPosition()));
 
         super.loadSprite("img/baseTile.png");
         sprite.setColor(1f, 1f, 0f, 1f);
@@ -36,7 +36,7 @@ public class Player extends BoardEntity {
     }
 
     public void setGrid(Grid newGrid) {
-        grid = newGrid;
+        super.setGrid(newGrid);
         super.setGridPosition(Grid.width/2, Grid.height/2);
         highlight.setGrid(newGrid);
         moveHighlight();
@@ -68,8 +68,7 @@ public class Player extends BoardEntity {
                 offset = down;
                 break;
         }
-        Vector2 nextPos = Grid.getFinalPosition(gridX + offset[0], gridY + offset[1]);
-        highlight.setGridPosition((int)nextPos.x, (int)nextPos.y);
+        highlight.setGridPosition(Grid.getFinalPosition(getGridPosition(), offset[0], offset[1]));
     }
 
     public void setDirection(moveDirection newDirection) {
@@ -78,7 +77,9 @@ public class Player extends BoardEntity {
     }
 
     public void step() {
-        Vector2 vec;
+        IntVector2 vec;
+        int gridX = getGridPosition().getX();
+        int gridY = getGridPosition().getY();
         switch(direction) {
             case LEFT:
                 vec = Grid.getFinalPosition(gridX - 1, gridY);
@@ -93,11 +94,10 @@ public class Player extends BoardEntity {
                 vec = Grid.getFinalPosition(gridX, gridY + 1);
                 break;
             default:
-                vec = new Vector2(gridX, gridY);
+                vec = new IntVector2(gridX, gridY);
         }
-        gridX = (int)vec.x;
-        gridY = (int)vec.y;
-        animateJump(grid.getTileAt(gridX, gridY));
+        getGridPosition().set(vec);
+        animateJump(getGrid().getTileAt(gridX, gridY));
         moveHighlight();
     }
 

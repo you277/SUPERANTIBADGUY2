@@ -8,7 +8,7 @@ import com.badlogic.gdx.Gdx;
 public class Highlight extends BoardEntity {
     public Highlight(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
-        parentTile = grid.getTileAt(gridX, gridY);
+        setParentTile(getGrid().getTileAt(getGridPosition()));
 
         super.loadSprite("img/baseTile.png");
         sprite.setColor(1f, 1f, 1f, 0.5f);
@@ -16,15 +16,12 @@ public class Highlight extends BoardEntity {
         sprite.setCenter();
     }
 
-    public void setGrid(Grid newGrid) {
-        grid = newGrid;
-    }
-
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         float alpha = Lerp.alpha(delta, 20);
-        x = Lerp.lerp(x, parentTile.x, alpha);
-        y = Lerp.lerp(y, parentTile.y, alpha);
+        float x = Lerp.lerp(getScreenPosition().x, getParentTile().getScreenPosition().x, alpha);
+        float y = Lerp.lerp(getScreenPosition().y, getParentTile().getScreenPosition().y, alpha);
+        getScreenPosition().set(x, y);
         sprite.setPosition(x, y);
     }
 }

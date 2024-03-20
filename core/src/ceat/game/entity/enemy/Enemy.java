@@ -21,14 +21,14 @@ public class Enemy extends BoardEntity {
         new SkyBeam( this)
                 .setColor(r, g, b)
                 .setScale(13f, 150f).play();
-        isAnimating = true;
+        setIsAnimating(true);
         new Loop(0.2f) {
             public void run(float delta, float elapsed) {
-                x = parentTile.x;
-                y = parentTile.y + 400 - (elapsed/0.2f)*400;
+                Vector2 screenPosition = getParentTile().getScreenPosition();
+                getScreenPosition().set(screenPosition.x, screenPosition.y + 400 - (elapsed/0.2f)*400);
             }
             public void onEnd() {
-                isAnimating = false;
+                setIsAnimating(false);
             }
         };
     }
@@ -39,30 +39,31 @@ public class Enemy extends BoardEntity {
 
     // epic enemy ai
     public int[] calcStep(boolean allowDiagonals, int stepDistance) {
-        int playerX = grid.player.gridX;
-        int playerY = grid.player.gridY;
+        IntVector2 playerPosition = getGrid().getPlayer().getGridPosition();
+        int playerX = playerPosition.getX();
+        int playerY = playerPosition.getY();
 
-        int newX = gridX;
-        int newY = gridY;
+        IntVector2 gridPosition = getGridPosition();
 
-        if (playerX > x) newX += stepDistance;
-        else if (playerX < x) newX -= stepDistance;
+        int newX = getGridPosition().getX();
+        int newY = getGridPosition().getY();
 
-        if (playerY > y) newY += stepDistance;
-        else if (playerY < y) newY -= stepDistance;
+        if (playerX > newX) newX += stepDistance;
+        else if (playerX < newX) newX -= stepDistance;
 
-        int[] xPositions = { gridX, newX, newX };
-        int[] yPositions = { newY, gridY, newY };
+        if (playerY > newY) newY += stepDistance;
+        else if (playerY < newY) newY -= stepDistance;
+
+        int[] xPositions = { gridPosition.getX(), newX, newX };
+        int[] yPositions = { newY, gridPosition.getY(), newY };
 
         ArrayList<Integer> allowedMoves = new ArrayList<>();
         int maxMoveIdx = allowDiagonals ? 2 : 1;
 
         for (int i = 0; i <= maxMoveIdx; i++) {
-            int x = xPositions[i];
-            int y = yPositions[i];
             boolean allowMove = true;
-            for (Enemy otherEnemy: grid.enemies) {
-                if (otherEnemy.gridX == x && otherEnemy.gridY == y) {
+            for (Enemy otherEnemy: getGrid().getEnemies()) {
+                if (otherEnemy.getGridPosition().equals(gridPosition)) {
                     allowMove = false;
                     break;
                 }
@@ -85,16 +86,15 @@ public class Enemy extends BoardEntity {
             finalY = yPositions[moveIdx];
         }
 
-        Vector2 hi = Grid.getFinalPosition(finalX, finalY);
-        return new int[] {(int)hi.x, (int)hi.y};
+        IntVector2 hi = Grid.getFinalPosition(finalX, finalY);
+        return new int[] {hi.getX(), hi.getY()};
     }
 
     public void step() {
         int[] newCoords = calcStep(false, 1);
         if (newCoords[0] == -1) return;
-        gridX = newCoords[0];
-        gridY = newCoords[1];
-        super.animateJump(grid.getTileAt(gridX, gridY));
+        getGridPosition().set(newCoords[0], newCoords[1]);
+        super.animateJump(getGrid().getTileAt(getGridPosition()));
     }
 
     public String toString() {

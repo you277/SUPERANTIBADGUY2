@@ -1,13 +1,10 @@
 package ceat.game.entity;
 
-import ceat.game.Game;
-import ceat.game.GameHandler;
-import ceat.game.Grid;
-import ceat.game.Loop;
+import ceat.game.*;
 import ceat.game.entity.enemy.Enemy;
 import ceat.game.screen.ScreenOffset;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 public class FreeProjectile extends Entity {
     public float x;
@@ -16,8 +13,8 @@ public class FreeProjectile extends Entity {
     private float yVelocity;
     private float lifetime;
     public final Enemy parent;
-    public boolean alive = true;
-    public boolean active = true;
+    private boolean alive = true;
+    private boolean active = true;
     public FreeProjectile(Game newGame, Grid newGrid, Enemy parent) {
         super(newGame, newGrid);
         super.loadSprite("img/square.png");
@@ -26,9 +23,9 @@ public class FreeProjectile extends Entity {
         this.parent = parent;
     }
 
-    public FreeProjectile setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
+    public FreeProjectile setPosition(Vector2 position) {
+        this.x = position.x;
+        this.y = position.y;
         return this;
     }
 
@@ -50,6 +47,14 @@ public class FreeProjectile extends Entity {
                 active = false;
             }
         };
+    }
+
+    public boolean getAlive() {
+        return alive;
+    }
+
+    public boolean getActive() {
+        return active;
     }
 
     public void kill() {

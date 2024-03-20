@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import ceat.game.entity.*;
 import ceat.game.entity.enemy.Enemy;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
@@ -24,7 +23,7 @@ public class Grid {
     private static final float topCenterY = 500;
     private static final float mainCenterY = 250;
 
-    public static Vector2 getFinalPosition(int proposedX, int proposedY) {
+    public static IntVector2 getFinalPosition(int proposedX, int proposedY) {
         int x;
         int y;
         if (proposedX < 0) x = width + proposedX;
@@ -33,21 +32,26 @@ public class Grid {
         if (proposedY < 0) y = height + proposedY;
         else if (proposedY >= height) y = proposedY - height;
         else y = proposedY;
-        return new Vector2(x, y);
+        return new IntVector2(x, y);
     }
 
-    public EmptyTile[][] grid;
-    public ArrayList<Enemy> enemies;
-    public ArrayList<Projectile> projectiles;
-    public ArrayList<FreeProjectile> freeProjectiles;
-    public Player player;
-    public boolean active;
+    public static IntVector2 getFinalPosition(IntVector2 initPosition, int xOffset, int yOffset) {
+        return getFinalPosition(initPosition.getX() + xOffset, initPosition.getY() + yOffset);
+    }
 
-    public float centerX;
-    public float centerY;
-    public int totalEnemies;
-    public int waveSpawnAmount;
-    public int enemiesDead;
+
+    private EmptyTile[][] grid;
+    private ArrayList<Enemy> enemies;
+    private ArrayList<Projectile> projectiles;
+    private ArrayList<FreeProjectile> freeProjectiles;
+    private Player player;
+    private boolean active;
+
+    private float centerX;
+    private float centerY;
+    private int totalEnemies;
+    private int waveSpawnAmount;
+    private int enemiesDead;
     private final int floor;
 
     private gridPosition position;
@@ -84,14 +88,49 @@ public class Grid {
 
         shouldDraw = true;
     }
+    public void setIsActive(boolean active) {
+        this.active = active;
+    }
+    public boolean getIsActive() {
+        return active;
+    }
 
     public void setPlayer(Player newPlayer) {
         player = newPlayer;
         playerSet = true;
     }
+    public Player getPlayer() {
+        return player;
+    }
+
+    public int getTotalEnemies() {
+        return totalEnemies;
+    }
+    public ArrayList<Enemy> getEnemies() {
+        return enemies;
+    }
+    public ArrayList<Projectile> getProjectiles() {
+        return projectiles;
+    }
+    public ArrayList<FreeProjectile> getFreeProjectiles() {
+        return freeProjectiles;
+    }
+    public int getWaveSpawnAmount() {
+        return waveSpawnAmount;
+    }
+
+    public void setEnemiesDead(int enemiesDead) {
+        this.enemiesDead = enemiesDead;
+    }
+    public int getEnemiesDead() {
+        return  getEnemiesDead();
+    }
 
     public EmptyTile getTileAt(int x, int y) {
         return grid[x][y];
+    }
+    public EmptyTile getTileAt(IntVector2 position) {
+        return grid[position.getX()][position.getY()];
     }
 
     public boolean getIsFreeSpaceAvailable() {
@@ -101,12 +140,13 @@ public class Grid {
     public Vector2 getFreeSpace() {
         int x = (int)(Math.random()*width);
         int y = (int)(Math.random()*height);
-        if (x == player.gridX && y == player.gridY)
+        Vector2 position = new Vector2(x, y);
+        if (player.getGridPosition().equals(position))
             return getFreeSpace();
         for (Enemy enemy: enemies)
-            if (enemy.gridX == x && enemy.gridY == y)
+            if (enemy.getGridPosition().equals(position))
                 return getFreeSpace();
-        return new Vector2(x, y);
+        return position;
     }
 
     public boolean didWin() {
@@ -124,10 +164,10 @@ public class Grid {
     private static final float[] down = {-25, -12.5f};
 
     public Vector2 getSpritePositionFromGridPosition(int x, int y) {
-        EmptyTile tile = grid[x][y];
-        Vector2 vec = new Vector2();
-        vec.set(tile.x, tile.y);
-        return vec;
+        return grid[x][y].getScreenPosition();
+    }
+    public Vector2 getSpritePositionFromGridPosition(float x, float y) {
+        return getSpritePositionFromGridPosition((int)x, (int)y);
     }
 
     public void setGridPosition(gridPosition newPosition) {
@@ -147,8 +187,10 @@ public class Grid {
             for (int x = 0; x < width; x++) {
                 EmptyTile tile = grid[x][y];
                 double p = gameTime*2 + x*0.5 + y*0.5 + wavePhaseShift;
-                tile.x = (float)(centerX2 + right[0]*x + down[0]*y + Math.cos(p)*5);
-                tile.y = (float)(topLeftY + down[1]*y + right[1]*x + Math.sin(p)*5);
+                tile.getScreenPosition().set(
+                        (float)(centerX2 + right[0]*x + down[0]*y + Math.cos(p)*5),
+                    (float)(topLeftY + down[1]*y + right[1]*x + Math.sin(p)*5)
+                );
             }
         }
     }
@@ -169,8 +211,8 @@ public class Grid {
             public void run(float delta, float elapsed) {
                 for (EmptyTile tile: velocities.keySet()) {
                     float[] velocity = velocities.get(tile);
-                    tile.x += velocity[0]*delta;
-                    tile.y += velocity[1]*delta;
+                    Vector2 screenPosition = tile.getScreenPosition();
+                    screenPosition.set(screenPosition.x + velocity[0]*delta, screenPosition.y + velocity[1]*delta);
                     velocity[1] -= 1000*delta;
                 }
             }
@@ -204,7 +246,7 @@ public class Grid {
         ArrayList<FreeProjectile> freeProjectilesToRemove = new ArrayList<>();
         for(FreeProjectile proj: freeProjectiles) {
             proj.render();
-            if (!proj.active) freeProjectilesToRemove.add(proj);
+            if (!proj.getActive()) freeProjectilesToRemove.add(proj);
         }
         for (FreeProjectile proj: freeProjectilesToRemove) freeProjectiles.remove(proj);
     }

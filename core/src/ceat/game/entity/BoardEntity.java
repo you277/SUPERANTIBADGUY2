@@ -6,48 +6,66 @@ import com.badlogic.gdx.math.Vector2;
 
 public class BoardEntity extends Entity {
     public static boolean overlap(BoardEntity a, BoardEntity b) {
-        return a.gridX == b.gridX && a.gridY == b.gridY;
+        return a.getGridPosition().equals(b.getGridPosition());
     }
     public static boolean overlap(BoardEntity boardEntity, int gridX, int gridY) {
-        return boardEntity.gridX == gridX && boardEntity.gridY == gridY;
+        IntVector2 position = boardEntity.getGridPosition();
+        return position.getX() == gridX && position.getY() == gridY;
     }
-    public float x;
-    public float y;
-    public int gridX;
-    public int gridY;
-    public EmptyTile parentTile;
-    public boolean isAnimating;
-    public boolean isJumping;
+    private final Vector2 screenPosition;
+    private final IntVector2 gridPosition;
+    private EmptyTile parentTile;
+    private boolean isAnimating;
+    private boolean isJumping;
     public BoardEntity(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
-        parentTile = grid.getTileAt(0, 0);
+        parentTile = getGrid().getTileAt(0, 0);
+        screenPosition = new Vector2();
+        gridPosition = new IntVector2();
     }
     public void setGridPosition(int newGridX, int newGridY) {
-        gridX = newGridX;
-        gridY = newGridY;
-        parentTile = grid.getTileAt(newGridX, newGridY);
+        gridPosition.set(newGridX, newGridY);
+        parentTile = getGrid().getTileAt(newGridX, newGridY);
+    }
+    public void setGridPosition(IntVector2 position) {
+        gridPosition.set(position);
+    }
+    public void setParentTile(EmptyTile tile) {
+        parentTile = tile;
+    }
+    public EmptyTile getParentTile() {
+        return parentTile;
+    }
+    public IntVector2 getGridPosition() {
+        return gridPosition;
+    }
+    public Vector2 getScreenPosition() {
+        return screenPosition;
+    }
+    public boolean getIsJumping() {
+        return isJumping;
+    }
+    public void setIsAnimating(boolean isAnimating) {
+        this.isAnimating = isAnimating;
     }
     public void render() {
         if (!isAnimating) {
-            Vector2 spritePos = grid.getSpritePositionFromGridPosition(gridX, gridY);
-            x = spritePos.x;
-            y = spritePos.y;
+            Vector2 spritePos = getGrid().getSpritePositionFromGridPosition(gridPosition.getX(), gridPosition.getY());
+            screenPosition.set(spritePos.x, spritePos.y);
         }
-        sprite.setPosition(x + ScreenOffset.offsetX, y + ScreenOffset.offsetY);
+        sprite.setPosition(screenPosition.x + ScreenOffset.offsetX, screenPosition.y + ScreenOffset.offsetY);
     }
 
     public void animateJump(EmptyTile nextTile, float duration, float height) {
         isAnimating = true;
-        float initX = parentTile.x;
-        float initY = parentTile.y;
+        float initX = parentTile.getScreenPosition().x;
+        float initY = parentTile.getScreenPosition().y;
         isJumping = true;
         new Loop(duration) {
             public void run(float delta, float elapsed) {
-                float midX = (initX + nextTile.x)/2;
-                float midY = (initY + nextTile.y)/2 + height;
-                Vector2 newPos = Lerp.threePointBezier(initX, initY, midX, midY, nextTile.x, nextTile.y, elapsed/duration);
-                x = newPos.x;
-                y = newPos.y;
+                float midX = (initX + nextTile.getScreenPosition().x)/2;
+                float midY = (initY + nextTile.getScreenPosition().y)/2 + height;
+                screenPosition.set(Lerp.threePointBezier(initX, initY, midX, midY, nextTile.getScreenPosition().x, nextTile.getScreenPosition().y, elapsed/duration));
             }
             public void onEnd() {
                 isAnimating = false;

@@ -11,7 +11,7 @@ public class EntityQuery <E extends BoardEntity, T extends BoardEntity> {
         ArrayList<T> overlapB = new ArrayList<>();
         for (E thing : entities) {
             for (T otherThing : otherEntities) {
-                if (thing.gridX == otherThing.gridX && thing.gridY == otherThing.gridY) {
+                if (thing.getGridPosition().equals(otherThing.getGridPosition())) {
                     if (!overlapA.contains(thing))
                         overlapA.add(thing);
                     if (!overlapB.contains(otherThing))

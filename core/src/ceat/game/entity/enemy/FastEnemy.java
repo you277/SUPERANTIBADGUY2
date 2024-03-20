@@ -16,9 +16,8 @@ public class FastEnemy extends Enemy {
     public void step() {
         int[] newCoords = calcStep(false, 2);
         if (newCoords[0] == -1) return;
-        gridX = newCoords[0];
-        gridY = newCoords[1];
-        super.animateJump(grid.getTileAt(gridX, gridY));
+        setGridPosition(newCoords[0], newCoords[1]);
+        super.animateJump(getGrid().getTileAt(getGridPosition()));
     }
 
     public String toString() {

@@ -2,7 +2,7 @@ package ceat.game.entity;
 
 import ceat.game.Game;
 import ceat.game.Grid;
-import com.badlogic.gdx.math.Vector2;
+import ceat.game.IntVector2;
 
 public class Projectile extends BoardEntity {
     private final moveDirection direction;
@@ -15,12 +15,12 @@ public class Projectile extends BoardEntity {
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
 
         direction = newDirection;
-        setGridPosition(player.gridX, player.gridY);
+        setGridPosition(player.getGridPosition());
     }
 
     public void step() {
-        int x = gridX;
-        int y = gridY;
+        int x = getGridPosition().getX();
+        int y = getGridPosition().getY();
         switch (direction) {
             case UP: {
                 y -= 2;
@@ -38,12 +38,9 @@ public class Projectile extends BoardEntity {
                 x -= 2;
             }
         }
-        Vector2 newPosition = Grid.getFinalPosition(x, y);
-        int newX = (int)newPosition.x;
-        int newY = (int)newPosition.y;
-        animateJump(grid.getTileAt(newX, newY), 0.1f, 0);
-        gridX = newX;
-        gridY = newY;
+        IntVector2 newPosition = Grid.getFinalPosition(x, y);
+        animateJump(getGrid().getTileAt(newPosition), 0.1f, 0);
+        getGridPosition().set(newPosition);
         life--;
     }
 }

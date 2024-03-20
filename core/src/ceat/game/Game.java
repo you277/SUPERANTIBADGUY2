@@ -68,15 +68,15 @@ public class Game {
 
         this.isBackgroundGame = isBackgroundGame;
         gameGui.enabled = !isBackgroundGame;
-        grid.active = true;
+        grid.setIsActive(true);
 
         player = new Player(this, grid);
         grid.setPlayer(player);
         player.setGridPosition(Grid.width/2, Grid.height/2);
 
         // gamegui setup
-        gameGui.enemyCounter.setAlive(grid.totalEnemies);
-        gameGui.enemyCounter.setTotal(grid.totalEnemies);
+        gameGui.enemyCounter.setAlive(grid.getTotalEnemies());
+        gameGui.enemyCounter.setTotal(grid.getTotalEnemies());
 //        gameGui.cardHolder.pullUp(0);
 
         grid.setGridPosition(Grid.gridPosition.CENTER);
@@ -130,17 +130,17 @@ public class Game {
     private void changeGrids(ChainedTask chain) {
         Grid oldGrid = grid;
         floorsDone++;
-        enemiesIgnored += oldGrid.enemies.size();
+        enemiesIgnored += oldGrid.getEnemies().size();
 
         lastGrid = grid;
         grid = nextGrid;
         nextGrid = new Grid(this, floor + 1);
 
-        lastGrid.active = false;
-        grid.active = true;
+        lastGrid.setIsActive(false);
+        grid.setIsActive(true);
 
-        gameGui.enemyCounter.setAlive(grid.totalEnemies);
-        gameGui.enemyCounter.setTotal(grid.totalEnemies);
+        gameGui.enemyCounter.setAlive(grid.getTotalEnemies());
+        gameGui.enemyCounter.setTotal(grid.getTotalEnemies());
 
         lastGridPresent = true;
 
@@ -175,34 +175,34 @@ public class Game {
     private attackMode currentAttackMode = attackMode.NONE;
 
     private void killEnemy(Enemy enemy) {
-        grid.enemiesDead++;
+        grid.setEnemiesDead(grid.getEnemiesDead() + 1);
         enemiesKilled++;
-        grid.enemies.remove(enemy);
+        grid.getEnemies().remove(enemy);
         enemy.dispose();
         grid.clearFreeProjectiles(enemy);
-        gameGui.enemyCounter.setAlive(grid.totalEnemies - grid.enemiesDead);
+        gameGui.enemyCounter.setAlive(grid.getTotalEnemies() - grid.getEnemiesDead());
     }
 
     private int currentEnemyAmt;
     private void setCurrentEnemyAmt() {
-        currentEnemyAmt = grid.enemies.size();
+        currentEnemyAmt = grid.getEnemies().size();
     }
     public void compareEnemyAmt() {
         if (isBackgroundGame) return;
-        System.out.println(grid.enemies.size() - currentEnemyAmt);
-        if (currentEnemyAmt - grid.enemies.size() >= 3) {
+        System.out.println(grid.getEnemies().size() - currentEnemyAmt);
+        if (currentEnemyAmt - grid.getEnemies().size() >= 3) {
             multiKillSound.play();
         }
     }
 
     public void processProjectilesAndEnemies() {
-        EntityQuery<Enemy, Projectile> query = new EntityQuery<Enemy, Projectile>().overlap(grid.enemies, grid.projectiles);
+        EntityQuery<Enemy, Projectile> query = new EntityQuery<Enemy, Projectile>().overlap(grid.getEnemies(), grid.getProjectiles());
         if (query.a.isEmpty()) return;
         ScreenOffset.shake(20f, 0.25f);
         for (Enemy enemy : query.a)
             killEnemy(enemy);
         for (Projectile projectile : query.b) {
-            grid.projectiles.remove(projectile);
+            grid.getProjectiles().remove(projectile);
             projectile.dispose();
         }
     }
@@ -216,7 +216,7 @@ public class Game {
         useAltInput = true;
         gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns, killedBy).play();
         gameGui.deathScreenEnabled = true;
-        new PlayerDeathEffect(player.x, player.y).play();
+        new PlayerDeathEffect(player.getScreenPosition()).play();
         if (isBackgroundGame) return;
         playerDeadSound.play();
         playerDeadSound2.play();
@@ -231,11 +231,12 @@ public class Game {
     }
 
     public void processPlayerAndSentryProjectiles() {
-        if (player.isJumping) return;
-        float playerX = (int)player.x;
-        float playerY = (int)player.y;
+        if (player.getIsJumping()) return;
+        Vector2 playerPosition = player.getScreenPosition();
+        float playerX = (int)playerPosition.x;
+        float playerY = (int)playerPosition.y;
         int killDistance = 5; // in pixels
-        for (FreeProjectile proj: grid.freeProjectiles) {
+        for (FreeProjectile proj: grid.getFreeProjectiles()) {
             int projX = (int)proj.x;
             int projY = (int)proj.y;
             if (Math.pow(projX - playerX, 2) + Math.pow(projY - playerY, 2) <= Math.pow(killDistance, 2)) {
@@ -247,7 +248,7 @@ public class Game {
 
     public void processPlayerAndEnemies() {
         if (!player.isAlive) return;
-        for (Enemy enemy: grid.enemies) {
+        for (Enemy enemy: grid.getEnemies()) {
             if (BoardEntity.overlap(player, enemy)) {
                 onPlayerDeath(enemy.toString());
                 return;
@@ -263,11 +264,11 @@ public class Game {
         for (int xOff = -2; xOff <= 2; xOff++) {
             for (int yOff = -2; yOff <= 2; yOff++) {
                 if (xOff == 0 && yOff == 0) continue;
-                Vector2 finalPos = Grid.getFinalPosition(player.gridX + xOff, player.gridY + yOff);
-                int gridX = (int)finalPos.x;
-                int gridY = (int)finalPos.y;
+                IntVector2 finalPos = Grid.getFinalPosition(player.getGridPosition(), xOff, yOff);
+                int gridX = finalPos.getX();
+                int gridY = finalPos.getY();
                 ArrayList<Enemy> enemiesToKill = new ArrayList<>();
-                for (Enemy enemy: grid.enemies) {
+                for (Enemy enemy: grid.getEnemies()) {
                     if (BoardEntity.overlap(enemy, gridX, gridY)) {
                         enemiesToKill.add(enemy);
                     }
@@ -296,14 +297,16 @@ public class Game {
     private void theActualBeamAttack(beamDirection direction) {
         ArrayList<Enemy> enemiesToKill = new ArrayList<>();
         if (direction == beamDirection.VERTICAL) {
+            int x = player.getGridPosition().getX();
             for (int i = 0; i < Grid.height; i++)
-                for (Enemy enemy: grid.enemies)
-                    if (BoardEntity.overlap(enemy, player.gridX, i))
+                for (Enemy enemy: grid.getEnemies())
+                    if (BoardEntity.overlap(enemy, x, i))
                         enemiesToKill.add(enemy);
         } else {
+            int y = player.getGridPosition().getY();
             for (int i = 0; i < Grid.width; i++)
-                for (Enemy enemy: grid.enemies)
-                    if (BoardEntity.overlap(enemy, i, player.gridY))
+                for (Enemy enemy: grid.getEnemies())
+                    if (BoardEntity.overlap(enemy, i, y))
                         enemiesToKill.add(enemy);
         }
         if (!enemiesToKill.isEmpty()) {
@@ -326,7 +329,7 @@ public class Game {
         gameGui.cooldownBarList.setBarProgress(1, 0);
         ScreenOffset.shake(5f, 0.25f);
         theActualBeamAttack(dir == Entity.moveDirection.UP || dir == Entity.moveDirection.DOWN ? beamDirection.VERTICAL : beamDirection.HORIZONTAL);
-        new SkyBeam(grid.getTileAt(player.gridX, player.gridY))
+        new SkyBeam(grid.getTileAt(player.getGridPosition()))
             .setColor(1f, 1f, 1f)
             .setScale(10f, 100f)
             .setRotation(rotation)
@@ -340,8 +343,8 @@ public class Game {
     private void projectileStep(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
-                if (grid.projectiles.isEmpty()) return;
-                for (Projectile projectile: grid.projectiles) {
+                if (grid.getProjectiles().isEmpty()) return;
+                for (Projectile projectile: grid.getProjectiles()) {
                     projectile.step();
                 }
             }
@@ -367,7 +370,7 @@ public class Game {
     private void enemyStep(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
-                for (Enemy enemy: grid.enemies)
+                for (Enemy enemy: grid.getEnemies())
                     enemy.step();
             }
         }).wait(0.25f).run(new Timer.Task() {
@@ -396,14 +399,14 @@ public class Game {
         Enemy enemy = randomEnemyType();
         enemy.setGridPosition((int)newPos.x, (int)newPos.y);
         enemy.animateEntry();
-        grid.enemies.add(enemy);
+        grid.getEnemies().add(enemy);
     }
 
     private void spawnEnemies(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
                 if (!grid.getIsFreeSpaceAvailable()) return;
-                for (int i = 0; i < grid.waveSpawnAmount; i++) {
+                for (int i = 0; i < grid.getWaveSpawnAmount(); i++) {
                     addEnemy();
                     if (!grid.getIsFreeSpaceAvailable()) return;
                 }
