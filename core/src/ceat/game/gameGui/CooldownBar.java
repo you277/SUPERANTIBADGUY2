@@ -20,7 +20,6 @@ public class CooldownBar {
     private static final int padding = 10;
     private final TexSprite bgSprite;
     private final TexSprite barSprite;
-    private final int index;
     private final String indexStr;
 
     private float x;
@@ -31,7 +30,6 @@ public class CooldownBar {
     public CooldownBar(int index) {
         bgSprite = new TexSprite("img/square.png");
         barSprite = new TexSprite("img/square.png");
-        this.index = index;
         indexStr = "" + (index + 1);
 
         bgSprite.setScale(barWidth, barHeight);
@@ -70,5 +68,12 @@ public class CooldownBar {
     public void dispose() {
         bgSprite.dispose();
         barSprite.dispose();
+    }
+
+    public String toString() {
+        return "COOLDOWN BAR " + indexStr;
+    }
+    public boolean equals(CooldownBar other) {
+        return this == other;
     }
 }

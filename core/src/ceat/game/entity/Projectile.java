@@ -3,13 +3,14 @@ package ceat.game.entity;
 import ceat.game.Game;
 import ceat.game.Grid;
 import ceat.game.IntVector2;
+import ceat.game.TexSprite;
 
 public class Projectile extends BoardEntity {
     private final moveDirection direction;
     public int life = 5;
     public Projectile(Game newGame, Grid newGrid, Player player, moveDirection newDirection) {
         super(newGame, newGrid);
-        super.loadSprite("img/baseTile.png");
+        TexSprite sprite = loadSprite("img/baseTile.png");
         sprite.setColor(1f, 1f, 1f, 1f);
         sprite.setScale(1.2f);
         sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
@@ -39,8 +40,15 @@ public class Projectile extends BoardEntity {
             }
         }
         IntVector2 newPosition = Grid.getFinalPosition(x, y);
-        animateJump(getGrid().getTileAt(newPosition), 0.1f, 0);
-        getGridPosition().set(newPosition);
+        animateJump(getParentTile(), getGrid().getTileAt(newPosition), 0.1f, 0);
+        setGridPosition(newPosition);
         life--;
+    }
+
+    public String toString() {
+        return "PROJECTILE";
+    }
+    public boolean equals(Projectile other) {
+        return getGridPosition().equals(other.getGridPosition()) && life == other.life;
     }
 }

@@ -10,4 +10,11 @@ public class ScreenShake {
         this.strength = strength;
         existenceTime = 0;
     }
+
+    public String toString() {
+        return "SCREEN SHAKE";
+    }
+    public boolean equals(ScreenShake other) {
+        return duration == other.duration && strength == other.strength;
+    }
 }

@@ -31,4 +31,11 @@ public class PlayerDeathRing extends Effect {
             }
         };
     }
+
+    public String toString() {
+        return "PLAYER DEATH RING";
+    }
+    public boolean equals(PlayerDeathRing other) {
+        return this == other;
+    }
 }

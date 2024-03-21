@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Timer;
 public class FreeEnemy extends Enemy {
     public FreeEnemy(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
-        sprite.setColor(0, 1, 1, 1);
+        getSprite().setColor(0, 1, 1, 1);
     }
 
     public void animateEntry() {
@@ -40,5 +40,8 @@ public class FreeEnemy extends Enemy {
 
     public String toString() {
         return "CYAN ENEMY";
+    }
+    public boolean equals(FreeEnemy other) {
+        return this == other;
     }
 }

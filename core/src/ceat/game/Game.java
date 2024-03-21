@@ -30,25 +30,26 @@ public class Game {
     private final SpriteBatch batch;
     private final GameGui gameGui;
     private Music music;
-    public float gameTime;
+    private float gameTime;
     
     private Grid grid;
     private Grid nextGrid;
     private Grid lastGrid;
     private boolean lastGridPresent;
-    public Player player;
+    private final Player player;
     
     private boolean allowStep;
     private int turns = 0;
     private int enemiesKilled = 0;
     private int enemiesIgnored = 0;
     private int floorsDone = 0;
-    private int floor = 1;
-    private int startFloor = 1;
-    private int shotsFired = 0;
-    public boolean isBackgroundGame;
+    private int floor;
+    private final int startFloor;
+    private int shotsFired;
+    private final boolean isBackgroundGame;
     private boolean useAltInput = false;
     private boolean inputActive = true;
+    private final GameBackground background;
 
     private Sound beamAttackSound;
     private Sound playerDeadSound;
@@ -67,7 +68,7 @@ public class Game {
         nextGrid = new Grid(this, startingFloor + 1);
 
         this.isBackgroundGame = isBackgroundGame;
-        gameGui.enabled = !isBackgroundGame;
+        gameGui.setEnabled(!isBackgroundGame);
         grid.setIsActive(true);
 
         player = new Player(this, grid);
@@ -75,8 +76,8 @@ public class Game {
         player.setGridPosition(Grid.width/2, Grid.height/2);
 
         // gamegui setup
-        gameGui.enemyCounter.setAlive(grid.getTotalEnemies());
-        gameGui.enemyCounter.setTotal(grid.getTotalEnemies());
+        gameGui.getEnemyCounter().setAlive(grid.getTotalEnemies());
+        gameGui.getEnemyCounter().setTotal(grid.getTotalEnemies());
 //        gameGui.cardHolder.pullUp(0);
 
         grid.setGridPosition(Grid.gridPosition.CENTER);
@@ -99,6 +100,12 @@ public class Game {
             new NewFloorBanner(floor).play();
 
         new Transition.Out().play();
+        background = new GameBackground();
+        background.play();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public void render() {
@@ -116,6 +123,7 @@ public class Game {
 
         ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
         batch.begin();
+        Effect.renderBackgroundEffects(batch);
 
         if (lastGridPresent)
             lastGrid.draw(batch);
@@ -139,14 +147,12 @@ public class Game {
         lastGrid.setIsActive(false);
         grid.setIsActive(true);
 
-        gameGui.enemyCounter.setAlive(grid.getTotalEnemies());
-        gameGui.enemyCounter.setTotal(grid.getTotalEnemies());
+        gameGui.getEnemyCounter().setAlive(grid.getTotalEnemies());
+        gameGui.getEnemyCounter().setTotal(grid.getTotalEnemies());
 
         lastGridPresent = true;
 
         grid.setPlayer(player);
-
-        Game hi = this;
 
         player.animateJump(grid.getTileAt(Grid.width/2, Grid.height/2), 1.15f, 400);
         oldGrid.explode();
@@ -180,7 +186,7 @@ public class Game {
         grid.getEnemies().remove(enemy);
         enemy.dispose();
         grid.clearFreeProjectiles(enemy);
-        gameGui.enemyCounter.setAlive(grid.getTotalEnemies() - grid.getEnemiesDead());
+        gameGui.getEnemyCounter().setAlive(grid.getTotalEnemies() - grid.getEnemiesDead());
     }
 
     private int currentEnemyAmt;
@@ -189,7 +195,6 @@ public class Game {
     }
     public void compareEnemyAmt() {
         if (isBackgroundGame) return;
-        System.out.println(grid.getEnemies().size() - currentEnemyAmt);
         if (currentEnemyAmt - grid.getEnemies().size() >= 3) {
             multiKillSound.play();
         }
@@ -208,14 +213,15 @@ public class Game {
     }
 
     private void onPlayerDeath(String killedBy) {
-        if (!player.isAlive) return;
+        if (!player.getIsAlive()) return;
+        player.setIsAlive(false);
         ScreenOffset.shake(25f, 1f);
         player.kill();
         if (!isBackgroundGame)
             music.setVolume(0.3f);
         useAltInput = true;
-        gameGui.deathScreen.set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns, killedBy).play();
-        gameGui.deathScreenEnabled = true;
+        gameGui.getDeathScreen().set(startFloor, floor, floorsDone, enemiesKilled, enemiesIgnored, shotsFired, turns, killedBy).play();
+        gameGui.setDeathScreenEnabled(true);
         new PlayerDeathEffect(player.getScreenPosition()).play();
         if (isBackgroundGame) return;
         playerDeadSound.play();
@@ -233,21 +239,23 @@ public class Game {
     public void processPlayerAndSentryProjectiles() {
         if (player.getIsJumping()) return;
         Vector2 playerPosition = player.getScreenPosition();
-        float playerX = (int)playerPosition.x;
-        float playerY = (int)playerPosition.y;
+        // it was using the bottom left of the sprite even tho i had the center set to the sprite center
+        float playerX = (int)playerPosition.x + player.getSprite().getWidth()/2;
+        float playerY = (int)playerPosition.y + player.getSprite().getHeight()/2;
         int killDistance = 5; // in pixels
         for (FreeProjectile proj: grid.getFreeProjectiles()) {
-            int projX = (int)proj.x;
-            int projY = (int)proj.y;
+            if (!proj.getAlive()) continue;
+            int projX = (int)proj.getPosition().x;
+            int projY = (int)proj.getPosition().y;
             if (Math.pow(projX - playerX, 2) + Math.pow(projY - playerY, 2) <= Math.pow(killDistance, 2)) {
-                onPlayerDeath("SENTRY ENEMY PROJECTILE");
+                onPlayerDeath("GREEN ENEMY PROJECTILE");
                 break;
             }
         }
     }
 
     public void processPlayerAndEnemies() {
-        if (!player.isAlive) return;
+        if (!player.getIsAlive()) return;
         for (Enemy enemy: grid.getEnemies()) {
             if (BoardEntity.overlap(player, enemy)) {
                 onPlayerDeath(enemy.toString());
@@ -259,7 +267,7 @@ public class Game {
     private void clearAttack() {
         shotsFired += 24;
         ScreenOffset.shake(5f, 0.25f);
-        gameGui.cooldownBarList.setBarProgress(2, 0);
+        gameGui.getCooldownBarList().setBarProgress(2, 0);
         setCurrentEnemyAmt();
         for (int xOff = -2; xOff <= 2; xOff++) {
             for (int yOff = -2; yOff <= 2; yOff++) {
@@ -326,7 +334,7 @@ public class Game {
             60 // left
             ;
         setCurrentEnemyAmt();
-        gameGui.cooldownBarList.setBarProgress(1, 0);
+        gameGui.getCooldownBarList().setBarProgress(1, 0);
         ScreenOffset.shake(5f, 0.25f);
         theActualBeamAttack(dir == Entity.moveDirection.UP || dir == Entity.moveDirection.DOWN ? beamDirection.VERTICAL : beamDirection.HORIZONTAL);
         new SkyBeam(grid.getTileAt(player.getGridPosition()))
@@ -433,7 +441,7 @@ public class Game {
     private void endOfTurn(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
-                gameGui.cooldownBarList.setBarProgress(0, 1f);
+                gameGui.getCooldownBarList().setBarProgress(0, 1f);
             }
         });
     }
@@ -452,13 +460,13 @@ public class Game {
         switch (currentAttackMode) {
             case BULLET: {
                 shotsFired++;
-                gameGui.cooldownBarList.setBarProgress(0, 0f);
+                gameGui.getCooldownBarList().setBarProgress(0, 0f);
                 grid.addProjectile();
                 break;
             }
             case BEAM: {
                 if (beamCooldown != 0) {
-                    gameGui.turnText.shake();
+                    gameGui.getStatusText().shake();
                     return;
                 }
                 didBeamAttack = true;
@@ -468,7 +476,7 @@ public class Game {
             }
             case CLEAR: {
                 if (clearCooldown != 0) {
-                    gameGui.turnText.shake();
+                    gameGui.getStatusText().shake();
                     return;
                 }
                 didClearAttack = true;
@@ -476,7 +484,7 @@ public class Game {
                 clearCooldown = 3;
             }
         }
-        gameGui.turnText.text = "";
+        gameGui.getStatusText().text = "";
         currentAttackMode = attackMode.NONE;
 
         allowStep = false;
@@ -484,12 +492,11 @@ public class Game {
 
         if (beamCooldown != 0 && !didBeamAttack) {
             beamCooldown--;
-            System.out.println(1 - beamCooldown/3);
-            gameGui.cooldownBarList.setBarProgress(1, 1 - beamCooldown/2f);
+            gameGui.getCooldownBarList().setBarProgress(1, 1 - beamCooldown/2f);
         }
         if (clearCooldown != 0 && !didClearAttack) {
             clearCooldown--;
-            gameGui.cooldownBarList.setBarProgress(2, 1 - clearCooldown/3f);
+            gameGui.getCooldownBarList().setBarProgress(2, 1 - clearCooldown/3f);
         }
 
         projectileStep(chain);
@@ -565,31 +572,31 @@ public class Game {
             case Keys.NUM_0: {
                 currentAttackMode = attackMode.NONE;
 //                gameGui.cardHolder.pullUp(0);
-                gameGui.turnText.text = "";
+                gameGui.getStatusText().text = "";
                 break;
             }
             case Keys.NUMPAD_1:
             case Keys.NUM_1: {
                 currentAttackMode = attackMode.BULLET;
 //                gameGui.cardHolder.pullUp(1);
-                gameGui.turnText.text = "USING ATTACK 1";
-                gameGui.turnText.pop();
+                gameGui.getStatusText().text = "USING ATTACK 1";
+                gameGui.getStatusText().pop();
                 break;
             }
             case Keys.NUMPAD_2:
             case Keys.NUM_2: {
                 currentAttackMode = attackMode.BEAM;
 //                gameGui.cardHolder.pullUp(2);
-                gameGui.turnText.text = getTurnText(beamCooldown == 0, "USING ATTACK 2", "ATTACK 2 ON COOLDOWN");
-                gameGui.turnText.pop();
+                gameGui.getStatusText().text = getTurnText(beamCooldown == 0, "USING ATTACK 2", "ATTACK 2 ON COOLDOWN");
+                gameGui.getStatusText().pop();
                 break;
             }
             case Keys.NUMPAD_3:
             case Keys.NUM_3: {
                 currentAttackMode = attackMode.CLEAR;
 //                gameGui.cardHolder.pullUp(3);
-                gameGui.turnText.text = getTurnText(clearCooldown == 0, "USING ATTACK 3", "ATTACK 3 ON COOLDOWN");
-                gameGui.turnText.pop();
+                gameGui.getStatusText().text = getTurnText(clearCooldown == 0, "USING ATTACK 3", "ATTACK 3 ON COOLDOWN");
+                gameGui.getStatusText().pop();
                 break;
             }
             case Keys.NUMPAD_ENTER:
@@ -616,6 +623,15 @@ public class Game {
             beamAttackSound.dispose();
             multiKillSound.dispose();
         }
+        background.stop();
+        background.dispose();
         Loop.cancelAllLoops();
+    }
+
+    public String toString() {
+        return "GAME";
+    }
+    public boolean equals(Game other) {
+        return this == other;
     }
 }

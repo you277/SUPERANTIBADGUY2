@@ -1,7 +1,7 @@
 package ceat.game.gameGui;
 
 import ceat.game.Font;
-import ceat.game.Game;
+import ceat.game.GameHandler;
 import ceat.game.TexSprite;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,11 +10,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 public class EnemyCounter {
     private int alive;
     private int total;
-    private final Game game;
     private final BitmapFont font;
     private final TexSprite sprite;
-    public EnemyCounter(Game game) {
-        this.game = game;
+    private float lifetime;
+    public EnemyCounter() {
         font = Font.create(new Font.ParamSetter() {
             public void run(FreeTypeFontParameter params) {
                 params.size = 20;
@@ -33,12 +32,20 @@ public class EnemyCounter {
         this.total = total;
     }
     public void draw(SpriteBatch batch) {
-        font.draw(batch, alive + "/" + total, 20 + sprite.getWidth() + 20, (float)Math.sin(game.gameTime)*10 + 10 + 20);
-        sprite.setPosition(20, (float)Math.sin(game.gameTime)*10 + 10 + 20 - sprite.getHeight());
+        lifetime += GameHandler.getDeltaTime();
+        font.draw(batch, alive + "/" + total, 20 + sprite.getWidth() + 20, (float)Math.sin(lifetime)*10 + 10 + 20);
+        sprite.setPosition(20, (float)Math.sin(lifetime)*10 + 10 + 20 - sprite.getHeight());
         sprite.draw(batch);
     }
     public void dispose() {
         sprite.dispose();
         font.dispose();
+    }
+
+    public String toString() {
+        return "ENEMY COUNTER";
+    }
+    public boolean equals(EnemyCounter other) {
+        return this == other;
     }
 }

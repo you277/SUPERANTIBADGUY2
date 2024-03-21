@@ -39,6 +39,10 @@ public class IntVector2 {
         return new int[] {x, y};
     }
 
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
+
     public boolean equals(IntVector2 other) {
         return x == other.x && y == other.y;
     }

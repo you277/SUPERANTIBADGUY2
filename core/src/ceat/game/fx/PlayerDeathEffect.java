@@ -22,4 +22,11 @@ public class PlayerDeathEffect {
             }).wait(0.1f);
         }
     }
+
+    public String toString() {
+        return "PLAYER DEATH EFFECT";
+    }
+    public boolean equals(PlayerDeathEffect other) {
+        return this == other;
+    }
 }

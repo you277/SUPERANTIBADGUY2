@@ -62,4 +62,11 @@ public class SkyBeam extends Effect {
     public void render() {
         getSprite().setPosition(parentTile.getScreenPosition().x + ScreenOffset.offsetX, parentTile.getScreenPosition().y + ScreenOffset.offsetY);
     }
+
+    public String toString() {
+        return "SKY BEAM";
+    }
+    public boolean equals(SkyBeam other) {
+        return this == other;
+    }
 }

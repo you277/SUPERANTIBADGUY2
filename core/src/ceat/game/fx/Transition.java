@@ -35,6 +35,13 @@ public class Transition {
         }
 
         public void onFinish() {}
+
+        public String toString() {
+            return "TRANSITION IN";
+        }
+        public boolean equals(In other) {
+            return this == other;
+        }
     }
     public static class Out extends Effect {
         private final TexSprite[] sprites;
@@ -82,5 +89,19 @@ public class Transition {
             for (TexSprite sprite: sprites)
                 sprite.dispose();
         }
+
+        public String toString() {
+            return "TRANSITION OUT";
+        }
+        public boolean equals(Out other) {
+            return this == other;
+        }
+    }
+
+    public String toString() {
+        return "TRANSITION ???";
+    }
+    public boolean equals(Transition other) {
+        return this == other;
     }
 }

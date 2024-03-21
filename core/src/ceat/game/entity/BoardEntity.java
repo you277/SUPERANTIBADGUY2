@@ -28,7 +28,7 @@ public class BoardEntity extends Entity {
         parentTile = getGrid().getTileAt(newGridX, newGridY);
     }
     public void setGridPosition(IntVector2 position) {
-        gridPosition.set(position);
+        setGridPosition(position.getX(), position.getY());
     }
     public void setParentTile(EmptyTile tile) {
         parentTile = tile;
@@ -53,13 +53,13 @@ public class BoardEntity extends Entity {
             Vector2 spritePos = getGrid().getSpritePositionFromGridPosition(gridPosition.getX(), gridPosition.getY());
             screenPosition.set(spritePos.x, spritePos.y);
         }
-        sprite.setPosition(screenPosition.x + ScreenOffset.offsetX, screenPosition.y + ScreenOffset.offsetY);
+        getSprite().setPosition(ScreenOffset.project(screenPosition));
     }
 
-    public void animateJump(EmptyTile nextTile, float duration, float height) {
+    public void animateJump(EmptyTile previousTile, EmptyTile nextTile, float duration, float height) {
         isAnimating = true;
-        float initX = parentTile.getScreenPosition().x;
-        float initY = parentTile.getScreenPosition().y;
+        float initX = previousTile.getScreenPosition().x;
+        float initY = previousTile.getScreenPosition().y;
         isJumping = true;
         new Loop(duration) {
             public void run(float delta, float elapsed) {
@@ -70,16 +70,17 @@ public class BoardEntity extends Entity {
             public void onEnd() {
                 isAnimating = false;
                 isJumping = false;
-                parentTile = nextTile;
             }
         };
     }
-
-    public void animateJump(EmptyTile nextTile, float duration) {
-        animateJump(nextTile, duration, 75);
+    public void animateJump(EmptyTile nextTile) {
+        animateJump(parentTile, nextTile, 0.25f, 75);
     }
 
-    public void animateJump(EmptyTile nextTile) {
-        animateJump(nextTile, 0.25f, 75);
+    public String toString() {
+        return "BOARD ENTITY";
+    }
+    public boolean equals(BoardEntity other) {
+        return parentTile == other.parentTile && gridPosition.equals(other.gridPosition);
     }
 }

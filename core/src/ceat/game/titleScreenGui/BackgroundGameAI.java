@@ -11,4 +11,11 @@ public class BackgroundGameAI {
     public void step() {
 
     }
+
+    public String toString() {
+        return "BACKGROUND GAME AI";
+    }
+    public boolean equals(BackgroundGameAI other) {
+        return this == other;
+    }
 }

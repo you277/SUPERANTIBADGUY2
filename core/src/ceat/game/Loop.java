@@ -28,7 +28,7 @@ public class Loop {
 
     }
     public static void cancelAllLoops() {
-        while (loops.size() > 0) {
+        while (!loops.isEmpty()) {
             Loop f = loops.get(0);
             loops.remove(f);
             f.onEnd();
@@ -44,4 +44,12 @@ public class Loop {
     }
     public void run(float deltaTime, float elapsed) {}
     public void onEnd() {}
+
+    public String toString() {
+        if (type == loopType.SYNCED) return "SYNCED LOOP";
+        return "UNSYNCED LOOP";
+    }
+    public boolean equals(Loop other) {
+        return this == other;
+    }
 }

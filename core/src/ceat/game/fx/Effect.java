@@ -13,8 +13,7 @@ public class Effect {
     private static void sortEffectOrder() {
         Collections.sort(effects, compareZIndex);
     }
-    public static void renderEffects(SpriteBatch batch) {
-        if (effects.isEmpty()) return;
+    private static void checkOrder() {
         boolean isOrdered = true;
         int lastZIndex = effects.get(0).zIndex;
         for (Effect effect: effects) {
@@ -23,7 +22,18 @@ public class Effect {
             lastZIndex = effect.zIndex;
         }
         if (!isOrdered) sortEffectOrder();
+    }
+    public static void renderBackgroundEffects(SpriteBatch batch) {
+        checkOrder();
         for (Effect effect: effects) {
+            if (effect.zIndex >= 0) continue;
+            effect.draw(batch);
+        }
+    }
+    public static void renderEffects(SpriteBatch batch) {
+        checkOrder();
+        for (Effect effect: effects) {
+            if (effect.zIndex < 0) continue;
             effect.draw(batch);
         }
     }
@@ -41,9 +51,6 @@ public class Effect {
     public void setZIndex(int zIndex) {
         this.zIndex = zIndex;
     }
-    public int getZIndex() {
-        return zIndex;
-    }
     public void registerEffect() {
         effects.add(this);
     }
@@ -57,5 +64,12 @@ public class Effect {
     public void render() {}
     public void dispose() {
         if (sprite != null) sprite.dispose();
+    }
+
+    public String toString() {
+        return "EFFECT";
+    }
+    public boolean equals(Effect other) {
+        return this == other;
     }
 }

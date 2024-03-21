@@ -1,9 +1,6 @@
 package ceat.game.entity;
 
-import ceat.game.ChainedTask;
-import ceat.game.Game;
-import ceat.game.Grid;
-import ceat.game.IntVector2;
+import ceat.game.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -11,13 +8,13 @@ public class Player extends BoardEntity {
     private moveDirection direction = moveDirection.UP;
     private final Highlight highlight;
     private boolean highlightVisible;
-    public boolean isAlive;
+    private boolean isAlive;
 
     public Player(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         setParentTile(getGrid().getTileAt(getGridPosition()));
 
-        super.loadSprite("img/baseTile.png");
+        TexSprite sprite = loadSprite("img/baseTile.png");
         sprite.setColor(1f, 1f, 0f, 1f);
         sprite.setScale(2f);
         sprite.setCenter();
@@ -40,6 +37,13 @@ public class Player extends BoardEntity {
         super.setGridPosition(Grid.width/2, Grid.height/2);
         highlight.setGrid(newGrid);
         moveHighlight();
+    }
+
+    public void setIsAlive(boolean isAlive) {
+        this.isAlive = isAlive;
+    }
+    public boolean getIsAlive() {
+        return isAlive;
     }
 
     public void kill() {
@@ -96,13 +100,13 @@ public class Player extends BoardEntity {
             default:
                 vec = new IntVector2(gridX, gridY);
         }
-        getGridPosition().set(vec);
-        animateJump(getGrid().getTileAt(gridX, gridY));
+        animateJump(getGrid().getTileAt(vec));
+        setGridPosition(vec);
         moveHighlight();
     }
 
     public void animateJump(EmptyTile tile, float duration, float height) {
-        super.animateJump(tile, duration, height);
+        animateJump(getParentTile(), tile, duration, height);
         highlightVisible = false;
         new ChainedTask()
                 .wait(0.25f)
@@ -112,10 +116,6 @@ public class Player extends BoardEntity {
                         highlightVisible = true;
                     }
                 });
-    }
-
-    public void animateJump(EmptyTile tile, float duration) {
-        animateJump(tile, duration, 75);
     }
 
     public void animateJump(EmptyTile tile) {
@@ -134,5 +134,12 @@ public class Player extends BoardEntity {
     public void dispose() {
         super.dispose();
         highlight.dispose();
+    }
+
+    public String toString() {
+        return "PLAYER";
+    }
+    public boolean equals(Player other) {
+        return this == other;
     }
 }

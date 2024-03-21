@@ -2,6 +2,7 @@ package ceat.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.HashMap;
 
@@ -28,10 +29,15 @@ public class TexSprite extends Sprite {
     }
 
     public void setCenter() {
-        setCenter(getWidth()/2, getHeight()/2);
+        super.setCenter(getWidth()/2, getHeight()/2);
+    }
+
+    public void setPosition(Vector2 position) {
+        super.setPosition(position.x, position.y);
     }
 
     public void dispose() {
+        if (!textureUsage.containsKey(texturePath)) return;
         int currentUsage = textureUsage.get(texturePath);
         if (currentUsage == 1) {
             textures.get(texturePath).dispose();
@@ -40,6 +46,12 @@ public class TexSprite extends Sprite {
             return;
         }
         textureUsage.put(texturePath, currentUsage - 1);
-//        getTexture().dispose();
+    }
+
+    public String toString() {
+        return "TEXTURE SPRITE " + texturePath;
+    }
+    public boolean equals(TexSprite other) {
+        return this == other;
     }
 }

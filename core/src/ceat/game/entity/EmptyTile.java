@@ -3,6 +3,7 @@ package ceat.game.entity;
 import ceat.game.Game;
 import ceat.game.Grid;
 import ceat.game.Loop;
+import ceat.game.TexSprite;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +13,7 @@ public class EmptyTile extends Entity {
 
     public EmptyTile(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
-        super.loadSprite("img/baseTile.png");
+        TexSprite sprite = loadSprite("img/baseTile.png");
         sprite.setColor(0f, 0f, 0f, 0.15f);
         sprite.scale(1.5f);
         sprite.setCenter();
@@ -25,18 +26,24 @@ public class EmptyTile extends Entity {
     public void fadeIn() {
         new Loop(1f) {
             public void run(float delta, float elapsed) {
-                sprite.setColor(0f, 0f, 0f, 0.15f + (elapsed)*0.25f);
+                getSprite().setColor(0f, 0f, 0f, 0.15f + (elapsed)*0.25f);
             }
 
             public void onEnd() {
-                sprite.setColor(0f, 0f, 0f, 0.4f);
+                getSprite().setColor(0f, 0f, 0f, 0.4f);
             }
         };
     }
 
     public void draw(SpriteBatch batch) {
-        Vector2 position = getScreenPosition();
-        sprite.setPosition(position.x + ScreenOffset.offsetX, position.y + ScreenOffset.offsetY);
+        getSprite().setPosition(ScreenOffset.project(getScreenPosition()));
         super.draw(batch);
+    }
+
+    public String toString() {
+        return "EMPTY TILE";
+    }
+    public boolean equals(EmptyTile other) {
+        return this == other;
     }
 }

@@ -4,7 +4,6 @@ import ceat.game.Font;
 import ceat.game.GameHandler;
 import ceat.game.Lerp;
 import ceat.game.fx.SelectionParticles;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -64,5 +63,12 @@ public class Selection {
 
     public void dispose() {
         font.dispose();
+    }
+
+    public String toString() {
+        return "SELECTION [" + text + "]";
+    }
+    public boolean equals(Selection other) {
+        return this == other;
     }
 }

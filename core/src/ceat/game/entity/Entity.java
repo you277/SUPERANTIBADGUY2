@@ -14,19 +14,18 @@ public class Entity {
         DOWN
     }
 
-    public TexSprite sprite;
-    private boolean loadedSprite;
+    private TexSprite sprite;
     private Grid grid;
-    private Game game;
+    private final Game game;
 
     public Entity(Game newGame, Grid newGrid) {
         grid = newGrid;
         game = newGame;
     }
 
-    public void loadSprite(String path) {
+    public TexSprite loadSprite(String path) {
         sprite = new TexSprite(path);
-        loadedSprite = true;
+        return sprite;
     }
     public void setGrid(Grid newGrid) {
         grid = newGrid;
@@ -37,16 +36,26 @@ public class Entity {
     public Game getGame() {
         return game;
     }
+    public TexSprite getSprite() {
+        return sprite;
+    }
 
     public void render() {}
 
     public void step() {}
 
     public void draw(SpriteBatch batch) {
-        if (loadedSprite) sprite.draw(batch);
+        if (sprite != null) sprite.draw(batch);
     }
 
     public void dispose() {
         sprite.dispose();
+    }
+
+    public String toString() {
+        return "ENTITY";
+    }
+    public boolean equals(Entity other) {
+        return this == other;
     }
 }

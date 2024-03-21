@@ -79,4 +79,11 @@ public class NewFloorBanner extends Effect {
         y -= Gdx.graphics.getDeltaTime()*10;
         currentFont.draw(batch, text, 50, y);
     }
+
+    public String toString() {
+        return "NEW FLOOR BANNER";
+    }
+    public boolean equals(NewFloorBanner other) {
+        return this == other;
+    }
 }

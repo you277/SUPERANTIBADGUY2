@@ -40,17 +40,17 @@ public class Grid {
     }
 
 
-    private EmptyTile[][] grid;
-    private ArrayList<Enemy> enemies;
-    private ArrayList<Projectile> projectiles;
-    private ArrayList<FreeProjectile> freeProjectiles;
+    private final EmptyTile[][] grid;
+    private final ArrayList<Enemy> enemies;
+    private final ArrayList<Projectile> projectiles;
+    private final ArrayList<FreeProjectile> freeProjectiles;
     private Player player;
     private boolean active;
 
     private float centerX;
     private float centerY;
-    private int totalEnemies;
-    private int waveSpawnAmount;
+    private final int totalEnemies;
+    private final int waveSpawnAmount;
     private int enemiesDead;
     private final int floor;
 
@@ -123,7 +123,7 @@ public class Grid {
         this.enemiesDead = enemiesDead;
     }
     public int getEnemiesDead() {
-        return  getEnemiesDead();
+        return enemiesDead;
     }
 
     public EmptyTile getTileAt(int x, int y) {
@@ -274,5 +274,12 @@ public class Grid {
         for (EmptyTile[] row: grid)
             for (EmptyTile tile: row)
                 tile.dispose();
+    }
+
+    public String toString() {
+        return "GRID";
+    }
+    public boolean equals(Grid other) {
+        return this == other;
     }
 }

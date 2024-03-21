@@ -32,4 +32,11 @@ public class SelectionParticles extends Effect {
             }
         };
     }
+
+    public String toString() {
+        return "SELECTION PARTICLES";
+    }
+    public boolean equals(SelectionParticles other) {
+        return this == other;
+    }
 }

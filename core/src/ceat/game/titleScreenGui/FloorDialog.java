@@ -25,7 +25,7 @@ public class FloorDialog {
     private float lifetime;
     private float inputYPosition;
     private final TexSprite bgSprite;
-    private Sound clickSound;
+    private final Sound clickSound;
     public FloorDialog() {
         layout = new GlyphLayout();
         inputYPosition = 200;
@@ -116,9 +116,7 @@ public class FloorDialog {
 
         if (backspaceDown) {
             if (backspaceDownTime > 0.25 && currentInput > 0) {
-                if (currentInput != 0) {
-                    clickSound.play(10);
-                }
+                clickSound.play(10);
                 currentInput /= 10;
                 inputYPosition = 207.5f;
             } else {
@@ -155,5 +153,12 @@ public class FloorDialog {
         inputFont.dispose();
         emptyInputFont.dispose();
         clickSound.dispose();
+    }
+
+    public String toString() {
+        return "FLOOR DIALOG";
+    }
+    public boolean equals(FloorDialog other) {
+        return this == other;
     }
 }

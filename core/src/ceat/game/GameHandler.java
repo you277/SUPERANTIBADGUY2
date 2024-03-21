@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer.Task;
 
@@ -180,5 +179,12 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	public void dispose() {
 		batch.dispose();
 		title1.dispose();
+	}
+
+	public String toString() {
+		return "GAME HANDLER";
+	}
+	public boolean equals(GameHandler other) {
+		return this == other;
 	}
 }

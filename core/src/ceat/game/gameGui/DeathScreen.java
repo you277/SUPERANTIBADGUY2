@@ -53,6 +53,13 @@ public class DeathScreen extends Effect {
             };
         }
         public void onFinish() {}
+
+        public String toString() {
+            return "INT STATE";
+        }
+        public boolean equals(IntState other) {
+            return num == other.num;
+        }
     }
 
     private class Stat {
@@ -83,6 +90,13 @@ public class DeathScreen extends Effect {
         public void draw(SpriteBatch batch) {
             if (!visible) return;
             drawStat(batch, name, "" + state.displayNum, statsTop);
+        }
+
+        public String toString() {
+            return "STAT";
+        }
+        public boolean equals(Stat other) {
+            return name.equals(other.name) && state.equals(other.state);
         }
     }
 
@@ -171,6 +185,13 @@ public class DeathScreen extends Effect {
         titleFont.dispose();
         killedByFont.dispose();
         statFont.dispose();
-        tickSound.dispose();
+        if (tickSound != null) tickSound.dispose();
+    }
+
+    public String toString() {
+        return "DEATH SCREEN";
+    }
+    public boolean equals(DeathScreen other) {
+        return this == other;
     }
 }

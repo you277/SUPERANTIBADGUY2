@@ -4,10 +4,9 @@ import ceat.game.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameGui {
-    private static GameGui currentGui;
-    private final Game game;
-    public boolean enabled;
-    public boolean deathScreenEnabled;
+    public static GameGui currentGui;
+    private boolean enabled;
+    private boolean deathScreenEnabled;
 
     private final EnemyCounter enemyCounter;
     private final CooldownBarList cooldownBarList;
@@ -17,9 +16,8 @@ public class GameGui {
     public GameGui(Game game) {
         currentGui = this;
         enabled = true;
-        this.game = game;
-        enemyCounter = new EnemyCounter(game);
-        cooldownBarList = new CooldownBarList(game);
+        enemyCounter = new EnemyCounter();
+        cooldownBarList = new CooldownBarList();
         statusText = new StatusText(game);
         deathScreen = new DeathScreen();
     }
@@ -37,6 +35,13 @@ public class GameGui {
         return deathScreen;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    public void setDeathScreenEnabled(boolean enabled) {
+        deathScreenEnabled = enabled;
+    }
+
     public void draw(SpriteBatch batch) {
         if (!enabled) return;
         enemyCounter.draw(batch);
@@ -51,5 +56,12 @@ public class GameGui {
         cooldownBarList.dispose();
         statusText.dispose();
         deathScreen.dispose();
+    }
+
+    public String toString() {
+        return "GAME GUI";
+    }
+    public boolean equals(GameGui other) {
+        return this == other;
     }
 }

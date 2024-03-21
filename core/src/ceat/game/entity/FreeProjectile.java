@@ -7,25 +7,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public class FreeProjectile extends Entity {
-    public float x;
-    public float y;
+    private final Vector2 position;
     private float xVelocity;
     private float yVelocity;
     private float lifetime;
     public final Enemy parent;
     private boolean alive = true;
     private boolean active = true;
+    private final TexSprite sprite;
     public FreeProjectile(Game newGame, Grid newGrid, Enemy parent) {
         super(newGame, newGrid);
-        super.loadSprite("img/square.png");
+        sprite = loadSprite("img/square.png");
         sprite.setScale(5, 5);
         sprite.setCenter();
+        position = new Vector2();
         this.parent = parent;
     }
 
     public FreeProjectile setPosition(Vector2 position) {
-        this.x = position.x;
-        this.y = position.y;
+        this.position.set(position);
         return this;
     }
 
@@ -41,7 +41,7 @@ public class FreeProjectile extends Entity {
                 float extraScale = elapsed*5;
                 sprite.setColor(1, 1, 1, 1 - elapsed*2);
                 sprite.setScale(5 + extraScale, 5 + extraScale);
-                sprite.setCenter(sprite.getWidth()/2, sprite.getHeight()/2);
+                sprite.setCenter();
             }
             public void onEnd() {
                 active = false;
@@ -62,6 +62,9 @@ public class FreeProjectile extends Entity {
         alive = false;
         doFadeAnimation();
     }
+    public Vector2 getPosition() {
+        return position;
+    }
 
     public void render() {
         if (alive) {
@@ -71,11 +74,17 @@ public class FreeProjectile extends Entity {
         }
         float delta = GameHandler.getDeltaTime();
         lifetime += delta;
-        x += xVelocity*delta;
-        y += yVelocity*delta;
-        sprite.setPosition(x + ScreenOffset.offsetX, y + ScreenOffset.offsetY);
+        position.set(position.x + xVelocity*delta, position.y + yVelocity*delta);
+        sprite.setPosition(ScreenOffset.project(position));
     }
     public void draw(SpriteBatch batch) {
         sprite.draw(batch);
+    }
+
+    public String toString() {
+        return "FREE PROJECTILE";
+    }
+    public boolean equals(FreeProjectile other) {
+        return xVelocity == other.xVelocity && yVelocity == other.yVelocity && alive == other.alive && active == other.active;
     }
 }

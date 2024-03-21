@@ -4,6 +4,7 @@ import ceat.game.Font;
 import ceat.game.Game;
 import ceat.game.GameHandler;
 import ceat.game.TexSprite;
+import ceat.game.fx.BackgroundCircleThing;
 import ceat.game.fx.Effect;
 import ceat.game.fx.Transition;
 import com.badlogic.gdx.Gdx;
@@ -24,6 +25,7 @@ public class TitleScreen {
     private FloorDialog floorDialog;
     private final Selection startSelect;
     private final Selection floorSelect;
+    private final BackgroundCircleThing backgroundCircleThing;
     private int currentSelection;
     private boolean acceptInput;
     private final Sound clickSound;
@@ -52,6 +54,9 @@ public class TitleScreen {
         startSelect = new Selection("START FLOOR 1").setPosition(0, 300).setSelected(true);
         floorSelect = new Selection("SELECT FLOOR").setPosition(0, 200).setSelected(false);
 
+        backgroundCircleThing = new BackgroundCircleThing();
+        backgroundCircleThing.play();
+
         clickSound = Gdx.audio.newSound(Gdx.files.internal("snd/Switch1.mp3"));
         keySound = Gdx.audio.newSound(Gdx.files.internal("snd/Key2.mp3"));
     }
@@ -63,8 +68,10 @@ public class TitleScreen {
         backgroundGame.render();
 
         batch.begin();
+        Effect.renderBackgroundEffects(batch);
         bgSprite.draw(batch);
-        font.draw(batch, "SUPERBADGUYDESTROYER2200++ ULTRA DELUXE\nEDITION", 15, 470);
+        float offset = (float)Math.cos(lifetime)*5;
+        font.draw(batch, "SUPERBADGUYDESTROYER2200++ ULTRA DELUXE\nEDITION", 15, 470 + offset);
         startSelect.draw(batch);
         floorSelect.draw(batch);
         if (floorDialog != null)
@@ -151,7 +158,17 @@ public class TitleScreen {
         floorSelect.dispose();
         bgSprite.dispose();
         font.dispose();
+        backgroundGame.dispose();
         clickSound.dispose();
         keySound.dispose();
+        backgroundCircleThing.stop();
+        backgroundCircleThing.unregisterEffect();
+    }
+
+    public String toString() {
+        return "TITLE SCREEN";
+    }
+    public boolean equals(TitleScreen other) {
+        return this == other;
     }
 }

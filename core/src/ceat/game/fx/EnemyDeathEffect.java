@@ -41,4 +41,11 @@ public class EnemyDeathEffect extends Effect {
             }
         });
     }
+
+    public String toString() {
+        return "ENEMY DEATH EFFECT";
+    }
+    public boolean equals(EnemyDeathEffect other) {
+        return this == other;
+    }
 }

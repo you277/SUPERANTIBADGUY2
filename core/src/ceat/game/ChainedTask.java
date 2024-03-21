@@ -14,4 +14,11 @@ public class ChainedTask {
         Timer.schedule(task, time);
         return this;
     }
+
+    public String toString() {
+        return "CHAINED TASK";
+    }
+    public boolean equals(ChainedTask other) {
+        return this == other;
+    }
 }

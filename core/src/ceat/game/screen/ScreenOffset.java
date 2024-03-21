@@ -11,6 +11,9 @@ public class ScreenOffset {
     public static Vector2 project(float x, float y) {
         return new Vector2(x + offsetX, y + offsetY);
     }
+    public static Vector2 project(Vector2 position) {
+        return new Vector2(position.x + offsetX, position.y + offsetY);
+    }
 
     public static void shake(float strength, float duration) {
         shakers.add(new ScreenShake(duration, strength));
