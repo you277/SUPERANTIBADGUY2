@@ -9,7 +9,7 @@ public class GameBackground extends Effect {
     private float lifetime;
     private float yLevel;
     public GameBackground() {
-        int rows = 8;
+        int rows = 21;
         int tilesPerRow = 11;
         sprites = new TexSprite[rows*tilesPerRow];
         for (int i = 0; i < rows*tilesPerRow; i++) {
@@ -27,9 +27,7 @@ public class GameBackground extends Effect {
     }
 
     public void arrangeTiles() {
-//        int numRows = sprites.length/11;
-        float top = 175;
-//        float bottom = yLevel*sprites[0].getHeight()*5;
+        float top = 500;
         float xOffset = (float)Math.sin(lifetime/6)*sprites[0].getWidth()*2.5f - sprites[0].getWidth()*2.5f;
         float opacity = 0.5f;
         for (int i = 0; i < sprites.length; i++) {

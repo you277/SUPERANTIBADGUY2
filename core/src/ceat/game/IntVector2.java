@@ -40,7 +40,7 @@ public class IntVector2 {
     }
 
     public String toString() {
-        return "(" + x + ", " + y + ")";
+        return "[" + x + ", " + y + "]";
     }
 
     public boolean equals(IntVector2 other) {
@@ -49,5 +49,8 @@ public class IntVector2 {
 
     public boolean equals(Vector2 other) {
         return x == other.x && y == other.y;
+    }
+    public boolean equals(int x, int y) {
+        return this.x == x && this.y == y;
     }
 }

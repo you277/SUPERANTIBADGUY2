@@ -122,7 +122,7 @@ public class Game {
         grid.render(gameTime);
 
         ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
-        batch.begin();
+        if (!isBackgroundGame) batch.begin();
         Effect.renderBackgroundEffects(batch);
 
         if (lastGridPresent)
@@ -132,7 +132,7 @@ public class Game {
 
         gameGui.draw(batch);
         Effect.renderEffects(batch);
-        batch.end();
+        if (!isBackgroundGame) batch.end();
     }
 
     private void changeGrids(ChainedTask chain) {

@@ -55,17 +55,53 @@ public class Enemy extends BoardEntity {
 
         return new IntVector2(newX, newY);
     }
+    private IntVector2 getOtherRandomPosition(IntVector2[] originalPotentialPositions, boolean allowDiagonals) {
+        int initX = getGridPosition().getX();
+        int initY = getGridPosition().getY();
+        ArrayList<IntVector2> positions = new ArrayList<>();
+        for (int xOffset = -1; xOffset <= 1; xOffset++) {
+            for (int yOffset = -1; yOffset <= 1; yOffset++) {
+                if (xOffset == 0 && yOffset == 0) continue;
+                if (xOffset != 0 && yOffset != 0 && !allowDiagonals) continue;
+                IntVector2 vec = Grid.getFinalPosition(initX + xOffset, initY + yOffset);
+                boolean allowMove = true;
+                for (IntVector2 other: originalPotentialPositions) {
+                    if (other.equals(vec)) {
+                        allowMove = false;
+                        break;
+                    }
+                }
+                if (allowMove) {
+                    for (Enemy otherEnemy: getGrid().getEnemies()) {
+                        if (otherEnemy.getGridPosition().equals(vec)) {
+                            allowMove = false;
+                            break;
+                        }
+                    }
+                }
+                if (!allowMove) continue;
+                positions.add(vec);
+            }
+        }
+        if (positions.isEmpty()) return new IntVector2(-1, -1);
+        return positions.get((int)(Math.random()*positions.size()));
+    }
+
+    private IntVector2[] cullPotentialPositions(IntVector2[] positions, boolean allowDiagonals) {
+        if (allowDiagonals) return positions;
+        return new IntVector2[] {positions[0], positions[1]};
+    }
 
     // epic enemy ai
     public int[] calcStep(boolean allowDiagonals, int stepDistance) {
         IntVector2 gridPosition = getGridPosition();
         IntVector2 possibleStep = getPossibleStep(stepDistance);
 
-        IntVector2[] positions = {
+        IntVector2[] positions = cullPotentialPositions(new IntVector2[] {
                 new IntVector2(gridPosition.getX(), possibleStep.getY()),
                 new IntVector2(possibleStep.getX(), gridPosition.getY()),
                 possibleStep
-        };
+        }, allowDiagonals);
 
         ArrayList<Integer> allowedMoves = new ArrayList<>();
         int maxMoveIdx = allowDiagonals ? 2 : 1;
@@ -81,7 +117,7 @@ public class Enemy extends BoardEntity {
             if (allowMove) allowedMoves.add(i);
         }
 
-        if (allowedMoves.isEmpty()) return new int[] {-1, -1};
+        if (allowedMoves.isEmpty()) return getOtherRandomPosition(positions, allowDiagonals).getPositionArr();
 
         IntVector2 finalPosition;
 
@@ -93,7 +129,7 @@ public class Enemy extends BoardEntity {
             finalPosition = positions[moveIdx];
         }
 
-        if (finalPosition.equals(gridPosition)) return new int[] {-1, -1};
+        if (finalPosition.equals(gridPosition)) return getOtherRandomPosition(positions, allowDiagonals).getPositionArr();
         return finalPosition.getPositionArr();
     }
 

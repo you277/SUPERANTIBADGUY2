@@ -64,11 +64,13 @@ public class TitleScreen {
     public void render() {
         float delta = GameHandler.getDeltaTime();
         lifetime += delta;
+
         backgroundAI.step();
-        backgroundGame.render();
 
         batch.begin();
         Effect.renderBackgroundEffects(batch);
+        backgroundGame.render();
+
         bgSprite.draw(batch);
         float offset = (float)Math.cos(lifetime)*5;
         font.draw(batch, "SUPERBADGUYDESTROYER2200++ ULTRA DELUXE\nEDITION", 15, 470 + offset);
