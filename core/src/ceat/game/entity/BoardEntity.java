@@ -58,14 +58,14 @@ public class BoardEntity extends Entity {
 
     public void animateJump(EmptyTile previousTile, EmptyTile nextTile, float duration, float height) {
         isAnimating = true;
-        float initX = previousTile.getScreenPosition().x;
-        float initY = previousTile.getScreenPosition().y;
+        Vector2 initPosition = previousTile.getScreenPosition();
         isJumping = true;
         new Loop(duration) {
             public void run(float delta, float elapsed) {
-                float midX = (initX + nextTile.getScreenPosition().x)/2;
-                float midY = (initY + nextTile.getScreenPosition().y)/2 + height;
-                screenPosition.set(Lerp.threePointBezier(initX, initY, midX, midY, nextTile.getScreenPosition().x, nextTile.getScreenPosition().y, elapsed/duration));
+                Vector2 nextPosition = nextTile.getScreenPosition();
+                float midX = (initPosition.x + nextPosition.x)/2;
+                float midY = (initPosition.y + nextPosition.y)/2 + height;
+                screenPosition.set(Lerp.threePointBezier(initPosition, new Vector2(midX, midY), nextPosition, elapsed/duration));
             }
             public void onEnd() {
                 isAnimating = false;

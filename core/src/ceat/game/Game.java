@@ -6,7 +6,9 @@ import ceat.game.entity.enemy.FastEnemy;
 import ceat.game.entity.enemy.FreeEnemy;
 import ceat.game.entity.enemy.SentryEnemy;
 import ceat.game.fx.*;
+import ceat.game.gameGui.CooldownBarList;
 import ceat.game.gameGui.GameGui;
+import ceat.game.gameGui.StatusText;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -107,6 +109,9 @@ public class Game {
     public Player getPlayer() {
         return player;
     }
+    public Grid getGrid() {
+        return grid;
+    }
 
     public void render() {
         float delta = GameHandler.getDeltaTime();
@@ -195,9 +200,8 @@ public class Game {
     }
     public void compareEnemyAmt() {
         if (isBackgroundGame) return;
-        if (currentEnemyAmt - grid.getEnemies().size() >= 3) {
+        if (currentEnemyAmt - grid.getEnemies().size() >= 3)
             multiKillSound.play();
-        }
     }
 
     public void processProjectilesAndEnemies() {
@@ -240,13 +244,13 @@ public class Game {
         if (player.getIsJumping()) return;
         Vector2 playerPosition = player.getScreenPosition();
         // it was using the bottom left of the sprite even tho i had the center set to the sprite center
-        float playerX = (int)playerPosition.x + player.getSprite().getWidth()/2;
-        float playerY = (int)playerPosition.y + player.getSprite().getHeight()/2;
+        float playerX = playerPosition.x + player.getSprite().getWidth()/2;
+        float playerY = playerPosition.y + player.getSprite().getHeight()/2;
         int killDistance = 5; // in pixels
         for (FreeProjectile proj: grid.getFreeProjectiles()) {
             if (!proj.getAlive()) continue;
-            int projX = (int)proj.getPosition().x;
-            int projY = (int)proj.getPosition().y;
+            float projX = proj.getPosition().x;
+            float projY = proj.getPosition().y;
             if (Math.pow(projX - playerX, 2) + Math.pow(projY - playerY, 2) <= Math.pow(killDistance, 2)) {
                 onPlayerDeath("GREEN ENEMY PROJECTILE");
                 break;
@@ -342,9 +346,8 @@ public class Game {
             .setScale(10f, 100f)
             .setRotation(rotation)
             .play();
-        if (!isBackgroundGame) {
+        if (!isBackgroundGame)
             beamAttackSound.play(10);
-        }
         compareEnemyAmt();
     }
 
@@ -457,16 +460,19 @@ public class Game {
         boolean didBeamAttack = false;
         boolean didClearAttack = false;
 
+        CooldownBarList cooldownBarList = gameGui.getCooldownBarList();
+        StatusText statusText = gameGui.getStatusText();
+
         switch (currentAttackMode) {
             case BULLET: {
                 shotsFired++;
-                gameGui.getCooldownBarList().setBarProgress(0, 0f);
+                cooldownBarList.setBarProgress(0, 0f);
                 grid.addProjectile();
                 break;
             }
             case BEAM: {
                 if (beamCooldown != 0) {
-                    gameGui.getStatusText().shake();
+                    statusText.shake();
                     return;
                 }
                 didBeamAttack = true;
@@ -476,7 +482,7 @@ public class Game {
             }
             case CLEAR: {
                 if (clearCooldown != 0) {
-                    gameGui.getStatusText().shake();
+                    statusText.shake();
                     return;
                 }
                 didClearAttack = true;
@@ -484,7 +490,7 @@ public class Game {
                 clearCooldown = 3;
             }
         }
-        gameGui.getStatusText().text = "";
+        statusText.setText();
         currentAttackMode = attackMode.NONE;
 
         allowStep = false;
@@ -492,11 +498,11 @@ public class Game {
 
         if (beamCooldown != 0 && !didBeamAttack) {
             beamCooldown--;
-            gameGui.getCooldownBarList().setBarProgress(1, 1 - beamCooldown/2f);
+            cooldownBarList.setBarProgress(1, 1 - beamCooldown/2f);
         }
         if (clearCooldown != 0 && !didClearAttack) {
             clearCooldown--;
-            gameGui.getCooldownBarList().setBarProgress(2, 1 - clearCooldown/3f);
+            cooldownBarList.setBarProgress(2, 1 - clearCooldown/3f);
         }
 
         projectileStep(chain);
@@ -547,6 +553,7 @@ public class Game {
             altInput(keycode);
             return;
         }
+        StatusText statusText = gameGui.getStatusText();
         switch (keycode) {
             case Keys.UP:
             case Keys.W: {
@@ -571,32 +578,28 @@ public class Game {
             case Keys.NUMPAD_0:
             case Keys.NUM_0: {
                 currentAttackMode = attackMode.NONE;
-//                gameGui.cardHolder.pullUp(0);
-                gameGui.getStatusText().text = "";
+                statusText.setText();
                 break;
             }
             case Keys.NUMPAD_1:
             case Keys.NUM_1: {
                 currentAttackMode = attackMode.BULLET;
-//                gameGui.cardHolder.pullUp(1);
-                gameGui.getStatusText().text = "USING ATTACK 1";
-                gameGui.getStatusText().pop();
+                statusText.setText("USING ATTACK 1");
+                statusText.pop();
                 break;
             }
             case Keys.NUMPAD_2:
             case Keys.NUM_2: {
                 currentAttackMode = attackMode.BEAM;
-//                gameGui.cardHolder.pullUp(2);
-                gameGui.getStatusText().text = getTurnText(beamCooldown == 0, "USING ATTACK 2", "ATTACK 2 ON COOLDOWN");
-                gameGui.getStatusText().pop();
+                statusText.setText(getTurnText(beamCooldown == 0, "USING ATTACK 2", "ATTACK 2 ON COOLDOWN"));
+                statusText.pop();
                 break;
             }
             case Keys.NUMPAD_3:
             case Keys.NUM_3: {
                 currentAttackMode = attackMode.CLEAR;
-//                gameGui.cardHolder.pullUp(3);
-                gameGui.getStatusText().text = getTurnText(clearCooldown == 0, "USING ATTACK 3", "ATTACK 3 ON COOLDOWN");
-                gameGui.getStatusText().pop();
+                statusText.setText(getTurnText(clearCooldown == 0, "USING ATTACK 3", "ATTACK 3 ON COOLDOWN"));
+                statusText.pop();
                 break;
             }
             case Keys.NUMPAD_ENTER:

@@ -54,10 +54,10 @@ public class Player extends BoardEntity {
     public moveDirection getDirection() {
         return direction;
     }
-    int[] left = {-1, 0};
-    int[] up = {0, -1};
-    int[] right = {1, 0};
-    int[] down = {0, 1};
+    private static final int[] left = {-1, 0};
+    private static final int[] up = {0, -1};
+    private static final int[] right = {1, 0};
+    private static final int[] down = {0, 1};
 
     private void moveHighlight() {
         int[] offset = left;

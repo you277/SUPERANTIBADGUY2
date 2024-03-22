@@ -11,7 +11,7 @@ public class FreeProjectile extends Entity {
     private float xVelocity;
     private float yVelocity;
     private float lifetime;
-    public final Enemy parent;
+    private final Enemy parent;
     private boolean alive = true;
     private boolean active = true;
     private final TexSprite sprite;
@@ -33,6 +33,10 @@ public class FreeProjectile extends Entity {
         this.xVelocity = xVelocity;
         this.yVelocity = yVelocity;
         return this;
+    }
+
+    public Enemy getParent() {
+        return parent;
     }
 
     public void doFadeAnimation() {

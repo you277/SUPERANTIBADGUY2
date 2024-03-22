@@ -224,7 +224,7 @@ public class Grid {
 
     public void clearFreeProjectiles(Enemy enemy) {
         for (FreeProjectile proj: freeProjectiles)
-            if (proj.parent == enemy)
+            if (proj.getParent() == enemy)
                 proj.kill();
     }
 

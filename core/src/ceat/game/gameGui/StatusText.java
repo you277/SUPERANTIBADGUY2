@@ -19,8 +19,8 @@ public class StatusText {
 
     private final Game game;
     private float yOffset;
-    public boolean visible;
-    public String text = "";
+    private boolean visible;
+    private String text = "";
 
     public StatusText(Game game) {
         this.game = game;
@@ -50,6 +50,13 @@ public class StatusText {
                 yOffset = 0;
             }
         };
+    }
+
+    public void setText() {
+        this.text = "";
+    }
+    public void setText(String text) {
+        this.text = text;
     }
 
     public void draw(SpriteBatch batch) {
