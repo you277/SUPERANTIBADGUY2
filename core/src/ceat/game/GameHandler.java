@@ -1,6 +1,7 @@
 package ceat.game;
 
 import ceat.game.fx.NewFloorBanner;
+import ceat.game.requirements.SuperRequirements;
 import ceat.game.titleScreenGui.TitleScreen;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.InputProcessor;
@@ -111,6 +112,7 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	
 	@Override
 	public void create() {
+		new SuperRequirements();
 		batch = new SpriteBatch();
 		title1 = new Texture("img/title1.png");
 		title2 = new Texture("img/title2.png");
