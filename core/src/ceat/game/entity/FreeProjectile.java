@@ -35,6 +35,13 @@ public class FreeProjectile extends Entity {
         return this;
     }
 
+    public float getXVelocity() {
+        return xVelocity;
+    }
+    public float getYVelocity() {
+        return yVelocity;
+    }
+
     public Enemy getParent() {
         return parent;
     }

@@ -35,7 +35,7 @@ public class Requirements {
     }
     public Requirements() {
         ArrayList<Integer> guy = new ArrayList<>();
-        guy.add(1);
+        guy.add(0, 1);
         guy.set(0, 2);
         intSelectionSort(new int[] {1, 0, -1});
         intInsertionSort(new int[] {1, 0, -1});

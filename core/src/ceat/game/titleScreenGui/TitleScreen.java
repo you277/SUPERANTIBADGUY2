@@ -9,6 +9,7 @@ import ceat.game.fx.Effect;
 import ceat.game.fx.Transition;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -28,6 +29,7 @@ public class TitleScreen {
     private final BackgroundCircleThing backgroundCircleThing;
     private int currentSelection;
     private boolean acceptInput;
+    private Music music;
     private final Sound clickSound;
     private final Sound keySound;
     public TitleScreen(SpriteBatch newBatch) {
@@ -59,6 +61,10 @@ public class TitleScreen {
 
         clickSound = Gdx.audio.newSound(Gdx.files.internal("snd/Switch1.mp3"));
         keySound = Gdx.audio.newSound(Gdx.files.internal("snd/Key2.mp3"));
+
+        music = Gdx.audio.newMusic(Gdx.files.internal("snd/ETERNALWAVES.mp3"));
+        music.setLooping(true);
+        music.play();
     }
 
     public void render() {
@@ -165,6 +171,7 @@ public class TitleScreen {
         keySound.dispose();
         backgroundCircleThing.stop();
         backgroundCircleThing.unregisterEffect();
+        music.dispose();
     }
 
     public String toString() {

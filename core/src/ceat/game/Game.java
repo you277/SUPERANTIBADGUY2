@@ -32,6 +32,7 @@ public class Game {
     private final SpriteBatch batch;
     private final GameGui gameGui;
     private Music music;
+    private String musicName;
     private float gameTime;
     
     private Grid grid;
@@ -65,17 +66,18 @@ public class Game {
         startFloor = startingFloor;
         floor = startingFloor;
 
-        gameGui = new GameGui(this);
         grid = new Grid(this, startingFloor);
         nextGrid = new Grid(this, startingFloor + 1);
-
-        this.isBackgroundGame = isBackgroundGame;
-        gameGui.setEnabled(!isBackgroundGame);
-        grid.setIsActive(true);
 
         player = new Player(this, grid);
         grid.setPlayer(player);
         player.setGridPosition(Grid.width/2, Grid.height/2);
+
+        gameGui = new GameGui(this);
+
+        this.isBackgroundGame = isBackgroundGame;
+        gameGui.setEnabled(!isBackgroundGame);
+        grid.setIsActive(true);
 
         // gamegui setup
         gameGui.getEnemyCounter().setAlive(grid.getTotalEnemies());
@@ -88,9 +90,10 @@ public class Game {
         allowStep = true;
 
         if (!isBackgroundGame) {
-            music = Gdx.audio.newMusic(Gdx.files.internal("snd/Hexagonest.mp3"));
+            music = Gdx.audio.newMusic(Gdx.files.internal("snd/FOCUS.mp3"));
             music.setLooping(true);
             music.play();
+            musicName = "FOCUS";
 
             beamAttackSound = Gdx.audio.newSound(Gdx.files.internal("snd/Attack2_2.mp3"));
             playerDeadSound = Gdx.audio.newSound(Gdx.files.internal("snd/Kill10_2.mp3"));
@@ -138,6 +141,28 @@ public class Game {
         gameGui.draw(batch);
         Effect.renderEffects(batch);
         if (!isBackgroundGame) batch.end();
+
+        checkMusic();
+    }
+
+    private void checkMusic() {
+        if (music == null) return;
+        String targetMusicName = floor >= 20 ? "HEXAGONER" : "FOCUS";
+        if (musicName.equals(targetMusicName)) return;
+        musicName = targetMusicName;
+        new ChainedTask().wait(1f).run(new Timer.Task() {
+            public void run() {
+                music.stop();
+            }
+        }).wait(0.5f).run(new Timer.Task() {
+            @Override
+            public void run() {
+                music.dispose();
+                music = Gdx.audio.newMusic(Gdx.files.internal("snd/" + targetMusicName + ".mp3"));
+                music.setLooping(true);
+                music.play();
+            }
+        });
     }
 
     private void changeGrids(ChainedTask chain) {
@@ -162,6 +187,8 @@ public class Game {
         player.animateJump(grid.getTileAt(Grid.width/2, Grid.height/2), 1.15f, 400);
         oldGrid.explode();
         player.setGrid(grid);
+
+        checkMusic();
         new ChainedTask().wait(0.2f).run(new Timer.Task() {
             public void run() {
                 player.setGridPosition(Grid.width/2, Grid.height/2);
@@ -413,7 +440,7 @@ public class Game {
         grid.getEnemies().add(enemy);
     }
 
-    private void spawnEnemies(ChainedTask chain) {
+    public void spawnEnemies(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
                 if (!grid.getIsFreeSpaceAvailable()) return;
@@ -427,6 +454,9 @@ public class Game {
                 processProjectilesAndEnemies();
             }
         });
+    }
+    public void spawnEnemies() {
+        spawnEnemies(new ChainedTask());
     }
 
     public void postEnemyProcesses() {

@@ -11,6 +11,7 @@ public class GameGui {
     private final EnemyCounter enemyCounter;
     private final CooldownBarList cooldownBarList;
     private final StatusText statusText;
+    private final FreeProjectileWarning freeProjectileWarning;
     private final DeathScreen deathScreen;
 
     public GameGui(Game game) {
@@ -19,6 +20,7 @@ public class GameGui {
         enemyCounter = new EnemyCounter();
         cooldownBarList = new CooldownBarList();
         statusText = new StatusText(game);
+        freeProjectileWarning = new FreeProjectileWarning(game);
         deathScreen = new DeathScreen();
     }
 
@@ -46,6 +48,7 @@ public class GameGui {
         if (!enabled) return;
         enemyCounter.draw(batch);
         cooldownBarList.draw(batch);
+        freeProjectileWarning.draw(batch);
         statusText.draw(batch);
         if (deathScreenEnabled)
             deathScreen.draw(batch);
@@ -55,6 +58,7 @@ public class GameGui {
         enemyCounter.dispose();
         cooldownBarList.dispose();
         statusText.dispose();
+        freeProjectileWarning.dispose();
         deathScreen.dispose();
     }
 
