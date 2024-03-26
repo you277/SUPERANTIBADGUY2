@@ -21,15 +21,17 @@ public class TitleScreen {
     private final SpriteBatch batch;
     private float lifetime;
     private final BitmapFont font;
+    private final BitmapFont controlsFont;
 
     private final TexSprite bgSprite;
     private FloorDialog floorDialog;
     private final Selection startSelect;
     private final Selection floorSelect;
+    private final Selection controlsSelect;
     private final BackgroundCircleThing backgroundCircleThing;
     private int currentSelection;
     private boolean acceptInput;
-    private Music music;
+    private final Music music;
     private final Sound clickSound;
     private final Sound keySound;
     public TitleScreen(SpriteBatch newBatch) {
@@ -44,6 +46,11 @@ public class TitleScreen {
                 params.size = 20;
             }
         });
+        controlsFont = Font.create(new Font.ParamSetter() {
+            public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
+                params.size = 15;
+            }
+        });
         acceptInput = true;
 
         bgSprite = new TexSprite("img/square.png");
@@ -55,6 +62,7 @@ public class TitleScreen {
         currentSelection = 0;
         startSelect = new Selection("START FLOOR 1").setPosition(0, 300).setSelected(true);
         floorSelect = new Selection("SELECT FLOOR").setPosition(0, 200).setSelected(false);
+        controlsSelect = new Selection("CONTROLS").setPosition(0, 100).setSelected(false);
 
         backgroundCircleThing = new BackgroundCircleThing();
         backgroundCircleThing.play();
@@ -74,7 +82,8 @@ public class TitleScreen {
         backgroundAI.step();
 
         batch.begin();
-        Effect.renderBackgroundEffects(batch);
+        Effect.renderEffects();
+        Effect.drawBackgroundEffects(batch);
         backgroundGame.render();
 
         bgSprite.draw(batch);
@@ -82,9 +91,15 @@ public class TitleScreen {
         font.draw(batch, "SUPERBADGUYDESTROYER2200++ ULTRA DELUXE\nEDITION", 15, 470 + offset);
         startSelect.draw(batch);
         floorSelect.draw(batch);
+        controlsSelect.draw(batch);
         if (floorDialog != null)
             floorDialog.draw(batch);
-        Effect.renderEffects(batch);
+        Effect.drawEffects(batch);
+
+        if (currentSelection == 2) {
+            controlsFont.draw(batch, "[W][A][S][D] CHANGE DIRECTION\n[<][^][v][>]\n\n[1][2][3][4] SELECT ATTACK\n[0] DESELECT ATTACK\n\n[ENTER] DO TURN", 350, 250);
+        }
+
         batch.end();
     }
 
@@ -117,7 +132,7 @@ public class TitleScreen {
                 keySound.play();
                 if (currentSelection == 0) {
                     transitionToGame(1);
-                } else {
+                } else if (currentSelection == 1) {
                     floorDialog = new FloorDialog() {
                         public void onConfirm(int floor) {
                             keySound.play();
@@ -134,14 +149,20 @@ public class TitleScreen {
                 }
                 break;
         }
-        if (currentSelection < 0) currentSelection = 1;
-        else if (currentSelection > 1) currentSelection = 0;
+        if (currentSelection < 0) currentSelection = 2;
+        else if (currentSelection > 2) currentSelection = 0;
         if (currentSelection == 0) {
             startSelect.setSelected(true);
             floorSelect.setSelected(false);
-        } else {
+            controlsSelect.setSelected(false);
+        } else if (currentSelection == 1) {
             startSelect.setSelected(false);
             floorSelect.setSelected(true);
+            controlsSelect.setSelected(false);
+        } else {
+            startSelect.setSelected(false);
+            floorSelect.setSelected(false);
+            controlsSelect.setSelected(true);
         }
         if (previousSelection != currentSelection) {
             clickSound.play();
@@ -164,8 +185,10 @@ public class TitleScreen {
     public void dispose() {
         startSelect.dispose();
         floorSelect.dispose();
+        controlsSelect.dispose();
         bgSprite.dispose();
         font.dispose();
+        controlsFont.dispose();
         backgroundGame.dispose();
         clickSound.dispose();
         keySound.dispose();

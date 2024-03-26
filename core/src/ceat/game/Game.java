@@ -131,7 +131,9 @@ public class Game {
 
         ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
         if (!isBackgroundGame) batch.begin();
-        Effect.renderBackgroundEffects(batch);
+
+        Effect.renderEffects();
+        Effect.drawBackgroundEffects(batch);
 
         if (lastGridPresent)
             lastGrid.draw(batch);
@@ -139,7 +141,7 @@ public class Game {
         grid.draw(batch);
 
         gameGui.draw(batch);
-        Effect.renderEffects(batch);
+        Effect.drawEffects(batch);
         if (!isBackgroundGame) batch.end();
 
         checkMusic();
@@ -150,19 +152,10 @@ public class Game {
         String targetMusicName = floor >= 20 ? "HEXAGONER" : "FOCUS";
         if (musicName.equals(targetMusicName)) return;
         musicName = targetMusicName;
-        new ChainedTask().wait(1f).run(new Timer.Task() {
-            public void run() {
-                music.stop();
-            }
-        }).wait(0.5f).run(new Timer.Task() {
-            @Override
-            public void run() {
-                music.dispose();
-                music = Gdx.audio.newMusic(Gdx.files.internal("snd/" + targetMusicName + ".mp3"));
-                music.setLooping(true);
-                music.play();
-            }
-        });
+        music.dispose();
+        music = Gdx.audio.newMusic(Gdx.files.internal("snd/" + targetMusicName + ".mp3"));
+        music.setLooping(true);
+        music.play();
     }
 
     private void changeGrids(ChainedTask chain) {
@@ -216,6 +209,7 @@ public class Game {
         grid.setEnemiesDead(grid.getEnemiesDead() + 1);
         enemiesKilled++;
         grid.getEnemies().remove(enemy);
+        enemy.kill();
         enemy.dispose();
         grid.clearFreeProjectiles(enemy);
         gameGui.getEnemyCounter().setAlive(grid.getTotalEnemies() - grid.getEnemiesDead());

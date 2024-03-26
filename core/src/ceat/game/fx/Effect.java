@@ -17,20 +17,23 @@ public class Effect {
         boolean isOrdered = true;
         int lastZIndex = effects.get(0).zIndex;
         for (Effect effect: effects) {
-            effect.render();
             if (isOrdered && effect.zIndex < lastZIndex) isOrdered = false;
             lastZIndex = effect.zIndex;
         }
         if (!isOrdered) sortEffectOrder();
     }
-    public static void renderBackgroundEffects(SpriteBatch batch) {
+    public static void renderEffects() {
+        for (Effect effect: effects)
+            effect.render();
+    }
+    public static void drawBackgroundEffects(SpriteBatch batch) {
         checkOrder();
         for (Effect effect: effects) {
             if (effect.zIndex >= 0) continue;
             effect.draw(batch);
         }
     }
-    public static void renderEffects(SpriteBatch batch) {
+    public static void drawEffects(SpriteBatch batch) {
         checkOrder();
         for (Effect effect: effects) {
             if (effect.zIndex < 0) continue;

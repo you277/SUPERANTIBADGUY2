@@ -1,46 +1,56 @@
 package ceat.game.fx;
 
 import ceat.game.ChainedTask;
-import ceat.game.Loop;
 import ceat.game.TexSprite;
 import ceat.game.entity.enemy.Enemy;
+import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 
 public class EnemyDeathEffect extends Effect {
-    private final float x;
-    private final float y;
+    private final Vector2 position;
     private int frame;
     public EnemyDeathEffect(Enemy enemy) {
-        super();
+        position = enemy.getScreenPosition();
         TexSprite sprite = loadSprite("img/enemyDeathSheet.png");
-        sprite.setScale(3f, 3f);
-        sprite.setCenter(sprite.getWidth()/2, 0);
-        x = enemy.getScreenPosition().x;
-        y = enemy.getScreenPosition().y;
-    }
-
-    public void draw(SpriteBatch batch) {
-        System.out.println("draw");
-//        batch.draw(tex, x + ScreenOffset.offsetY, y + ScreenOffset.offsetY, frame*15, 0);
-        //sprite.draw(batch, x + ScreenOffset.offsetY, y + ScreenOffset.offsetY);
+        sprite.setScale(3, 3);
+//        sprite.setRegion(0f, 15f, 0, 15);
+        sprite.setCenter();
+        sprite.setPosition(position);
     }
 
     public void play() {
         registerEffect();
-        new Loop(0.3f) {
-            public void run(float delta, float elapsed) {
-                frame = (int)(elapsed/0.3f*8); // 8 frames
-            }
-        };
-        new ChainedTask().wait(0.3f).run(new Timer.Task() {
-            @Override
+        TexSprite sprite = getSprite();
+        ChainedTask chain = new ChainedTask();
+        for (int i = 0; i < 7; i++) {
+            int i2 = i;
+            chain.run(new Timer.Task() {
+                public void run() {
+                    System.out.println(i2);
+                    frame = i2;
+//                    sprite.setRegion( i2*15f, i2*15f + 15, 0, 15);
+                    sprite.setPosition(ScreenOffset.project(position));
+                    sprite.setCenter();
+                }
+            }).wait(0.4f);
+        }
+        chain.run(new Timer.Task() {
             public void run() {
                 unregisterEffect();
                 dispose();
             }
         });
     }
+//    public void render() {
+//        TexSprite sprite = getSprite();
+//        sprite.setre
+//        sprite.setRegion(frame*15f, 0f, frame*15 + 15, 15);
+//        sprite.setPosition(ScreenOffset.project(position));
+//        sprite.setCenter();
+//    }
 
     public String toString() {
         return "ENEMY DEATH EFFECT";

@@ -2,6 +2,8 @@ package ceat.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.HashMap;
@@ -10,7 +12,7 @@ public class TexSprite extends Sprite {
     // cache textures
     private static final HashMap<String, Texture> textures = new HashMap<>();
     private static final HashMap<String, Integer> textureUsage = new HashMap<>();
-    public static Texture getTexture(String path) {
+    public static Texture getCachedTexture(String path) {
         if (textures.containsKey(path)) {
             textureUsage.put(path, textureUsage.get(path) + 1);
             return textures.get(path);
@@ -24,7 +26,7 @@ public class TexSprite extends Sprite {
     private final String texturePath;
 
     public TexSprite(String path) {
-        super(getTexture(path));
+        super(getCachedTexture(path));
         texturePath = path;
     }
 

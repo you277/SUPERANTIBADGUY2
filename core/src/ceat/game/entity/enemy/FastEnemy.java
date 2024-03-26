@@ -2,6 +2,7 @@ package ceat.game.entity.enemy;
 
 import ceat.game.Game;
 import ceat.game.Grid;
+import ceat.game.IntVector2;
 
 public class FastEnemy extends Enemy {
     public FastEnemy(Game newGame, Grid newGrid) {
@@ -16,8 +17,9 @@ public class FastEnemy extends Enemy {
     public void step() {
         int[] newCoords = calcStep(false, 2);
         if (newCoords[0] == -1) return;
-        animateJump(getGrid().getTileAt(newCoords[0], newCoords[1]));
-        setGridPosition(newCoords[0], newCoords[1]);
+        IntVector2 newPosition = Grid.getFinalPosition(newCoords[0], newCoords[1]);
+        animateJump(getGrid().getTileAt(newPosition));
+        setGridPosition(newPosition);
     }
 
     public String toString() {

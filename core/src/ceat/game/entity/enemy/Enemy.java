@@ -2,6 +2,7 @@ package ceat.game.entity.enemy;
 
 import ceat.game.*;
 import ceat.game.entity.BoardEntity;
+import ceat.game.fx.EnemyDeathEffect;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public class Enemy extends BoardEntity {
         animateEntry(1, 0, 0);
     }
 
+    public void kill() {
+        new EnemyDeathEffect(this).play();
+    }
     private IntVector2 getPossibleStep(int stepDistance) {
         IntVector2 playerPosition = getGrid().getPlayer().getGridPosition();
         int playerX = playerPosition.getX();
