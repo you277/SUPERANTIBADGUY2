@@ -13,14 +13,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer.Task;
 
 public class GameHandler extends ApplicationAdapter implements InputProcessor {
-	SpriteBatch batch;
-
-	Texture title1;
-	Texture title2;
-
-	private int screen = 0;
-	private Game game;
-	private TitleScreen titleScreen;
 	public static float speed = 1;
 	public static float getRawDeltaTime() {
 		return Gdx.graphics.getDeltaTime();
@@ -28,6 +20,15 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	public static float getDeltaTime() {
 		return getRawDeltaTime()*speed;
 	}
+
+	private SpriteBatch batch;
+
+	private Texture title1;
+	private Texture title2;
+
+	private int screen = 0;
+	private Game game;
+	private TitleScreen titleScreen;
 
 	private void renderSplash1() {
 		ScreenUtils.clear(0, 0, 0, 1);
@@ -125,8 +126,12 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 		if (screen == 0) renderSplash1();
 		else if (screen == 1) renderSplash2();
 		else {
-			if (game != null) game.render();
-			if (titleScreen != null) titleScreen.render();
+			if (game != null || titleScreen != null) {
+				batch.begin();
+				if (game != null) game.render();
+				if (titleScreen != null) titleScreen.render();
+				batch.end();
+			}
 		}
 	}
 

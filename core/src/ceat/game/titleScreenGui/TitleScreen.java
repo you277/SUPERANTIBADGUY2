@@ -81,7 +81,6 @@ public class TitleScreen {
 
         backgroundAI.step();
 
-        batch.begin();
         Effect.renderEffects();
         Effect.drawBackgroundEffects(batch);
         backgroundGame.render();
@@ -99,8 +98,6 @@ public class TitleScreen {
         if (currentSelection == 2) {
             controlsFont.draw(batch, "[W][A][S][D] CHANGE DIRECTION\n[<][^][v][>]\n\n[1][2][3][4] SELECT ATTACK\n[0] DESELECT ATTACK\n\n[ENTER] DO TURN", 350, 250);
         }
-
-        batch.end();
     }
 
     public void keyDown(int keycode) {

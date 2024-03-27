@@ -130,7 +130,6 @@ public class Game {
         grid.render(gameTime);
 
         ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
-        if (!isBackgroundGame) batch.begin();
 
         Effect.renderEffects();
         Effect.drawBackgroundEffects(batch);
@@ -142,7 +141,6 @@ public class Game {
 
         gameGui.draw(batch);
         Effect.drawEffects(batch);
-        if (!isBackgroundGame) batch.end();
 
         checkMusic();
     }

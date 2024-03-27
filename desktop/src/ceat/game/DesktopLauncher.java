@@ -11,7 +11,7 @@ public class DesktopLauncher {
 		config.setWindowedMode(800, 500);
 		config.useVsync(true);
 		config.setTitle("SUPERBADGUYDESTROYER2200 DELUXE+");
-		config.setResizable(false);
+//		config.setResizable(false);
 		new Lwjgl3Application(new GameHandler(), config);
 	}
 }
