@@ -7,25 +7,47 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public class FreeProjectile extends Entity {
+    public enum ProjectileType {
+        SENTRY,
+        WALL
+    }
     private final Vector2 position;
     private float xVelocity;
     private float yVelocity;
     private float lifetime;
-    private final Enemy parent;
+    private Enemy parent;
     private boolean alive = true;
     private boolean active = true;
     private final TexSprite sprite;
-    public FreeProjectile(Game newGame, Grid newGrid, Enemy parent) {
+    private ProjectileType type;
+
+    public FreeProjectile(Game newGame, Grid newGrid) {
         super(newGame, newGrid);
         sprite = loadSprite("img/square.png");
         sprite.setScale(5, 5);
         sprite.setCenter();
         position = new Vector2();
+        type = ProjectileType.SENTRY;
+    }
+    public FreeProjectile(Game newGame, Grid newGrid, Enemy parent) {
+        this(newGame, newGrid);
         this.parent = parent;
+    }
+    public FreeProjectile setType(ProjectileType type) {
+        this.type = type;
+        return this;
+    }
+    public ProjectileType getType() {
+        return type;
     }
 
     public FreeProjectile setPosition(Vector2 position) {
         this.position.set(position);
+        return this;
+    }
+
+    public FreeProjectile setPosition(float x, float y) {
+        this.position.set(x, y);
         return this;
     }
 

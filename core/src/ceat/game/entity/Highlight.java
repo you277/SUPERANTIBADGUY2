@@ -8,7 +8,7 @@ import com.badlogic.gdx.Gdx;
 
 public class Highlight extends BoardEntity {
     public Highlight(Game newGame, Grid newGrid) {
-        super(newGame, newGrid);
+        super(newGame, newGrid, BoardEntityType.HIGHLIGHT);
         setParentTile(getGrid().getTileAt(getGridPosition()));
 
         TexSprite sprite = loadSprite("img/baseTile.png");

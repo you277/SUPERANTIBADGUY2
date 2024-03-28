@@ -1,10 +1,7 @@
 package ceat.game;
 
 import ceat.game.entity.*;
-import ceat.game.entity.enemy.Enemy;
-import ceat.game.entity.enemy.FastEnemy;
-import ceat.game.entity.enemy.FreeEnemy;
-import ceat.game.entity.enemy.SentryEnemy;
+import ceat.game.entity.enemy.*;
 import ceat.game.fx.*;
 import ceat.game.gameGui.CooldownBarList;
 import ceat.game.gameGui.GameGui;
@@ -20,6 +17,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Game {
     public enum attackMode {
@@ -52,6 +50,7 @@ public class Game {
     private final boolean isBackgroundGame;
     private boolean useAltInput = false;
     private boolean inputActive = true;
+    private final HashMap<Enemy, TexSprite> auraRings;
     private final GameBackground background;
 
     private Sound beamAttackSound;
@@ -65,6 +64,8 @@ public class Game {
 
         startFloor = startingFloor;
         floor = startingFloor;
+
+        auraRings = new HashMap<>();
 
         grid = new Grid(this, startingFloor);
         nextGrid = new Grid(this, startingFloor + 1);
@@ -138,6 +139,8 @@ public class Game {
             lastGrid.draw(batch);
         nextGrid.draw(batch);
         grid.draw(batch);
+        for (Enemy enemy: auraRings.keySet())
+            auraRings.get(enemy).draw(batch);
 
         gameGui.draw(batch);
         Effect.drawEffects(batch);
@@ -147,7 +150,7 @@ public class Game {
 
     private void checkMusic() {
         if (music == null) return;
-        String targetMusicName = floor >= 20 ? "HEXAGONER" : "FOCUS";
+        String targetMusicName = floor >= 25 ? "HEXAGONER" : floor >= 15 ? "COURTESY" : "FOCUS";
         if (musicName.equals(targetMusicName)) return;
         musicName = targetMusicName;
         music.dispose();
@@ -208,6 +211,7 @@ public class Game {
         enemiesKilled++;
         grid.getEnemies().remove(enemy);
         enemy.kill();
+        auraRings.remove(enemy);
         enemy.dispose();
         grid.clearFreeProjectiles(enemy);
         gameGui.getEnemyCounter().setAlive(grid.getTotalEnemies() - grid.getEnemiesDead());
@@ -225,11 +229,11 @@ public class Game {
 
     public void processProjectilesAndEnemies() {
         EntityQuery<Enemy, Projectile> query = new EntityQuery<Enemy, Projectile>().overlap(grid.getEnemies(), grid.getProjectiles());
-        if (query.a.isEmpty()) return;
+        if (query.getA().isEmpty()) return;
         ScreenOffset.shake(20f, 0.25f);
-        for (Enemy enemy : query.a)
+        for (Enemy enemy : query.getA())
             killEnemy(enemy);
-        for (Projectile projectile : query.b) {
+        for (Projectile projectile : query.getB()) {
             grid.getProjectiles().remove(projectile);
             projectile.dispose();
         }
@@ -249,9 +253,9 @@ public class Game {
         if (isBackgroundGame) return;
         playerDeadSound.play();
         playerDeadSound2.play();
-        new Loop(Loop.loopType.UNSYNCED,2) {
+        new Loop(Loop.loopType.UNSYNCED,5) {
             public void run(float delta, float elapsed) {
-                GameHandler.speed = 1 - elapsed/2*0.9f;
+                GameHandler.speed = 1 - elapsed/5*0.9f;
             }
             public void onEnd() {
                 GameHandler.speed = 0.1f;
@@ -271,7 +275,8 @@ public class Game {
             float projX = proj.getPosition().x;
             float projY = proj.getPosition().y;
             if (Math.pow(projX - playerX, 2) + Math.pow(projY - playerY, 2) <= Math.pow(killDistance, 2)) {
-                onPlayerDeath("GREEN ENEMY PROJECTILE");
+                String name = proj.getType() == FreeProjectile.ProjectileType.SENTRY ? "GREEN ENEMY PROJECTILE" : "WALL PROJECTILE";
+                onPlayerDeath(name);
                 break;
             }
         }
@@ -280,7 +285,7 @@ public class Game {
     public void processPlayerAndEnemies() {
         if (!player.getIsAlive()) return;
         for (Enemy enemy: grid.getEnemies()) {
-            if (BoardEntity.overlap(player, enemy)) {
+            if (enemy.overlaps(player)) {
                 onPlayerDeath(enemy.toString());
                 return;
             }
@@ -411,25 +416,53 @@ public class Game {
         });
     }
 
-    private Enemy randomEnemyType() {
+    private Enemy.EnemyType randomEnemyType() {
         if (floor >= 3) {
             if (floor >= 6) {
                 if (floor >= 10) {
-                    if (Math.random() < 0.3) return new SentryEnemy(this, grid);
+                    if (floor >= 15) {
+                        if (Math.random() < 0.1) return Enemy.EnemyType.AURA;
+                    }
+                    if (Math.random() < 0.3) return Enemy.EnemyType.SENTRY;
                 }
-                if (Math.random() < 0.3) return new FreeEnemy(this, grid);
+                if (Math.random() < 0.3) return Enemy.EnemyType.FREE;
             }
-            if (Math.random() < 0.3) return new FastEnemy(this, grid);
+            if (Math.random() < 0.3) return Enemy.EnemyType.FAST;
         }
-        return new Enemy(this, grid);
+        return Enemy.EnemyType.BASE;
     }
 
-    private void addEnemy() {
-        Vector2 newPos = grid.getFreeSpace();
-        Enemy enemy = randomEnemyType();
-        enemy.setGridPosition((int)newPos.x, (int)newPos.y);
+    private Enemy createEnemy(Enemy.EnemyType type) {
+        switch (type) {
+            case FAST:
+                return new FastEnemy(this, grid);
+            case FREE:
+                return new FreeEnemy(this, grid);
+            case SENTRY:
+                return new SentryEnemy(this, grid);
+            case AURA:
+                AuraEnemy me = new AuraEnemy(this, grid);
+                auraRings.put(me, me.getRingSprite());
+                return me;
+            default:
+                return new Enemy(this, grid);
+        }
+    }
+
+    private void addEnemy(Enemy.EnemyType type, IntVector2 spawnPosition) {
+        Enemy enemy = createEnemy(type);
+        enemy.setGridPosition(spawnPosition);
         enemy.animateEntry();
         grid.getEnemies().add(enemy);
+    }
+    private boolean spawnEnemy() {
+        Enemy.EnemyType enemyType = randomEnemyType();
+        int emptyRadius = enemyType == Enemy.EnemyType.AURA ? 1 : 0;
+        if (!grid.getIsFreeSpaceAvailable(emptyRadius)) return false;
+        IntVector2 newPos = grid.getFreeSpace(emptyRadius);
+        if (newPos == null) return false;
+        addEnemy(enemyType, newPos);
+        return true;
     }
 
     public void spawnEnemies(ChainedTask chain) {
@@ -437,8 +470,7 @@ public class Game {
             public void run() {
                 if (!grid.getIsFreeSpaceAvailable()) return;
                 for (int i = 0; i < grid.getWaveSpawnAmount(); i++) {
-                    addEnemy();
-                    if (!grid.getIsFreeSpaceAvailable()) return;
+                   if (!spawnEnemy()) return;
                 }
             }
         }).wait(0.2f).run(new Timer.Task() {
@@ -446,6 +478,31 @@ public class Game {
                 processProjectilesAndEnemies();
             }
         });
+    }
+    public void bulletWallEvent() {
+        boolean isDefaultSide = Math.random() > 0.5;
+        int bulletSpeed = 200;
+        if (Math.random() > 0.5) {
+            float y = isDefaultSide ? 0 : 500;
+            float yVelocity = isDefaultSide ? bulletSpeed : -bulletSpeed;
+            int numBullets = 800/12;
+            float gap = 800f/numBullets;
+            for (int i = 0; i < numBullets; i++)
+                grid.getFreeProjectiles().add(new FreeProjectile(this, grid).setType(FreeProjectile.ProjectileType.WALL).setPosition(gap*i, y).setVelocity(0, yVelocity));
+        } else {
+            float x = isDefaultSide ? 0 : 800;
+            float xVelocity = isDefaultSide ? bulletSpeed : -bulletSpeed;
+            int numBullets = 500/12;
+            float gap = 500f/numBullets;
+            for (int i = 0; i < numBullets; i++)
+                grid.getFreeProjectiles().add(new FreeProjectile(this, grid).setType(FreeProjectile.ProjectileType.WALL).setPosition(x, gap*i).setVelocity(xVelocity, 0));
+        }
+    }
+    public void doEvent() {
+        if (floor < 25) return;
+        if (Math.random() < 0.1)
+            bulletWallEvent();
+
     }
     public void spawnEnemies() {
         spawnEnemies(new ChainedTask());
@@ -466,6 +523,7 @@ public class Game {
     private void endOfTurn(ChainedTask chain) {
         chain.run(new Timer.Task() {
             public void run() {
+                doEvent();
                 gameGui.getCooldownBarList().setBarProgress(0, 1f);
             }
         });
@@ -650,6 +708,7 @@ public class Game {
         }
         background.stop();
         background.dispose();
+        auraRings.clear();
         Loop.cancelAllLoops();
     }
 

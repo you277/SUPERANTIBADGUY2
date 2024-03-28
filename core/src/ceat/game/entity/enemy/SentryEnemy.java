@@ -10,7 +10,7 @@ public class SentryEnemy extends Enemy {
     private final Game game;
     private final Grid grid;
     public SentryEnemy(Game newGame, Grid newGrid) {
-        super(newGame, newGrid);
+        super(newGame, newGrid, EnemyType.SENTRY);
         getSprite().setColor(0, 1, 0, 1);
         game = getGame();
         grid = getGrid();

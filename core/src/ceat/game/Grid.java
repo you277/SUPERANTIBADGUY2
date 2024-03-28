@@ -133,20 +133,36 @@ public class Grid {
         return grid[position.getX()][position.getY()];
     }
 
+    public boolean getIsFreeSpaceAvailable(int emptyRadius) {
+        // emptyRadius*2 to handle all corners, + 1 to handle sides
+        return Math.pow(emptyRadius*2 + 1, 2) + enemies.size() < width*height;
+    }
     public boolean getIsFreeSpaceAvailable() {
-        return 1 + enemies.size() < width*height; // default 1 for the player
+        return getIsFreeSpaceAvailable(0);
     }
 
-    public Vector2 getFreeSpace() {
+    private boolean isSafePosition(int x, int y, int emptyRadius) {
+        if (player.getGridPosition().equals(x, y)) return false;
+        int xDiff = Math.abs(x - player.getGridPosition().getX());
+        int yDiff = Math.abs(y - player.getGridPosition().getY());
+        return xDiff > emptyRadius || yDiff > emptyRadius;
+    }
+    private IntVector2 getFreeSpace(int emptyRadius, int depth) {
+        if (depth == 20) return null;
         int x = (int)(Math.random()*width);
         int y = (int)(Math.random()*height);
-        Vector2 position = new Vector2(x, y);
-        if (player.getGridPosition().equals(position))
-            return getFreeSpace();
+        if (!isSafePosition(x, y, emptyRadius))
+            return getFreeSpace(emptyRadius, depth + 1);
         for (Enemy enemy: enemies)
-            if (enemy.getGridPosition().equals(position))
-                return getFreeSpace();
-        return position;
+            if (enemy.getGridPosition().equals(x, y))
+                return getFreeSpace(emptyRadius, depth + 1);
+        return new IntVector2(x, y);
+    }
+    public IntVector2 getFreeSpace(int emptyRadius) {
+        return getFreeSpace(emptyRadius, 0);
+    }
+    public IntVector2 getFreeSpace() {
+        return getFreeSpace(0, 0);
     }
 
     public boolean didWin() {

@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Timer;
 
 public class FreeEnemy extends Enemy {
     public FreeEnemy(Game newGame, Grid newGrid) {
-        super(newGame, newGrid);
+        super(newGame, newGrid, EnemyType.FREE);
         getSprite().setColor(0, 1, 1, 1);
     }
 

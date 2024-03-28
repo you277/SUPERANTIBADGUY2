@@ -124,6 +124,10 @@ public class TitleScreen {
             case Keys.NUMPAD_2:
                 currentSelection = 1;
                 break;
+            case Keys.NUM_3:
+            case Keys.NUMPAD_3:
+                currentSelection = 2;
+                break;
             case Keys.ENTER:
             case Keys.NUMPAD_ENTER:
                 keySound.play();

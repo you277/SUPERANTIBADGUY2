@@ -6,7 +6,7 @@ import ceat.game.IntVector2;
 
 public class FastEnemy extends Enemy {
     public FastEnemy(Game newGame, Grid newGrid) {
-        super(newGame, newGrid);
+        super(newGame, newGrid, EnemyType.FAST);
         getSprite().setColor(0, 0, 1, 1);
     }
 

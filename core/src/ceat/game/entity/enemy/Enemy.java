@@ -10,12 +10,29 @@ import java.util.ArrayList;
 import ceat.game.fx.SkyBeam;
 
 public class Enemy extends BoardEntity {
-    public Enemy(Game newGame, Grid newGrid) {
-        super(newGame, newGrid);
+    public enum EnemyType {
+        BASE,
+        FAST,
+        FREE,
+        SENTRY,
+        AURA
+    }
+    private final EnemyType enemyType;
+    public Enemy(Game newGame, Grid newGrid, EnemyType enemyType) {
+        super(newGame, newGrid, BoardEntityType.ENEMY);
         TexSprite sprite = loadSprite("img/baseTile.png");
         sprite.setColor(1, 0, 0, 1);
         sprite.setScale(2);
         sprite.setCenter();
+        this.enemyType = enemyType;
+    }
+
+    public Enemy(Game newGame, Grid newGrid) {
+        this(newGame, newGrid, EnemyType.BASE);
+    }
+
+    public EnemyType getEnemyType() {
+        return enemyType;
     }
 
     public void animateEntry(float r, float g, float b) {

@@ -9,7 +9,7 @@ public class Projectile extends BoardEntity {
     private final moveDirection direction;
     public int life = 5;
     public Projectile(Game newGame, Grid newGrid, Player player, moveDirection newDirection) {
-        super(newGame, newGrid);
+        super(newGame, newGrid, BoardEntityType.PROJECTILE);
         TexSprite sprite = loadSprite("img/baseTile.png");
         sprite.setColor(1f, 1f, 1f, 1f);
         sprite.setScale(1.2f);

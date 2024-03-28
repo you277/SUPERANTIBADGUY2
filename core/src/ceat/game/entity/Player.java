@@ -11,7 +11,7 @@ public class Player extends BoardEntity {
     private boolean isAlive;
 
     public Player(Game newGame, Grid newGrid) {
-        super(newGame, newGrid);
+        super(newGame, newGrid, BoardEntityType.PLAYER);
         setParentTile(getGrid().getTileAt(getGridPosition()));
 
         TexSprite sprite = loadSprite("img/baseTile.png");

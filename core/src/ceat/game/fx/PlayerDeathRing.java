@@ -17,7 +17,7 @@ public class PlayerDeathRing extends Effect {
 
     public void play() {
         registerEffect();
-        new Loop(1) {
+        new Loop(Loop.loopType.UNSYNCED, 1) {
             public void run(float delta, float elapsed) {
                 float size = elapsed*500;
                 TexSprite sprite = getSprite();

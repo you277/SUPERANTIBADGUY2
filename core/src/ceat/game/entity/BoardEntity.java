@@ -5,6 +5,12 @@ import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.math.Vector2;
 
 public class BoardEntity extends Entity {
+    public enum BoardEntityType {
+        PLAYER,
+        ENEMY,
+        PROJECTILE,
+        HIGHLIGHT
+    }
     public static boolean overlap(BoardEntity a, BoardEntity b) {
         return a.getGridPosition().equals(b.getGridPosition());
     }
@@ -12,16 +18,21 @@ public class BoardEntity extends Entity {
         IntVector2 position = boardEntity.getGridPosition();
         return position.getX() == gridX && position.getY() == gridY;
     }
+    private final BoardEntityType type;
     private final Vector2 screenPosition;
     private final IntVector2 gridPosition;
     private EmptyTile parentTile;
     private boolean isAnimating;
     private boolean isJumping;
-    public BoardEntity(Game newGame, Grid newGrid) {
+    public BoardEntity(Game newGame, Grid newGrid, BoardEntityType type) {
         super(newGame, newGrid);
         parentTile = getGrid().getTileAt(0, 0);
         screenPosition = new Vector2();
         gridPosition = new IntVector2();
+        this.type = type;
+    }
+    public BoardEntityType getType() {
+        return type;
     }
     public void setGridPosition(int newGridX, int newGridY) {
         gridPosition.set(newGridX, newGridY);
@@ -75,6 +86,10 @@ public class BoardEntity extends Entity {
     }
     public void animateJump(EmptyTile nextTile) {
         animateJump(parentTile, nextTile, 0.25f, 75);
+    }
+
+    public boolean overlaps(BoardEntity other) {
+        return gridPosition.equals(other.gridPosition);
     }
 
     public String toString() {
