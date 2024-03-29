@@ -8,7 +8,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -19,7 +18,6 @@ public class FloorDialog {
     private final BitmapFont titleFont;
     private final BitmapFont inputFont;
     private final BitmapFont emptyInputFont;
-    private final GlyphLayout layout;
     private final HashMap<Integer, Integer> textMap;
     private int currentInput;
     private float lifetime;
@@ -27,7 +25,6 @@ public class FloorDialog {
     private final TexSprite bgSprite;
     private final Sound clickSound;
     public FloorDialog() {
-        layout = new GlyphLayout();
         inputYPosition = 200;
         titleFont = Font.create(new Font.ParamSetter() {
             public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
@@ -139,12 +136,10 @@ public class FloorDialog {
         BitmapFont currentInputFont = empty ? emptyInputFont : inputFont;
         String text = empty ? "1" : "" + currentInput;
 
-        layout.setText(titleFont, titleText);
-        titleFont.draw(batch, titleText, 400 - layout.width/2, 300 + yOffset);
+        titleFont.draw(batch, titleText, 400 - Font.getTextWidth(titleFont, titleText)/2, 300 + yOffset);
 
-        layout.setText(currentInputFont, text);
         inputYPosition = Lerp.lerp(inputYPosition, 200, a);
-        currentInputFont.draw(batch, text, 400 - layout.width/2, inputYPosition + yOffset);
+        currentInputFont.draw(batch, text, 400 - Font.getTextWidth(currentInputFont, text)/2, inputYPosition + yOffset);
     }
 
     public void dispose() {

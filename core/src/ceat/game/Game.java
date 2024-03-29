@@ -4,6 +4,7 @@ import ceat.game.entity.*;
 import ceat.game.entity.enemy.*;
 import ceat.game.fx.*;
 import ceat.game.gameGui.CooldownBarList;
+import ceat.game.gameGui.EnemyIntroLabel;
 import ceat.game.gameGui.GameGui;
 import ceat.game.gameGui.StatusText;
 import ceat.game.screen.ScreenOffset;
@@ -57,6 +58,7 @@ public class Game {
     private Sound playerDeadSound;
     private Sound playerDeadSound2;
     private Sound multiKillSound;
+    private final ArrayList<EnemyIntroLabel> enemyIntroLabels;
 
     public Game(SpriteBatch newBatch, int startingFloor, boolean isBackgroundGame) {
         GameHandler.speed = 1;
@@ -66,6 +68,7 @@ public class Game {
         floor = startingFloor;
 
         auraRings = new HashMap<>();
+        enemyIntroLabels = new ArrayList<>();
 
         grid = new Grid(this, startingFloor);
         nextGrid = new Grid(this, startingFloor + 1);
@@ -143,6 +146,9 @@ public class Game {
             auraRings.get(enemy).draw(batch);
 
         gameGui.draw(batch);
+        for (EnemyIntroLabel enemyIntroLabel: enemyIntroLabels) {
+            enemyIntroLabel.draw(batch);
+        }
         Effect.drawEffects(batch);
 
         checkMusic();
@@ -215,6 +221,15 @@ public class Game {
         enemy.dispose();
         grid.clearFreeProjectiles(enemy);
         gameGui.getEnemyCounter().setAlive(grid.getTotalEnemies() - grid.getEnemiesDead());
+
+        for (int i = 0; i < enemyIntroLabels.size(); i++) {
+            EnemyIntroLabel label = enemyIntroLabels.get(i);
+            if (label.getParentEnemy().getEnemyType() == enemy.getEnemyType()) {
+                enemyIntroLabels.remove(label);
+                label.dispose();
+                i--;
+            }
+        }
     }
 
     private int currentEnemyAmt;
@@ -454,6 +469,13 @@ public class Game {
         enemy.setGridPosition(spawnPosition);
         enemy.animateEntry();
         grid.getEnemies().add(enemy);
+        if (!isBackgroundGame && !EnemyIntroLabel.hasEnemyTypeBeenIntroduced(type)) {
+            EnemyIntroLabel.setEnemyTypeIntroduced(type);
+            EnemyIntroLabel label = new EnemyIntroLabel()
+                    .setParentEnemy(enemy)
+                    .setText(EnemyIntroLabel.getEnemyIntroText(type));
+            enemyIntroLabels.add(label);
+        }
     }
     private boolean spawnEnemy() {
         Enemy.EnemyType enemyType = randomEnemyType();
@@ -525,6 +547,16 @@ public class Game {
             public void run() {
                 doEvent();
                 gameGui.getCooldownBarList().setBarProgress(0, 1f);
+                for (int i = 0; i < enemyIntroLabels.size(); i++) {
+                    EnemyIntroLabel label = enemyIntroLabels.get(i);
+                    if (label.getLifetime() >= 3) {
+                        enemyIntroLabels.remove(label);
+                        label.dispose();
+                        i--;
+                        continue;
+                    }
+                    label.incrementLifetime();
+                }
             }
         });
     }

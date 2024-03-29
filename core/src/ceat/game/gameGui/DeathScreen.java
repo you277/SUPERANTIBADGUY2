@@ -8,15 +8,12 @@ import ceat.game.fx.Effect;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.Timer;
 
 public class DeathScreen extends Effect {
     private final TexSprite bgSprite;
-    private final GlyphLayout layout;
-
     private final BitmapFont titleFont;
     private final BitmapFont killedByFont;
     private final BitmapFont statFont;
@@ -107,7 +104,6 @@ public class DeathScreen extends Effect {
         bgSprite.setScale(800, 600);
         bgSprite.setColor(0, 0, 0, 0.5f);
         bgSprite.setPosition(400, 300);
-        layout = new GlyphLayout();
 
         titleFont = Font.create(new Font.ParamSetter() {
             public void run(FreeTypeFontGenerator.FreeTypeFontParameter params) {
@@ -149,9 +145,7 @@ public class DeathScreen extends Effect {
     }
 
     public void drawStat(SpriteBatch batch, String name, String value, float height) {
-        layout.setText(statFont, name);
-        statFont.draw(batch, name, 400 - layout.width - 10, height);
-        layout.setText(statFont,  value);
+        statFont.draw(batch, name, 400 - Font.getTextWidth(statFont, name) - 10, height);
         statFont.draw(batch, value, 400 + 10, height);
     }
 
@@ -164,20 +158,17 @@ public class DeathScreen extends Effect {
     public void draw(SpriteBatch batch) {
         bgSprite.draw(batch);
 
-        layout.setText(titleFont, "YOU ARE DEAD");
-        titleFont.draw(batch, "YOU ARE DEAD", 400 - layout.width/2, 400);
+        titleFont.draw(batch, "YOU ARE DEAD", 400 - Font.getTextWidth(titleFont, "YOU ARE DEAD")/2, 400);
         if (killedBy != null) {
             String str = "KILLED BY " + killedBy;
-            layout.setText(killedByFont, str);
-            killedByFont.draw(batch, str, 400 - layout.width/2, 360);
+            killedByFont.draw(batch, str, 400 - Font.getTextWidth(killedByFont, str)/2, 360);
         }
 
         for (Stat stat: statLines)
             stat.draw(batch);
 
         String hi = "[ESC] TO TITLE - [R] TO RETURN TO FLOOR [" + startFloor + "]";
-        layout.setText(statFont, hi);
-        statFont.draw(batch, hi, 400 - layout.width/2, 75);
+        statFont.draw(batch, hi, 400 - Font.getTextWidth(statFont, hi)/2, 75);
     }
 
     public void dispose() {

@@ -37,6 +37,7 @@ public class GameGui {
         return deathScreen;
     }
 
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }

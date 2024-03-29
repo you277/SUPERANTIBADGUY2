@@ -3,13 +3,11 @@ package ceat.game.gameGui;
 import ceat.game.Font;
 import ceat.game.Game;
 import ceat.game.GameHandler;
-import ceat.game.TexSprite;
 import ceat.game.entity.FreeProjectile;
 import ceat.game.entity.Player;
 import ceat.game.screen.ScreenOffset;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
@@ -17,11 +15,10 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 public class FreeProjectileWarning {
-    private ArrayList<FreeProjectile> projectiles;
-    private Player player;
-    private BitmapFont font;
-    private BitmapFont font2;
-    private GlyphLayout layout;
+    private final ArrayList<FreeProjectile> projectiles;
+    private final Player player;
+    private final BitmapFont font;
+    private final BitmapFont font2;
     private float cycle;
     public FreeProjectileWarning(Game game) {
         projectiles = game.getGrid().getFreeProjectiles();
@@ -38,8 +35,6 @@ public class FreeProjectileWarning {
                 params.color = new Color(1, 1, 1, 1);
             }
         });
-        layout = new GlyphLayout();
-        layout.setText(font, "!");
     }
 
     private float getDistance(float x1, float y1, float x2, float y2) {
@@ -80,8 +75,8 @@ public class FreeProjectileWarning {
         float y = (float)Math.sin(angle);
 
         Vector2 position = ScreenOffset.project(
-                playerPosition.x + x*20 - layout.width/2 + player.getSprite().getHeight()/2,
-                playerPosition.y + y*20 + layout.height/2 + player.getSprite().getHeight()/2
+                playerPosition.x + x*20 - Font.getTextWidth(font, "!")/2 + player.getSprite().getHeight()/2,
+                playerPosition.y + y*20 + Font.getTextHeight(font, "!")/2 + player.getSprite().getHeight()/2
         );
 
         (cycle < 0.2f ? font : font2).draw(batch, "!", position.x, position.y);
@@ -90,5 +85,12 @@ public class FreeProjectileWarning {
    public void dispose() {
         font.dispose();
         font2.dispose();
+   }
+
+   public String toString() {
+        return "FREE PROJECTILE WARNING";
+   }
+   public boolean equals() {
+        return false;
    }
 }
