@@ -34,4 +34,11 @@ public class Font {
         paramSetter.run(params);
         return fontGen.generateFont(params);
     }
+
+    public String toString() {
+		return "FONT";
+	}
+	public boolean equals(Font other) {
+		return this == other;
+	}
 }
