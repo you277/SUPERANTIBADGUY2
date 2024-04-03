@@ -31,7 +31,7 @@ public class Requirements {
                 v--;
             }
         }
-        return  strs;
+        return strs;
     }
     public Requirements() {
         ArrayList<Integer> guy = new ArrayList<>();
@@ -39,5 +39,12 @@ public class Requirements {
         guy.set(0, 2);
         intSelectionSort(new int[] {1, 0, -1});
         intInsertionSort(new int[] {1, 0, -1});
+    }
+
+    public String toString() {
+        return "REQUIREMENTS";
+    }
+    public boolean equals() {
+        return false;
     }
 }

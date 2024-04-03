@@ -38,7 +38,7 @@ public class Font {
     public String toString() {
 		return "FONT";
 	}
-	public boolean equals(Font other) {
+    public boolean equals(Font other) {
 		return this == other;
 	}
 }

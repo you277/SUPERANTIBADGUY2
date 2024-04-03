@@ -31,4 +31,11 @@ public class EntityQuery <E extends BoardEntity, T extends BoardEntity> {
     public ArrayList<T> getB() {
         return b;
     }
+
+    public String toString() {
+        return "ENTITY QUERY";
+    }
+    public boolean equals() {
+        return false;
+    }
 }

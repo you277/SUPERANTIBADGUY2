@@ -26,7 +26,7 @@ public class Lerp {
     public String toString() {
 		return "LERP";
 	}
-	public boolean equals(Lerp other) {
+    public boolean equals(Lerp other) {
 		return this == other;
 	}
 }

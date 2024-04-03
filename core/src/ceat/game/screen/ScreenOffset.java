@@ -36,4 +36,11 @@ public class ScreenOffset {
         offsetY = 0;
         renderShakes(delta);
     }
+
+    public String toString() {
+        return "SCREEN OFFSET";
+    }
+    public boolean equals() {
+        return false;
+    }
 }
