@@ -22,4 +22,11 @@ public class Lerp {
     public static Vector2 threePointBezier(Vector2 p1, Vector2 p2, Vector2 p3, float a) {
        return threePointBezier(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, a);
     }
+
+    public String toString() {
+		return "LERP";
+	}
+	public boolean equals(Lerp other) {
+		return this == other;
+	}
 }
