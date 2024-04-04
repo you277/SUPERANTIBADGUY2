@@ -113,7 +113,8 @@ public class GameHandler extends ApplicationAdapter implements InputProcessor {
 	
 	@Override
 	public void create() {
-		new SuperRequirements();
+		new SuperRequirements().doThing();
+		new SuperRequirements(5);
 		batch = new SpriteBatch();
 		title1 = new Texture("img/title1.png");
 		title2 = new Texture("img/title2.png");

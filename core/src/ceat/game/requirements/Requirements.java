@@ -3,6 +3,8 @@ package ceat.game.requirements;
 import java.util.ArrayList;
 
 public class Requirements {
+    // this project safeguards personal privacy because it forgets everything when you close it
+    // this project benefits personal security
 
     public static int[] intSelectionSort(int[] nums) {
         for (int i = 0; i < nums.length - 1; i++) {
@@ -33,12 +35,18 @@ public class Requirements {
         }
         return strs;
     }
-    public Requirements() {
+    public Requirements(int n) {
         ArrayList<Integer> guy = new ArrayList<>();
         guy.add(0, 1);
         guy.set(0, 2);
-        intSelectionSort(new int[] {1, 0, -1});
-        intInsertionSort(new int[] {1, 0, -1});
+        intSelectionSort(new int[] {1, 0, -1, n});
+        intInsertionSort(new int[] {1, 0, -1, n});
+    }
+    public Requirements() {
+        this(5); // call to argument constructor
+    }
+    public void doThing() {
+        System.out.println("a");
     }
 
     public String toString() {
